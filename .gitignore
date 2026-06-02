@@ -36,3 +36,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# AI Tracking Files
+workdone.md
+medicalink-hms-blueprint.md
