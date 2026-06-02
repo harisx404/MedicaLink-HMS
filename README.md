@@ -1,159 +1,59 @@
-# Turborepo starter
+# MedicaLink HMS
 
-This Turborepo starter is maintained by the Turborepo core team.
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 
-## Using this example
+An enterprise-grade, multi-tenant Hospital Management System (SaaS) engineered to streamline clinical, administrative, and patient workflows. Built with a highly scalable Turborepo architecture.
 
-Run the following command:
+## 🚀 Architecture
 
-```sh
-npx create-turbo@latest
-```
+This project is built utilizing a modern MERN stack monorepo architecture:
 
-## What's inside?
+- **Frontend (`apps/web`)**: React 18, Vite, Redux Toolkit, React Router v7, Tailwind CSS v3, and shadcn/ui.
+- **Backend (`apps/api`)**: Node.js, Express, strict TypeScript, Mongoose, and Redis for caching.
+- **Shared Packages (`packages/shared`)**: Shared TypeScript interfaces, types, and configurations across the monorepo to ensure end-to-end type safety.
 
-This Turborepo includes the following packages/apps:
+## ✨ Core Features
 
-### Apps and Packages
+- **Multi-Tenant SaaS**: Complete data isolation for individual hospitals (tenants).
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions for Super Admins, Doctors, Nurses, Receptionists, and Patients.
+- **Real-time Engine**: WebSocket integration via Socket.io for instant notifications and live messaging.
+- **Performance Optimized**: Redis caching layer and Turborepo remote build caching.
+- **Modern UI/UX**: Professionally designed interface using Tailwind CSS and Radix UI primitives.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## 🛠️ Local Development Setup
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Prerequisites
+- Node.js (v20+)
+- [pnpm](https://pnpm.io/) (v9+)
+- Docker & Docker Compose
 
-### Utilities
+### Getting Started
 
-This Turborepo has some additional tools already setup for you:
+1. **Start the Infrastructure**  
+   Spin up the local MongoDB and Redis instances using Docker:
+   ```bash
+   docker-compose up -d
+   ```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+2. **Install Dependencies**  
+   Install all monorepo dependencies from the root directory:
+   ```bash
+   pnpm install
+   ```
 
-### Build
+3. **Start the Development Servers**  
+   Run both the frontend and backend concurrently:
+   ```bash
+   pnpm run dev
+   ```
 
-To build all apps and packages, run the following command:
+- The React frontend will be available at `http://localhost:3000`
+- The Express API will be available at `http://localhost:5000`
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+---
+*Built with modern engineering standards for high availability and strict type safety.*
