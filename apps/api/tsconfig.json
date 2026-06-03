@@ -1,7 +1,13 @@
 {
   "extends": "@medicalink/typescript-config/base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

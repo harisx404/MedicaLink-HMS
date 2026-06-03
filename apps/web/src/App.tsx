@@ -1,7 +1,13 @@
+import { RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import { router } from './app/router';
+import './i18n';
+
 export default function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <h1 className="text-4xl font-bold text-primary">MedicaLink HMS</h1>
-    </div>
-  )
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  );
 }
