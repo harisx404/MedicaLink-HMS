@@ -12,7 +12,13 @@ async function bootstrap(): Promise<void> {
     // ── Infrastructure Connections ──────────────────────────────────────────
     logger.info('Connecting to infrastructure...');
     await connectMainDb();
-    await connectRedis();
+    
+    try {
+      await connectRedis();
+    } catch (err) {
+      logger.warn('Redis connection failed. Running without Redis caching/queues. Please ensure Redis is running locally on port 6379.');
+    }
+    
     initCloudinary();
 
     // ── Create App and HTTP Server ──────────────────────────────────────────

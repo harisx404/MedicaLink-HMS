@@ -4,7 +4,7 @@ import { authService } from '../services/authService';
 import { sendSuccess } from '../utils/apiResponse';
 import { getTenantDb } from '../config/db';
 import { env } from '../config/env';
-import { Connection } from 'mongoose';
+import mongoose, { Connection } from 'mongoose';
 import { RequestHandler } from 'express';
 
 export const authController: {
@@ -29,7 +29,7 @@ export const authController: {
 
   login: asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
@@ -49,7 +49,7 @@ export const authController: {
 
   refresh: asyncHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
@@ -67,7 +67,7 @@ export const authController: {
 
   logout: asyncHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
     
     if (refreshToken) {
       await authService.logout(refreshToken, tenantDb);
@@ -79,7 +79,7 @@ export const authController: {
 
   forgotPassword: asyncHandler(async (req: Request, res: Response) => {
     const { email, tenantSlug } = req.body;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
 
     await authService.forgotPassword(email, tenantDb, tenantSlug);
     // Always return success to prevent email enumeration
@@ -88,7 +88,7 @@ export const authController: {
 
   resetPassword: asyncHandler(async (req: Request, res: Response) => {
     const { token, newPassword } = req.body;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
 
     await authService.resetPassword(token, newPassword, tenantDb);
     return sendSuccess(res, 'Password reset successfully');
@@ -96,7 +96,7 @@ export const authController: {
 
   verifyEmail: asyncHandler(async (req: Request, res: Response) => {
     const { token } = req.body;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
 
     await authService.verifyEmail(token, tenantDb);
     return sendSuccess(res, 'Email verified successfully');
@@ -141,7 +141,7 @@ export const authController: {
 
   getMe: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.userId as string;
-    const tenantDb = req.tenantDb as Connection;
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
 
     const user = await authService.getCurrentUser(userId, tenantDb);
     return sendSuccess(res, 'User profile fetched', user);

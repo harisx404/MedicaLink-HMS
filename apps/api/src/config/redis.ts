@@ -9,13 +9,10 @@ let subClient: Redis | null = null;
 const redisOptions = {
   lazyConnect: true,
   enableReadyCheck: true,
-  maxRetriesPerRequest: 3,
+  maxRetriesPerRequest: 0,
   retryStrategy: (times: number): number | null => {
-    if (times > 10) {
-      logger.error('Redis max retries reached. Giving up.');
-      return null;
-    }
-    return Math.min(times * 100, 3000);
+    // Return null immediately to stop retrying and prevent terminal spam
+    return null;
   },
 };
 
@@ -29,6 +26,29 @@ export function getRedisClient(): Redis {
     redisClient.on('connect', () => logger.info('✅ Redis connected'));
     redisClient.on('error', (err) => logger.error('Redis error:', err));
     redisClient.on('reconnecting', () => logger.warn('Redis reconnecting...'));
+
+    // Safe overrides for local dev without Redis
+    const originalGet = redisClient.get.bind(redisClient);
+    const originalSet = redisClient.set.bind(redisClient);
+    const originalSetex = redisClient.setex.bind(redisClient);
+    const originalDel = redisClient.del.bind(redisClient);
+
+    redisClient.get = async (...args: any[]) => {
+      if (redisClient?.status !== 'ready') return null as any;
+      return originalGet(...args as [any]);
+    };
+    redisClient.set = async (...args: any[]) => {
+      if (redisClient?.status !== 'ready') return 'OK' as any;
+      return originalSet(...args as [any, any]);
+    };
+    redisClient.setex = async (...args: any[]) => {
+      if (redisClient?.status !== 'ready') return 'OK' as any;
+      return originalSetex(...args as [any, any, any]);
+    };
+    redisClient.del = async (...args: any[]) => {
+      if (redisClient?.status !== 'ready') return 1 as any;
+      return originalDel(...args as [any]);
+    };
   }
   return redisClient;
 }

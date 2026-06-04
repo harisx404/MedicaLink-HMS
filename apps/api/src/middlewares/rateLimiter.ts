@@ -29,7 +29,7 @@ export const apiRateLimiter = rateLimit({
   ...RATE_LIMIT.AUTHENTICATED,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request): string => req.user?.userId ?? req.ip ?? 'unknown',
+  handler: rateLimitHandler,
   handler: rateLimitHandler,
 });
 
@@ -38,7 +38,6 @@ export const aiRateLimiter = rateLimit({
   ...RATE_LIMIT.AI,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request): string => req.user?.userId ?? req.ip ?? 'unknown',
   handler: rateLimitHandler,
   message: 'AI request limit reached — please wait before trying again',
 });
@@ -48,7 +47,6 @@ export const reportRateLimiter = rateLimit({
   ...RATE_LIMIT.REPORTS,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request): string => req.user?.userId ?? req.ip ?? 'unknown',
   handler: rateLimitHandler,
 });
 
@@ -57,6 +55,5 @@ export const uploadRateLimiter = rateLimit({
   ...RATE_LIMIT.UPLOADS,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request): string => req.user?.userId ?? req.ip ?? 'unknown',
   handler: rateLimitHandler,
 });
