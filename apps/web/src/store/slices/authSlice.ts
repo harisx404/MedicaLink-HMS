@@ -6,6 +6,8 @@ interface AuthState {
   token: string | null;
   tenantSlug: string | null;
   isAuthenticated: boolean;
+  requires2FA: boolean;
+  tempUserId: string | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -23,6 +25,8 @@ const getInitialState = (): AuthState => {
         token,
         tenantSlug,
         isAuthenticated: true,
+        requires2FA: false,
+        tempUserId: null,
         isLoading: false,
         error: null,
       };
@@ -36,6 +40,8 @@ const getInitialState = (): AuthState => {
     token: null,
     tenantSlug: null,
     isAuthenticated: false,
+    requires2FA: false,
+    tempUserId: null,
     isLoading: false,
     error: null,
   };
@@ -62,6 +68,8 @@ const authSlice = createSlice({
       state.token = token;
       state.tenantSlug = tenantSlug || state.tenantSlug;
       state.isAuthenticated = true;
+      state.requires2FA = false;
+      state.tempUserId = null;
       state.error = null;
 
       // Persist to localStorage
@@ -79,10 +87,16 @@ const authSlice = createSlice({
       state.tenantSlug = action.payload;
       localStorage.setItem('tenantSlug', action.payload);
     },
+    setRequires2FA: (state, action: PayloadAction<{ tempUserId: string }>) => {
+      state.requires2FA = true;
+      state.tempUserId = action.payload.tempUserId;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.requires2FA = false;
+      state.tempUserId = null;
       state.error = null;
       // Do not clear tenantSlug so user can login back to the same hospital
       localStorage.removeItem('token');
@@ -97,6 +111,7 @@ export const {
   setCredentials,
   setToken,
   setTenant,
+  setRequires2FA,
   logout,
 } = authSlice.actions;
 

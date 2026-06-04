@@ -1,6 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios';
 import { store } from '../store/store';
-import { logout } from '../store/slices/authSlice';
+import { logout, setToken } from '../store/slices/authSlice';
 
 // ─── Environment ─────────────────────────────────────────────────────────────
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
@@ -52,11 +52,32 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Clear user credentials and trigger logout action when unauthorized
-      store.dispatch(logout());
-      
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      try {
+        // Attempt to refresh the token using cookies
+        const response = await axios.post(`${API_URL}/auth/refresh`, {}, {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const { token } = response.data.data;
+        
+        // Update Redux state
+        store.dispatch(setToken(token));
+        
+        // Update the failed request and retry
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+        }
+        
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Clear user credentials and trigger logout action when unauthorized and refresh fails
+        store.dispatch(logout());
+        
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return Promise.reject(refreshError);
       }
     }
 

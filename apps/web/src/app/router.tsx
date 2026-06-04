@@ -1,13 +1,53 @@
+import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { StatsCard } from '../components/ui';
 import { Users, Calendar, Activity, TrendingUp } from 'lucide-react';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+
+// Lazy loaded auth pages
+const LoginPage = lazy(() => import('../features/auth/LoginPage').then(m => ({ default: m.LoginPage })));
+const ForgotPasswordPage = lazy(() => import('../features/auth/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = lazy(() => import('../features/auth/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })));
+const VerifyEmailPage = lazy(() => import('../features/auth/VerifyEmailPage').then(m => ({ default: m.VerifyEmailPage })));
+const TwoFactorSetupPage = lazy(() => import('../features/auth/TwoFactorSetupPage').then(m => ({ default: m.TwoFactorSetupPage })));
+
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
+    {children}
+  </Suspense>
+);
 
 export const router = createBrowserRouter([
+  // Auth Routes
+  {
+    path: '/login',
+    element: <SuspenseWrapper><LoginPage /></SuspenseWrapper>,
+  },
+  {
+    path: '/forgot-password',
+    element: <SuspenseWrapper><ForgotPasswordPage /></SuspenseWrapper>,
+  },
+  {
+    path: '/reset-password/:token',
+    element: <SuspenseWrapper><ResetPasswordPage /></SuspenseWrapper>,
+  },
+  {
+    path: '/verify-email/:token',
+    element: <SuspenseWrapper><VerifyEmailPage /></SuspenseWrapper>,
+  },
+  
+  // Protected Routes
+
   {
     path: '/',
-    element: <AppLayout />,
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -43,6 +83,14 @@ export const router = createBrowserRouter([
                 trend={{ value: 4.8, isPositive: true }}
               />
             </div>
+          </PageWrapper>
+        ),
+      },
+      {
+        path: '2fa-setup',
+        element: (
+          <PageWrapper title="Two-Factor Authentication Setup">
+            <SuspenseWrapper><TwoFactorSetupPage /></SuspenseWrapper>
           </PageWrapper>
         ),
       },

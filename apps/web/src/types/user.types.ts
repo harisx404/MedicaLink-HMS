@@ -24,6 +24,7 @@ export interface User {
   tenantId?: string; // Null for SUPER_ADMIN
   departmentId?: string;
   isActive: boolean;
+  twoFactorEnabled?: boolean;
   profileImage?: string;
   lastLogin?: string;
   createdAt: string;
