@@ -286,6 +286,16 @@ export const authService = {
     const redis = getRedisClient();
     await redis.setex(`auth:blacklist:${tokenHash}`, 60 * 60 * 24 * 30, '1');
     await redis.del(`auth:refresh:${tokenHash}`);
+
+    const user = await User.findOne({ 'refreshTokens.tokenHash': tokenHash });
+    if (user) {
+      await auditService.logAuthEvent('AUTH_LOGOUT', {
+        actor: user._id.toString(),
+        resource: 'User',
+        resourceId: user._id.toString(),
+        tenantId: user.tenantId,
+      });
+    }
   },
 
   async setup2FA(userId: string, tenantDb: Connection): Promise<{ secret: string; qrCodeUrl: string }> {
@@ -407,6 +417,14 @@ export const authService = {
 
     const resetUrl = `${env.CLIENT_URL}/reset-password/${resetToken}?tenant=${tenantSlug}`;
     await emailService.sendPasswordResetEmail(user.email, resetUrl, '30 minutes');
+
+    await auditService.logAuthEvent('AUTH_PASSWORD_RESET_REQUESTED', {
+      actor: user._id.toString(),
+      actorEmail: user.email,
+      resource: 'User',
+      resourceId: user._id.toString(),
+      tenantId: user.tenantId,
+    });
   },
 
   async resetPassword(token: string, newPassword: string, tenantDb: Connection): Promise<void> {
@@ -426,6 +444,14 @@ export const authService = {
     // Remove all refresh tokens to force re-login on all devices
     user.refreshTokens = [];
     await user.save();
+
+    await auditService.logAuthEvent('AUTH_PASSWORD_RESET', {
+      actor: user._id.toString(),
+      actorEmail: user.email,
+      resource: 'User',
+      resourceId: user._id.toString(),
+      tenantId: user.tenantId,
+    });
   },
 
   async verifyEmail(token: string, tenantDb: Connection): Promise<void> {

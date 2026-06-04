@@ -60,8 +60,9 @@ export const LoginPage: React.FC = () => {
         toast.success('Welcome back!');
         navigate('/');
       }
-    } catch (err: any) {
-      toast.error(err?.data?.message || 'Login failed. Please check your credentials.');
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      toast.error(error?.data?.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -85,8 +86,9 @@ export const LoginPage: React.FC = () => {
       );
       toast.success('Authentication successful!');
       navigate('/');
-    } catch (err: any) {
-      toast.error(err?.data?.message || 'Invalid 2FA code.');
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      toast.error(error?.data?.message || 'Invalid 2FA code.');
     }
   };
 

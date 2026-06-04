@@ -71,8 +71,9 @@ export const ResetPasswordPage: React.FC = () => {
       await resetPassword({ token, newPassword: data.password }).unwrap();
       toast.success('Password has been reset successfully!');
       navigate('/login');
-    } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to reset password. The link might be expired.');
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      toast.error(error?.data?.message || 'Failed to reset password. The link might have expired.');
     }
   };
 

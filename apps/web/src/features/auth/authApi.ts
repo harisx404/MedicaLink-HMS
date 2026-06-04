@@ -11,6 +11,7 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
     baseUrl: `${env.VITE_API_URL}/auth`,
+    credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {
@@ -74,6 +75,12 @@ export const authApi = createApi({
         method: 'POST',
       }),
     }),
+    refresh: builder.mutation({
+      query: () => ({
+        url: '/refresh',
+        method: 'POST',
+      }),
+    }),
     getMe: builder.query({
       query: () => '/me',
     }),
@@ -89,5 +96,6 @@ export const {
   useSetup2FAMutation,
   useEnable2FAMutation,
   useLogoutMutation,
+  useRefreshMutation,
   useLazyGetMeQuery,
 } = authApi;

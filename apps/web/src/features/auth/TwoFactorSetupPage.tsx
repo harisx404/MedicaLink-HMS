@@ -64,8 +64,9 @@ export const TwoFactorSetupPage: React.FC = () => {
       }
       
       navigate('/admin/dashboard'); // Or wherever appropriate
-    } catch (err: any) {
-      toast.error(err?.data?.message || 'Invalid code. Please try again.');
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      toast.error(error?.data?.message || 'Failed to enable 2FA. Please check the code.');
     }
   };
 

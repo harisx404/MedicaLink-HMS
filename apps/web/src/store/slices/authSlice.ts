@@ -12,19 +12,16 @@ interface AuthState {
   error: string | null;
 }
 
-// Check local storage for initial state
+// We only retrieve tenantSlug from localStorage to remember the tenant login portal
 const getInitialState = (): AuthState => {
   try {
-    const token = localStorage.getItem('token');
     const tenantSlug = localStorage.getItem('tenantSlug');
-    const user = localStorage.getItem('user');
-
-    if (token && user) {
+    if (tenantSlug) {
       return {
-        user: JSON.parse(user),
-        token,
+        user: null,
+        token: null,
         tenantSlug,
-        isAuthenticated: true,
+        isAuthenticated: false,
         requires2FA: false,
         tempUserId: null,
         isLoading: false,
@@ -32,7 +29,7 @@ const getInitialState = (): AuthState => {
       };
     }
   } catch (error) {
-    console.error('Failed to parse auth state from localStorage', error);
+    console.error('Failed to parse tenant state from localStorage', error);
   }
 
   return {
@@ -72,16 +69,13 @@ const authSlice = createSlice({
       state.tempUserId = null;
       state.error = null;
 
-      // Persist to localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // Persist tenantSlug to localStorage
       if (state.tenantSlug) {
         localStorage.setItem('tenantSlug', state.tenantSlug);
       }
     },
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
-      localStorage.setItem('token', action.payload);
     },
     setTenant: (state, action: PayloadAction<string>) => {
       state.tenantSlug = action.payload;
@@ -99,8 +93,6 @@ const authSlice = createSlice({
       state.tempUserId = null;
       state.error = null;
       // Do not clear tenantSlug so user can login back to the same hospital
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
     },
   },
 });

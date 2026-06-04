@@ -29,8 +29,9 @@ export const ForgotPasswordPage: React.FC = () => {
     try {
       await forgotPassword(data.email).unwrap();
       toast.success('Password reset link sent!');
-    } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to send reset link. Please try again.');
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      toast.error(error?.data?.message || 'Failed to send reset link. Please try again.');
     }
   };
 
