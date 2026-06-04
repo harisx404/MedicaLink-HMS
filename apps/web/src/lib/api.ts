@@ -52,11 +52,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // TODO: Implement refresh token logic here if applicable
-      // For now, if 401 occurs, dispatch logout to clear state and redirect to login
+      // Clear user credentials and trigger logout action when unauthorized
       store.dispatch(logout());
       
-      // Optionally redirect to login page (if outside React Router context)
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }

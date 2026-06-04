@@ -2,15 +2,18 @@ export type Role =
   | 'SUPER_ADMIN'
   | 'HOSPITAL_ADMIN'
   | 'DOCTOR'
+  | 'SENIOR_DOCTOR'
   | 'NURSE'
   | 'PHARMACIST'
   | 'LAB_TECHNICIAN'
+  | 'RADIOLOGIST'
   | 'RECEPTIONIST'
-  | 'BILLING_OFFICER'
-  | 'PATIENT'
-  | 'HR_MANAGER'
+  | 'BILLING_STAFF'
   | 'INVENTORY_MANAGER'
-  | 'RADIOLOGIST';
+  | 'HR_MANAGER'
+  | 'BLOOD_BANK_OFFICER'
+  | 'EMERGENCY_STAFF'
+  | 'PATIENT';
 
 export interface User {
   id: string;

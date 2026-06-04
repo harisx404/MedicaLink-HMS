@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { StatsCard } from '../components/ui';
+import { Users, Calendar, Activity, TrendingUp } from 'lucide-react';
 
 export const router = createBrowserRouter([
   {
@@ -16,13 +18,30 @@ export const router = createBrowserRouter([
         element: (
           <PageWrapper title="Dashboard">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Dummy cards for Phase 0 */}
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-card rounded-xl border border-border/50 p-6 shadow-sm">
-                  <h3 className="text-muted-foreground text-sm font-medium">Metric {i}</h3>
-                  <p className="text-2xl font-bold font-heading mt-2">1,024</p>
-                </div>
-              ))}
+              <StatsCard
+                title="Total Patients"
+                value="1,248"
+                icon={<Users className="h-5 w-5" />}
+                trend={{ value: 12, isPositive: true }}
+              />
+              <StatsCard
+                title="Appointments Today"
+                value="42"
+                icon={<Calendar className="h-5 w-5" />}
+                trend={{ value: 8, isPositive: true }}
+              />
+              <StatsCard
+                title="Active Consultations"
+                value="18"
+                icon={<Activity className="h-5 w-5" />}
+                trend={{ value: 2, isPositive: false }}
+              />
+              <StatsCard
+                title="Monthly Growth"
+                value="+24%"
+                icon={<TrendingUp className="h-5 w-5" />}
+                trend={{ value: 4.8, isPositive: true }}
+              />
             </div>
           </PageWrapper>
         ),

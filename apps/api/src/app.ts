@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
 import { env } from './config/env';
@@ -41,6 +42,9 @@ export function createApp(): Application {
   // ── Body Parsing ──────────────────────────────────────────────────────────
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // ── Response Compression ──────────────────────────────────────────────────
+  app.use(compression());
 
   // ── NoSQL Injection Prevention ────────────────────────────────────────────
   app.use(mongoSanitize());

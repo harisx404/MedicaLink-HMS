@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { UploadCloud, File, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ interface FileUploadProps {
 export function FileUpload({ onUpload, accept, maxSizeMB = 5, className }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -24,6 +25,15 @@ export function FileUpload({ onUpload, accept, maxSizeMB = 5, className }: FileU
     }
   }, []);
 
+  const handleFile = useCallback((file: File) => {
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      alert(`File is too large. Max size is ${maxSizeMB}MB`);
+      return;
+    }
+    setSelectedFile(file);
+    onUpload(file);
+  }, [maxSizeMB, onUpload]);
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -32,26 +42,39 @@ export function FileUpload({ onUpload, accept, maxSizeMB = 5, className }: FileU
       
       const files = Array.from(e.dataTransfer.files);
       if (files.length > 0) {
-        // Validate size (simplified for Phase 0)
-        if (files[0].size > maxSizeMB * 1024 * 1024) {
-          alert(`File is too large. Max size is ${maxSizeMB}MB`);
-          return;
-        }
-        setSelectedFile(files[0]);
-        onUpload(files[0]);
+        handleFile(files[0]);
       }
     },
-    [maxSizeMB, onUpload]
+    [handleFile]
   );
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFile(files[0]);
+    }
+  }, [handleFile]);
+
+  const handleAreaClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className={className}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept={accept}
+        className="hidden"
+      />
       {!selectedFile ? (
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
+          onClick={handleAreaClick}
           className={cn(
             "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
             isDragging 

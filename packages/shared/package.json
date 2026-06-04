@@ -10,8 +10,10 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@medicalink/eslint-config": "workspace:*",
     "@medicalink/typescript-config": "workspace:*",
     "@types/node": "^20.0.0",
+    "eslint": "^9.39.1",
     "typescript": "^5.0.0"
   }
 }
