@@ -16,3 +16,4 @@ export {
   uploadMultipleDocuments,
   uploadMixed,
 } from './upload';
+export { validate } from './validate';

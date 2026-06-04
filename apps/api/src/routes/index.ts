@@ -2,7 +2,13 @@ import { Router, Request, Response } from 'express';
 import { APP_VERSION } from '../utils/constants';
 import { sendSuccess } from '../utils/apiResponse';
 
+import authRouter from './auth.routes';
+import superAdminRouter from './superAdmin.routes';
+
 const router: Router = Router();
+
+router.use('/auth', authRouter);
+router.use('/super-admin', superAdminRouter);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {

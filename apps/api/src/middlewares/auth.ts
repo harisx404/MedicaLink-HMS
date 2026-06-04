@@ -35,13 +35,18 @@ export async function authenticate(
 ): Promise<void> {
   try {
     const authHeader = req.headers.authorization;
+    let token = '';
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    } else if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
+    }
 
-    if (!authHeader?.startsWith('Bearer ')) {
+    if (!token) {
       sendUnauthorized(res, 'Authentication required');
       return;
     }
-
-    const token = authHeader.slice(7);
 
     let decoded: JwtPayload;
     try {

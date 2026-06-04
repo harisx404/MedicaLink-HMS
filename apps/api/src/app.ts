@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
 import { env } from './config/env';
 import { API_PREFIX } from './utils/constants';
 import { logger } from './utils/logger';
@@ -40,6 +41,7 @@ export function createApp(): Application {
   );
 
   // ── Body Parsing ──────────────────────────────────────────────────────────
+  app.use(cookieParser());
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

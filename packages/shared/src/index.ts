@@ -61,6 +61,20 @@ export enum Gender {
   OTHER = "OTHER"
 }
 
+export enum TenantPlan {
+  FREE = "FREE",
+  BASIC = "BASIC",
+  PROFESSIONAL = "PROFESSIONAL",
+  ENTERPRISE = "ENTERPRISE"
+}
+
+export enum TenantStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  TRIAL = "TRIAL"
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -185,3 +199,65 @@ export type DeepPartial<T> = {
     ? DeepPartial<T[P]>
     : T[P];
 };
+
+export interface SharedTenant {
+  id: string;
+  name: string;
+  slug: string;
+  plan: TenantPlan;
+  status: TenantStatus;
+  adminEmail: string;
+  phone?: string;
+  address?: Address;
+  logo?: string;
+  primaryColor: string;
+  features: {
+    pharmacy: boolean;
+    lab: boolean;
+    radiology: boolean;
+    telemedicine: boolean;
+    bloodBank: boolean;
+    ai: boolean;
+  };
+  subscription: {
+    planId?: string;
+    startDate?: string;
+    endDate?: string;
+    status: string;
+  };
+  database: {
+    name: string;
+    connectionString?: string;
+  };
+  settings: {
+    currency: string;
+    timezone: string;
+    dateFormat: string;
+    language: string;
+  };
+  createdAt: string;
+}
+
+export interface AuthUser extends Omit<SharedUser, 'id'> {
+  id: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password?: string; // Optional if using 2FA only or other methods later
+}
+
+export interface LoginResponse {
+  user: AuthUser;
+  accessToken: string;
+  refreshToken?: string;
+  requires2FA?: boolean;
+}
+
+export interface RegisterHospitalRequest {
+  hospitalName: string;
+  slug: string;
+  adminEmail: string;
+  password?: string;
+  plan: TenantPlan;
+}

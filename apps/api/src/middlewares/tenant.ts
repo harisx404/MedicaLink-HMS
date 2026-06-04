@@ -4,6 +4,8 @@ import { extractTenantSlug } from '../utils/helpers';
 import { getTenantDb } from '../config/db';
 import { getRedisClient } from '../config/redis';
 import { logger } from '../utils/logger';
+import { Tenant } from '../models/Tenant';
+import { CACHE_TTL } from '../utils/constants';
 
 /**
  * Resolves the hospital tenant from the request's subdomain or X-Tenant-Slug header.
@@ -34,14 +36,19 @@ export async function tenantMiddleware(
     const cached = await redis.get(cacheKey);
 
     if (!cached) {
-      // Tenant not in cache — look up in main DB (Phase 1 will add the Tenant model)
-      // For now, allow all slugs in development
-      if (process.env['NODE_ENV'] !== 'production') {
-        logger.debug(`[Tenant] Development mode — skipping tenant validation for: ${slug}`);
-      } else {
+      // Lookup in main DB
+      const tenant = await Tenant.findBySlug(slug);
+      if (!tenant) {
         sendError(res, 'Hospital not found or subscription inactive', 404);
         return;
       }
+      
+      // Cache for 1 hour
+      await redis.setex(cacheKey, CACHE_TTL.TENANT_SETTINGS, JSON.stringify({
+        id: tenant._id,
+        slug: tenant.slug,
+        dbName: tenant.database.name
+      }));
     }
 
     // Attach tenant DB connection
