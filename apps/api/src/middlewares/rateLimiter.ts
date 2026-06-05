@@ -30,7 +30,6 @@ export const apiRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler,
-  handler: rateLimitHandler,
 });
 
 /** Strict limiter for expensive AI endpoints. */
