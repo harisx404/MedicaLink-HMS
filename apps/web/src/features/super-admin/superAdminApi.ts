@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../store/store';
-import { env } from '../../config/env';
 
 export const superAdminApi = createApi({
   reducerPath: 'superAdminApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${env.VITE_API_URL}/super-admin`,
+    baseUrl: '/api/v1/super-admin',
+    credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {

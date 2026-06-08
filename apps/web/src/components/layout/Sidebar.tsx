@@ -1,24 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, Calendar, Activity, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Activity, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAppDispatch } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Patients', href: '/patients', icon: Users },
-  { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'EHR', href: '/ehr', icon: Activity },
-  { name: 'Settings', href: '/settings', icon: Settings },
-];
+export interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+}
 
 interface SidebarProps {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  navItems: NavItem[];
 }
 
-export function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
+export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProps) {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
@@ -81,7 +80,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto overflow-x-hidden">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.href);
           const Icon = item.icon;
 

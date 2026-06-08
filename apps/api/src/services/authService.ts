@@ -5,19 +5,20 @@ import QRCode from 'qrcode';
 import mongoose, { Connection } from 'mongoose';
 import { env } from '../config/env';
 import { AppError } from '../middlewares/errorHandler';
-import { TenantStatus, TenantPlan, SharedTenant, AuthUser, LoginRequest, RegisterHospitalRequest } from '@medicalink/shared';
+import { TenantStatus, SharedTenant, AuthUser, LoginRequest, RegisterHospitalRequest } from '@medicalink/shared';
 import { Tenant as TenantModel } from '../models/Tenant';
 import { getUserModel } from '../models/User';
 import { emailService } from './emailService';
 import { auditService } from './auditService';
 import { getRedisClient } from '../config/redis';
+import { getTenantDb } from '../config/db';
 import { TENANT_DB_PREFIX, CACHE_TTL, APP_NAME } from '../utils/constants';
 
 // ---- Private Helpers ----
 
-const generateAccessToken = (payload: object): string => {
+const generateAccessToken = (payload: { userId: string; role: string; tenantId: string; tenantSlug: string }): string => {
   return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
-    expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
+    expiresIn: env.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions['expiresIn'],
     algorithm: 'HS256',
   });
 };
@@ -107,9 +108,11 @@ export const authService = {
     device: string
   ): Promise<{ user: AuthUser; accessToken?: string; refreshToken?: string; requires2FA?: boolean }> {
     const User = getUserModel(tenantDb);
+    console.log('[DEBUG authService] Checking user:', data.email);
     const user = await User.findOne({ email: data.email }).select('+password +twoFactorSecret').exec();
 
     if (!user) {
+      console.log('[DEBUG authService] User not found');
       await auditService.logAuthEvent('AUTH_FAILED_LOGIN', {
         actor: 'unknown',
         actorEmail: data.email,
@@ -130,6 +133,7 @@ export const authService = {
     }
 
     const isValid = await user.comparePassword(data.password || '');
+    console.log('[DEBUG authService] Password is valid?', isValid);
     if (!isValid) {
       await user.incrementLoginAttempts();
       await auditService.logAuthEvent('AUTH_FAILED_LOGIN', {
@@ -166,10 +170,13 @@ export const authService = {
     }
 
     // Generate tokens
+    const tenant = await TenantModel.findById(user.tenantId);
+    const tenantSlug = tenant ? tenant.slug : 'master';
     const accessToken = generateAccessToken({
-      userId: user._id,
+      userId: user._id.toString(),
       role: user.role,
       tenantId: user.tenantId,
+      tenantSlug,
     });
     const refreshToken = generateRefreshToken();
     const tokenHash = hashToken(refreshToken);
@@ -226,7 +233,48 @@ export const authService = {
     }
 
     const User = getUserModel(tenantDb);
-    const user = await User.findOne({ 'refreshTokens.tokenHash': tokenHash });
+    let user = await User.findOne({ 'refreshTokens.tokenHash': tokenHash });
+
+    if (!user) {
+      if (tenantDb !== mongoose.connection) {
+        const MainUser = getUserModel(mongoose.connection);
+        user = await MainUser.findOne({ 'refreshTokens.tokenHash': tokenHash });
+      } else {
+        const sessionData = await redis.get(`auth:refresh:${tokenHash}`);
+        if (sessionData) {
+          try {
+            const session = JSON.parse(sessionData);
+            if (session.tenantId && session.tenantId !== '000000000000000000000000') {
+              const tenant = await TenantModel.findById(session.tenantId);
+              if (tenant) {
+                const targetDb = await getTenantDb(tenant.slug);
+                const TenantUser = getUserModel(targetDb);
+                user = await TenantUser.findOne({ 'refreshTokens.tokenHash': tokenHash });
+              }
+            }
+          } catch {
+            // Ignore error
+          }
+        }
+
+        if (!user) {
+          const tenants = await TenantModel.find({ status: 'ACTIVE' });
+          for (const tenant of tenants) {
+            try {
+              const targetDb = await getTenantDb(tenant.slug);
+              const TenantUser = getUserModel(targetDb);
+              const foundUser = await TenantUser.findOne({ 'refreshTokens.tokenHash': tokenHash });
+              if (foundUser) {
+                user = foundUser;
+                break;
+              }
+            } catch {
+              // Ignore connection errors
+            }
+          }
+        }
+      }
+    }
 
     if (!user || !user.isActive) {
       throw new AppError('Invalid token', 401);
@@ -238,10 +286,13 @@ export const authService = {
     }
 
     // Generate new tokens
+    const tenant = await TenantModel.findById(user.tenantId);
+    const tenantSlug = tenant ? tenant.slug : 'master';
     const accessToken = generateAccessToken({
-      userId: user._id,
+      userId: user._id.toString(),
       role: user.role,
       tenantId: user.tenantId,
+      tenantSlug,
     });
     const newRefreshToken = generateRefreshToken();
     const newHash = hashToken(newRefreshToken);
@@ -375,10 +426,13 @@ export const authService = {
       lastLogin: user.lastLogin?.toISOString(),
     };
 
+    const tenant = await TenantModel.findById(user.tenantId);
+    const tenantSlug = tenant ? tenant.slug : 'master';
     const accessToken = generateAccessToken({
-      userId: user._id,
+      userId: user._id.toString(),
       role: user.role,
       tenantId: user.tenantId,
+      tenantSlug,
     });
     const refreshToken = generateRefreshToken();
     const tokenHash = hashToken(refreshToken);
@@ -454,7 +508,8 @@ export const authService = {
     });
   },
 
-  async verifyEmail(token: string, tenantDb: Connection): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async verifyEmail(_token: string, _tenantDb: Connection): Promise<void> {
     // Similar to reset password but for email verification... (omitted for brevity, assume simple)
     throw new AppError('Not implemented', 501);
   },

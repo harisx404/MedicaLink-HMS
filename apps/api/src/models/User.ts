@@ -11,7 +11,17 @@ export interface UserDocument extends Document {
   firstName: string;
   lastName: string;
   phone?: string;
+  dob?: Date;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  address?: string;
   staffId?: string;
+  employeeId?: string;
+  designation?: string;
+  joinDate?: Date;
+  specialization?: string;
+  registrationNumber?: string;
+  degree?: string;
+  experienceYears?: number;
   department?: mongoose.Types.ObjectId;
   isActive: boolean;
   isEmailVerified: boolean;
@@ -48,7 +58,17 @@ const userSchema = new Schema<UserDocument>(
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     phone: { type: String, trim: true },
+    dob: { type: Date },
+    gender: { type: String, enum: ['MALE', 'FEMALE', 'OTHER'] },
+    address: { type: String },
     staffId: { type: String, trim: true },
+    employeeId: { type: String, trim: true },
+    designation: { type: String, trim: true },
+    joinDate: { type: Date },
+    specialization: { type: String, trim: true },
+    registrationNumber: { type: String, trim: true },
+    degree: { type: String, trim: true },
+    experienceYears: { type: Number },
     department: { type: Schema.Types.ObjectId, ref: 'Department' },
     isActive: { type: Boolean, default: true },
     isEmailVerified: { type: Boolean, default: false },

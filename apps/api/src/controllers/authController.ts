@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../middlewares/errorHandler';
 import { authService } from '../services/authService';
 import { sendSuccess } from '../utils/apiResponse';
-import { getTenantDb } from '../config/db';
 import { env } from '../config/env';
 import mongoose, { Connection } from 'mongoose';
 import { RequestHandler } from 'express';
+import { Tenant as TenantModel } from '../models/Tenant';
 
 export const authController: {
   registerHospital: RequestHandler;
@@ -29,7 +29,24 @@ export const authController: {
 
   login: asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
+    let tenantDb = req.tenantDb as Connection;
+
+    console.log('[DEBUG authController] Login attempt for:', email);
+    console.log('[DEBUG authController] Initial tenantDb set?', !!tenantDb);
+
+    if (!tenantDb) {
+      const tenant = await TenantModel.findOne({ adminEmail: email });
+      if (tenant) {
+        tenantDb = mongoose.connection.useDb(tenant.database.name, { useCache: true });
+        console.log('[DEBUG authController] Resolved tenantDb from email:', tenantDb.name);
+      } else {
+        tenantDb = mongoose.connection;
+        console.log('[DEBUG authController] Defaulting to main DB:', tenantDb.name);
+      }
+    } else {
+      console.log('[DEBUG authController] Using provided tenantDb:', tenantDb.name);
+    }
+
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
@@ -39,7 +56,7 @@ export const authController: {
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
     }
@@ -58,7 +75,7 @@ export const authController: {
     res.cookie('refreshToken', result.newRefreshToken, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 

@@ -4,6 +4,16 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 
+import { Home, Users, Calendar, Activity, Settings } from 'lucide-react';
+
+const NAV_ITEMS = [
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Patients', href: '/patients', icon: Users },
+  { name: 'Appointments', href: '/appointments', icon: Calendar },
+  { name: 'EHR', href: '/ehr', icon: Activity },
+  { name: 'Settings', href: '/settings', icon: Settings },
+];
+
 export function AppLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -17,7 +27,7 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      <Sidebar isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} />
+      <Sidebar isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} navItems={NAV_ITEMS} />
       <motion.div
         initial={false}
         animate={{ marginLeft: isCollapsed ? 80 : 256 }}

@@ -44,8 +44,8 @@ export const LoginPage: React.FC = () => {
       const response = await login({ email: data.email, password: data.password }).unwrap();
       
       if (response.data.requires2FA) {
-        setTempUserId(response.data.userId);
-        dispatch(setRequires2FA({ tempUserId: response.data.userId }));
+        setTempUserId(response.data.user.id);
+        dispatch(setRequires2FA({ tempUserId: response.data.user.id }));
         setStep('2FA');
         toast.success('Please enter your 2FA code');
       } else {

@@ -127,14 +127,15 @@ export const superAdminService = {
     if (!adminUser) throw new AppError('No active admin found for this hospital', 404);
 
     const payload = {
-      id: adminUser._id.toString(),
+      userId: adminUser._id.toString(),
       email: adminUser.email,
       role: adminUser.role,
-      tenantId: tenant._id.toString()
+      tenantId: tenant._id.toString(),
+      tenantSlug: tenant.slug
     };
 
     const accessToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
-      expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
+      expiresIn: env.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions['expiresIn'],
       algorithm: 'HS256',
     });
 

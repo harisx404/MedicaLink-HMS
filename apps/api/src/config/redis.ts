@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import Redis from 'ioredis';
 import { env } from './env';
 import { logger } from '../utils/logger';

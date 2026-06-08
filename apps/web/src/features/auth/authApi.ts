@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../store/store';
-import { env } from '../../config/env';
 
 // Base API for auth that uses basic fetchBaseQuery.
 // We avoid using the custom axios api instance here because RTK Query
@@ -10,12 +9,17 @@ import { env } from '../../config/env';
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${env.VITE_API_URL}/auth`,
+    baseUrl: '/api/v1/auth',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
+      const state = getState() as RootState;
+      const token = state.auth.token;
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
+      }
+      const tenantSlug = state.auth.tenantSlug;
+      if (tenantSlug) {
+        headers.set('X-Tenant-Slug', tenantSlug);
       }
       return headers;
     },
