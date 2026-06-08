@@ -40,3 +40,8 @@ yarn-error.log*
 # AI Tracking Files
 workdone.md
 medicalink-hms-blueprint.md
+
+# Diagnostic / Local Scripts
+check_db.js
+apps/api/check_tenant.js
+test_login.js
