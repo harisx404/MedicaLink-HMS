@@ -159,24 +159,28 @@ export const AppointmentList: React.FC = () => {
                             </Button>
                           </>
                         ) : app.status === 'CHECKED_IN' ? (
-                          <Button 
-                            variant="primary" 
-                            size="sm"
-                            onClick={() => handleStatusChange(app._id!, 'IN_CONSULTATION')}
-                            disabled={isUpdating}
-                          >
-                            Start Consult
-                          </Button>
+                          <Link to={`/consultation/new?appointmentId=${app._id}`}>
+                            <Button variant="primary" size="sm">
+                              Start Consult
+                            </Button>
+                          </Link>
                         ) : app.status === 'IN_CONSULTATION' ? (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
-                            onClick={() => handleStatusChange(app._id!, 'COMPLETED')}
-                            disabled={isUpdating}
-                          >
-                            Complete
-                          </Button>
+                          <div className="flex gap-2">
+                            <Link to={`/consultation/new?appointmentId=${app._id}`}>
+                              <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/5">
+                                Resume EHR
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                              onClick={() => handleStatusChange(app._id!, 'COMPLETED')}
+                              disabled={isUpdating}
+                            >
+                              Mark Done
+                            </Button>
+                          </div>
                         ) : (
                           <span className="text-xs font-medium text-slate-400">No actions</span>
                         )}

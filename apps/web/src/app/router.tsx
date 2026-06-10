@@ -58,6 +58,7 @@ const AppointmentCalendar = lazy(() => import('../features/appointments/pages/Ap
 const BookAppointment = lazy(() => import('../features/appointments/pages/BookAppointment').then(m => ({ default: m.BookAppointment })));
 const ReceptionDashboard = lazy(() => import('../features/appointments/pages/ReceptionDashboard').then(m => ({ default: m.ReceptionDashboard })));
 const QueueBoard = lazy(() => import('../features/appointments/pages/QueueBoard').then(m => ({ default: m.QueueBoard })));
+const ConsultationStart = lazy(() => import('../features/ehr/pages/ConsultationStart').then(m => ({ default: m.ConsultationStart })));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
@@ -317,6 +318,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.RECEPTIONIST]}>
             <SuspenseWrapper><ReceptionDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'consultation/new',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.SENIOR_DOCTOR]}>
+            <SuspenseWrapper><ConsultationStart /></SuspenseWrapper>
           </RoleGuard>
         ),
       },

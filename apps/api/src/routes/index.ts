@@ -9,6 +9,9 @@ import adminRouter from './admin.routes';
 import patientRouter from './patient.routes';
 import doctorRouter from './doctorRoutes';
 import appointmentRouter from './appointmentRoutes';
+import consultationRouter from './consultationRoutes';
+import prescriptionRouter from './prescriptionRoutes';
+import referenceRouter from './referenceRoutes';
 
 const router: Router = Router();
 
@@ -18,6 +21,9 @@ router.use('/admin', adminRouter);
 router.use('/patients', patientRouter);
 router.use('/doctors', doctorRouter);
 router.use('/appointments', appointmentRouter);
+router.use('/consultations', consultationRouter);
+router.use('/prescriptions', prescriptionRouter);
+router.use('/references', referenceRouter);
 
 
 // ─── Health Check ─────────────────────────────────────────────────────────────

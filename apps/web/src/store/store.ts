@@ -6,6 +6,7 @@ import { hospitalAdminApi } from '../features/hospital-admin/hospitalAdminApi';
 import { patientApi } from '../features/patients/api/patientApi';
 import { doctorApi } from '../features/doctors/api/doctorApi';
 import { staffApi } from '../features/staff/api/staffApi';
+import { ehrApi } from '../features/ehr/api/ehrApi';
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +17,7 @@ export const store = configureStore({
     [patientApi.reducerPath]: patientApi.reducer,
     [doctorApi.reducerPath]: doctorApi.reducer,
     [staffApi.reducerPath]: staffApi.reducer,
-    // Other reducers will be added here (e.g. ui, patient, etc.)
+    [ehrApi.reducerPath]: ehrApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,7 +26,8 @@ export const store = configureStore({
       hospitalAdminApi.middleware,
       patientApi.middleware,
       doctorApi.middleware,
-      staffApi.middleware
+      staffApi.middleware,
+      ehrApi.middleware
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

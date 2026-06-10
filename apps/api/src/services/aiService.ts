@@ -79,4 +79,104 @@ export class AIService {
       return 'I am sorry, I am having trouble connecting to my knowledge base right now.';
     }
   }
+  /**
+   * Generates a visit summary for referring doctors based on consultation data.
+   */
+  static async generateVisitSummary(consultation: any, db?: any): Promise<string> {
+    if (!GEMINI_API_KEY) return 'AI Summarization disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Summarize the following medical consultation for a referring doctor.
+        Patient ID: ${consultation.patient}
+        Complaint: ${consultation.subjective?.symptoms?.map((s: any) => s.symptom).join(', ')}
+        Vitals: BP ${consultation.objective?.vitals?.bp?.systolic}/${consultation.objective?.vitals?.bp?.diastolic}, Temp ${consultation.objective?.vitals?.temp}
+        Diagnoses: ${consultation.assessment?.diagnoses?.map((d: any) => d.description).join(', ')}
+        Plan: ${consultation.plan?.instructions}
+        
+        Provide a concise, professional 3-sentence clinical summary.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to generate visit summary', error);
+      return '';
+    }
+  }
+
+  /**
+   * Suggests differential diagnoses based on symptoms and vitals.
+   */
+  static async suggestDiagnosis(symptoms: string[], vitals: any): Promise<any[]> {
+    if (!GEMINI_API_KEY) return [];
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Based on these symptoms: ${symptoms.join(', ')}
+        And vitals: BP ${vitals.bp?.systolic}/${vitals.bp?.diastolic}, Pulse ${vitals.pulse}, Temp ${vitals.temp}
+        
+        Suggest top 3 differential diagnoses. 
+        Format as JSON array with objects containing: { "icdCode": "...", "description": "...", "reasoning": "...", "confidence": 90 }
+        Output ONLY valid JSON.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().replace(/```json\n?|\n?```/g, '').trim();
+      return JSON.parse(text);
+    } catch (error) {
+      logger.error('Failed to suggest diagnosis', error);
+      return [];
+    }
+  }
+
+  /**
+   * Checks for drug interactions.
+   */
+  static async checkDrugInteractions(drugList: string[]): Promise<string> {
+    if (!GEMINI_API_KEY) return 'Interaction checking disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Check for drug interactions among the following medications: ${drugList.join(', ')}.
+        If there are MAJOR or MODERATE interactions, list them clearly. If none, say "No known significant interactions."
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to check drug interactions', error);
+      return 'Could not verify interactions at this time.';
+    }
+  }
+
+  /**
+   * Converts voice transcript to structured SOAP notes.
+   */
+  static async voiceToSoapNotes(transcript: string): Promise<any> {
+    if (!GEMINI_API_KEY) throw new Error('AI disabled');
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Convert the following doctor's dictation transcript into structured SOAP notes JSON.
+        Transcript: "${transcript}"
+        
+        Format as JSON object with keys:
+        {
+          "subjective": { "symptoms": [{"symptom": "", "duration": "", "severity": "", "notes": ""}] },
+          "objective": { "physicalExam": {"notes": ""} },
+          "assessment": { "clinicalNotes": "" },
+          "plan": { "instructions": "" }
+        }
+        Output ONLY valid JSON.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().replace(/```json\n?|\n?```/g, '').trim();
+      return JSON.parse(text);
+    } catch (error) {
+      logger.error('Failed to structure SOAP notes', error);
+      throw error;
+    }
+  }
 }

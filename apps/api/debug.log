@@ -506,3 +506,14 @@
 [ERR] AggregateError
 [ERR] AggregateError
 [ERR] AggregateError
+[ERR] (node:15424) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[ERR] (node:15424) [MONGOOSE] Warning: Duplicate schema index on {"uhid":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+[ERR] (node:15424) [MONGOOSE] Warning: Duplicate schema index on {"phone":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+[ERR] AggregateError
+[ERR] AggregateError
+[ERR] AggregateError
+[ERR] Error: Connection is closed.
+[ERR] Error: Connection is closed.
+[ERR] AggregateError
+[ERR] AggregateError

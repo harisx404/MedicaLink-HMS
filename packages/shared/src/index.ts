@@ -432,3 +432,149 @@ export interface RegisterHospitalRequest {
   plan: TenantPlan;
 }
 
+export interface SharedConsultation {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  consultationNumber: string;
+  patient: SharedPatient | string;
+  doctor: SharedDoctor | string;
+  appointment: SharedAppointment | string;
+  visitDate: string;
+  visitType: 'OPD' | 'IPD' | 'EMERGENCY' | 'TELEMEDICINE';
+  department: string | Record<string, unknown>;
+  
+  subjective?: {
+    symptoms?: Array<{ symptom: string; duration: string; severity: string; notes?: string }>;
+    reviewOfSystems?: Record<string, string>;
+  };
+  
+  objective?: {
+    vitals?: {
+      bp?: { systolic: number; diastolic: number };
+      pulse?: number;
+      temperature?: number;
+      respRate?: number;
+      spO2?: number;
+      weight?: number;
+      height?: number;
+      bmi?: number;
+      painScore?: number;
+      bloodGlucose?: number;
+    };
+    physicalExam?: Record<string, string>;
+    anthropometry?: { waistCircumference?: number; hipCircumference?: number };
+  };
+  
+  assessment?: {
+    diagnoses?: Array<{
+      icdCode: string;
+      description: string;
+      type: 'PRIMARY' | 'SECONDARY' | 'COMORBIDITY';
+      severity?: string;
+      status: 'PROVISIONAL' | 'CONFIRMED' | 'DIFFERENTIAL';
+    }>;
+    clinicalNotes?: string;
+    aiSummary?: string;
+  };
+  
+  plan?: {
+    prescriptions?: SharedPrescription[] | string[];
+    labOrders?: string[];
+    radiologyOrders?: string[];
+    procedures?: Array<{ name: string; notes?: string; scheduledDate?: string }>;
+    referrals?: Array<{ speciality: string; doctorName?: string; urgency?: string; notes?: string }>;
+    instructions?: string;
+    followUpDate?: string;
+    followUpReason?: string;
+    sickLeave?: { days: number; fromDate: string; toDate: string; reason: string };
+  };
+  
+  consultationFee?: number;
+  status: 'DRAFT' | 'COMPLETED' | 'SIGNED';
+  signedAt?: string;
+  signedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SharedVitals {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  patient: SharedPatient | string;
+  ward?: string | Record<string, unknown>;
+  bed?: string | Record<string, unknown>;
+  recordedBy: SharedUser | string;
+  bp?: { systolic: number; diastolic: number };
+  pulse?: number;
+  temp?: number;
+  respRate?: number;
+  spO2?: number;
+  weight?: number;
+  height?: number;
+  bloodGlucose?: number;
+  urine?: string;
+  pain?: number;
+  timestamp: string;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface SharedPrescription {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  prescriptionNumber: string;
+  consultation: SharedConsultation | string;
+  patient: SharedPatient | string;
+  doctor: SharedDoctor | string;
+  medications: Array<{
+    drugId?: string;
+    drugName: string;
+    genericName?: string;
+    strength?: string;
+    form?: string;
+    dose: string;
+    doseUnit?: string;
+    frequency?: { times: number; period: string; instructions?: string };
+    route?: string;
+    duration: string;
+    quantity: number;
+    whenToTake?: string;
+    instructions?: string;
+    isSubstitutable: boolean;
+  }>;
+  generalInstructions?: string;
+  followUpDate?: string;
+  digitalSignature?: string;
+  qrCode?: string;
+  pharmacyStatus: 'PENDING' | 'DISPENSED' | 'PARTIAL';
+  createdAt?: string;
+}
+
+export interface ICD10Code {
+  _id?: string;
+  id?: string;
+  code: string;
+  description: string;
+  category: string;
+  isBillable: boolean;
+}
+
+export interface DrugFormulary {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  genericName: string;
+  brand: string;
+  category: string;
+  therapeuticClass?: string;
+  form: string;
+  strength: string;
+  unit?: string;
+  isActive: boolean;
+  isFormulary: boolean;
+}
+
