@@ -45,3 +45,7 @@ medicalink-hms-blueprint.md
 check_db.js
 apps/api/check_tenant.js
 test_login.js
+
+apps/api/check_logic.js
+
+apps/api/check_hash.js
