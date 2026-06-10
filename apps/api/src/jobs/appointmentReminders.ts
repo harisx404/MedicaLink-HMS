@@ -41,7 +41,7 @@ export const appointmentWorker = new Worker('appointment-reminders', async (job:
 
     const tenantDb = await getTenantDb(tenant.slug);
     const Appointment = getAppointmentModel(tenantDb);
-    const Patient = getPatientModel(tenantDb);
+    getPatientModel(tenantDb);
 
     const appointment = await Appointment.findById(appointmentId)
       .populate('patient')
