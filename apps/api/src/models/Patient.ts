@@ -229,8 +229,6 @@ const patientSchema = new Schema<PatientDocument>(
 
 // Indexes for searching
 patientSchema.index({ firstName: 1, lastName: 1 });
-patientSchema.index({ uhid: 1 });
-patientSchema.index({ phone: 1 });
 
 // UHID Generation Pre-Save Hook
 patientSchema.pre('save', async function (next) {

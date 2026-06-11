@@ -1,59 +1,123 @@
-# MedicaLink HMS
+<div align="center">
+  <img src="https://img.shields.io/badge/MedicaLink-HMS-4F46E5?style=for-the-badge&logo=health&logoColor=white" alt="MedicaLink Logo" />
+  <h1>MedicaLink HMS</h1>
+  <p><strong>Enterprise-Grade Multi-Tenant Hospital Management System (SaaS)</strong></p>
+  
+  <p>
+    <a href="#architecture"><img src="https://img.shields.io/badge/Architecture-Monorepo-blue?style=flat-square" alt="Monorepo" /></a>
+    <a href="#tech-stack"><img src="https://img.shields.io/badge/TypeScript-Strict-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript Strict" /></a>
+    <a href="#tech-stack"><img src="https://img.shields.io/badge/Frontend-React_18-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React 18" /></a>
+    <a href="#tech-stack"><img src="https://img.shields.io/badge/Backend-Express.js-404D59?style=flat-square&logo=nodedotjs" alt="Express.js" /></a>
+    <a href="#tech-stack"><img src="https://img.shields.io/badge/Database-MongoDB_Atlas-4EA94B?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB Atlas" /></a>
+  </p>
+</div>
 
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+---
 
-An enterprise-grade, multi-tenant Hospital Management System (SaaS) engineered to streamline clinical, administrative, and patient workflows. Built with a highly scalable Turborepo architecture.
+## 🚀 Overview
 
-## 🚀 Architecture
+MedicaLink HMS is a state-of-the-art, **cloud-native Hospital Management System** engineered for high scalability, real-time clinical workflows, and strict data isolation. Built with a Turborepo architecture, it serves as a robust B2B SaaS platform allowing multiple hospitals to manage their entire operations seamlessly.
 
-This project is built utilizing a modern MERN stack monorepo architecture:
+## ✨ Core Highlights
 
-- **Frontend (`apps/web`)**: React 18, Vite, Redux Toolkit, React Router v7, Tailwind CSS v3, and shadcn/ui.
-- **Backend (`apps/api`)**: Node.js, Express, strict TypeScript, Mongoose, and Redis for caching.
-- **Shared Packages (`packages/shared`)**: Shared TypeScript interfaces, types, and configurations across the monorepo to ensure end-to-end type safety.
+- **Complete Data Isolation**: True multi-tenant architecture utilizing a Database-Per-Tenant strategy.
+- **Enterprise Security**: Hardened authentication (JWT HttpOnly cookies), RBAC, automated data sanitization, and strict Zod validation.
+- **Real-Time Clinical Engine**: Live queues, instant notifications, and WebSockets powered by Socket.io and Redis.
+- **AI-Powered Workflows**: Gemini 1.5 Flash integration for automated clinical summaries and patient triage.
+- **Bespoke UI/UX**: Premium aesthetic featuring glassmorphism, Framer Motion animations, and custom Radix/Tailwind components.
+- **Zero-Error Guarantee**: Strict TypeScript configurations across the monorepo ensuring zero build errors or warnings.
 
-## ✨ Core Features
+---
 
-- **Multi-Tenant SaaS**: Complete data isolation for individual hospitals (tenants).
-- **Role-Based Access Control (RBAC)**: Fine-grained permissions for Super Admins, Doctors, Nurses, Receptionists, and Patients.
-- **Real-time Engine**: WebSocket integration via Socket.io for instant notifications and live messaging.
-- **Performance Optimized**: Redis caching layer and Turborepo remote build caching.
-- **Modern UI/UX**: Professionally designed interface using Tailwind CSS and Radix UI primitives.
+## 🏗️ Modules & Phases
 
-## 🛠️ Local Development Setup
+The system is built in distinct, fully functional phases:
+
+### Phase 1: Core Architecture & Auth
+- Advanced multi-tenant Mongoose connection factory.
+- Hardened JWT lifecycle management with silent refreshes.
+- 2FA integration and robust role-based access control.
+
+### Phase 2: Super Admin Operations (SaaS)
+- Tenant lifecycle management and subscription billing.
+- System-wide performance monitoring (Redis, BullMQ, DB health).
+- Impersonation mechanics for rapid hospital support.
+
+### Phase 3: Hospital Admin & Infrastructure
+- Department, ward, and bed hierarchy management.
+- Live hospital KPI dashboards with Recharts visualizations.
+- Granular staff permission matrices.
+
+### Phase 4: Patient Lifecycle & Portal
+- Complete patient registration, deduplication, and deep profiling.
+- Segregated Patient Portal ecosystem for self-service.
+- Asynchronous Twilio WhatsApp webhooks for patient engagement.
+
+### Phase 5: Doctor & Staff Ecosystem
+- Doctor availability and shift block generation.
+- Dynamic staff directories with specialty indexing.
+- Live, websocket-driven schedule grids.
+
+### Phase 6: Appointments & Smart Queues
+- Redis distributed locks (NX flag) to prevent slot double-booking.
+- Real-time TV-optimized Queue Boards for reception areas.
+- Beautiful `react-big-calendar` drag-and-drop scheduling.
+
+### Phase 7: Electronic Health Records (EHR)
+- Interactive Timeline showing all historical clinical visits.
+- Advanced SOAP (Subjective, Objective, Assessment, Plan) consultation forms.
+- AI-Assisted Clinical Summary Generation.
+- Integrated Prescription Builder with real-time drug search and PDF generation.
+
+---
+
+## 💻 Tech Stack
+
+### Frontend (`apps/web`)
+**Core**: React 18, Vite, TypeScript 5, React Router v7  
+**State**: Redux Toolkit, RTK Query  
+**Styling**: Tailwind CSS v3, shadcn/ui (Radix), Framer Motion  
+**Data**: React Hook Form, Zod, Recharts, TanStack Table  
+
+### Backend (`apps/api`)
+**Core**: Node.js 20 LTS, Express 4, TypeScript 5  
+**Data**: Mongoose 8 (Database-per-tenant), Redis, BullMQ  
+**Real-Time**: Socket.io  
+**Security**: Helmet, bcryptjs, JWT  
+**Integrations**: Twilio, NodeMailer, Cloudinary, Gemini AI  
+
+### DevOps & Monorepo
+**Tooling**: Turborepo, pnpm workspaces, ESLint 9 (Flat Config), Husky + lint-staged  
+**Infrastructure**: Docker Compose, GitHub Actions  
+
+---
+
+## ⚙️ Local Development Setup
 
 ### Prerequisites
-- Node.js (v20+)
+- [Node.js](https://nodejs.org/en/) (v20+)
 - [pnpm](https://pnpm.io/) (v9+)
 - Docker & Docker Compose
 
-### Getting Started
+### 1. Start Infrastructure Services
+Boot up the local MongoDB and Redis instances:
+```bash
+docker-compose up -d
+```
 
-1. **Start the Infrastructure**  
-   Spin up the local MongoDB and Redis instances using Docker:
-   ```bash
-   docker-compose up -d
-   ```
+### 2. Configure Environment
+Copy `.env.example` to `.env` in both `apps/web` and `apps/api`.
+*Note: Ensure your MongoDB Atlas / Local URI is correctly formatted.*
 
-2. **Install Dependencies**  
-   Install all monorepo dependencies from the root directory:
-   ```bash
-   pnpm install
-   ```
+### 3. Install & Start
+Run the following from the root directory:
+```bash
+pnpm install
+pnpm run dev
+```
 
-3. **Start the Development Servers**  
-   Run both the frontend and backend concurrently:
-   ```bash
-   pnpm run dev
-   ```
-
-- The React frontend will be available at `http://localhost:3000`
-- The Express API will be available at `http://localhost:5000`
+- **Frontend Application:** `http://localhost:3000`
+- **Backend API:** `http://localhost:5000`
 
 ---
-*Built with modern engineering standards for high availability and strict type safety.*
+*MedicaLink HMS — Engineering the future of healthcare operations.*

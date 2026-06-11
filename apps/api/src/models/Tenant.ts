@@ -94,7 +94,6 @@ const tenantSchema = new Schema<TenantDocument>(
   { timestamps: true }
 );
 
-tenantSchema.index({ slug: 1 }, { unique: true });
 tenantSchema.index({ status: 1 });
 
 tenantSchema.statics.findBySlug = function (slug: string): Promise<TenantDocument | null> {

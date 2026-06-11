@@ -18,10 +18,16 @@
     "turbo": "^2.9.16",
     "typescript": "5.9.2"
   },
-  "pnpm": {
-    "overrides": {
-      "eslint": "^9.21.0"
-    }
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,md,json}": [
+      "prettier --write"
+    ]
+  },
+  "resolutions": {
+    "eslint": "^9.21.0"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {

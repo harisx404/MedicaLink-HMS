@@ -27,11 +27,12 @@ out/
 build
 dist
 
-
-# Debug
+# Logs & Debug
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Misc
 .DS_Store
@@ -42,10 +43,5 @@ workdone.md
 medicalink-hms-blueprint.md
 
 # Diagnostic / Local Scripts
-check_db.js
-apps/api/check_tenant.js
-test_login.js
-
-apps/api/check_logic.js
-
-apps/api/check_hash.js
+check_*.js
+test_*.js
