@@ -47,6 +47,36 @@ export function initSocketServer(httpServer: HttpServer): SocketServer {
       socket.join(`ward-${wardId}`);
     });
 
+    // ── Telemedicine / WebRTC Signaling ───────────────────────────────────────
+    socket.on('join-telemed-room', (roomId: string) => {
+      socket.join(`telemed-${roomId}`);
+      logger.debug(`[Socket] User joined telemed room: ${roomId}`);
+    });
+
+    socket.on('webrtc-offer', ({ roomId, offer }: { roomId: string; offer: any }) => {
+      socket.to(`telemed-${roomId}`).emit('webrtc-offer', offer);
+    });
+
+    socket.on('webrtc-answer', ({ roomId, answer }: { roomId: string; answer: any }) => {
+      socket.to(`telemed-${roomId}`).emit('webrtc-answer', answer);
+    });
+
+    socket.on('webrtc-ice-candidate', ({ roomId, candidate }: { roomId: string; candidate: any }) => {
+      socket.to(`telemed-${roomId}`).emit('webrtc-ice-candidate', candidate);
+    });
+
+    socket.on('patient-arrived', ({ roomId }: { roomId: string }) => {
+      socket.to(`telemed-${roomId}`).emit('patient-arrived');
+    });
+
+    socket.on('doctor-ready', ({ roomId }: { roomId: string }) => {
+      socket.to(`telemed-${roomId}`).emit('doctor-ready');
+    });
+
+    socket.on('call-ended', ({ roomId }: { roomId: string }) => {
+      socket.to(`telemed-${roomId}`).emit('call-ended');
+    });
+
     socket.on('disconnect', (reason) => {
       logger.debug(`[Socket] Client disconnected: ${socket.id} — ${reason}`);
     });

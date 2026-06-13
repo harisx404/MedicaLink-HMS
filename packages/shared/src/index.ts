@@ -1253,3 +1253,4 @@ export * from './types/emergency.types';
 export * from './types/icu.types';
 export * from './types/ot.types';
 export * from './types/bloodbank.types';
+export * from './types/telemedicine.types';

@@ -14,6 +14,7 @@ import { emergencyApi } from '../features/emergency/api/emergencyApi';
 import { icuApi } from '../features/icu/api/icuApi';
 import { otApi } from '../features/ot/api/otApi';
 import { bloodBankApi } from '../features/bloodbank/api/bloodBankApi';
+import { telemedicineApi } from '../features/telemedicine/api/telemedicineApi';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     [icuApi.reducerPath]: icuApi.reducer,
     [otApi.reducerPath]: otApi.reducer,
     [bloodBankApi.reducerPath]: bloodBankApi.reducer,
+    [telemedicineApi.reducerPath]: telemedicineApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -49,6 +51,7 @@ export const store = configureStore({
       icuApi.middleware,
       otApi.middleware,
       bloodBankApi.middleware,
+      telemedicineApi.middleware,
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

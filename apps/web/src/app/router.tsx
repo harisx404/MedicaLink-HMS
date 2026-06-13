@@ -99,6 +99,11 @@ const BloodBankDashboard = lazy(() => import('../features/bloodbank/pages/BloodB
 const DonorManagement = lazy(() => import('../features/bloodbank/pages/DonorManagement').then(m => ({ default: m.DonorManagement })));
 const BloodInventory = lazy(() => import('../features/bloodbank/pages/BloodInventory').then(m => ({ default: m.BloodInventory })));
 const BloodRequests = lazy(() => import('../features/bloodbank/pages/BloodRequests').then(m => ({ default: m.BloodRequests })));
+const TelemedicineDashboard = lazy(() => import('../features/telemedicine/pages/TelemedicineDashboard').then(m => ({ default: m.TelemedicineDashboard })));
+const VirtualWaitingRoom = lazy(() => import('../features/telemedicine/pages/VirtualWaitingRoom').then(m => ({ default: m.VirtualWaitingRoom })));
+const VideoConsultation = lazy(() => import('../features/telemedicine/pages/VideoConsultation').then(m => ({ default: m.VideoConsultation })));
+const SessionNotes = lazy(() => import('../features/telemedicine/pages/SessionNotes').then(m => ({ default: m.SessionNotes })));
+const TelemedicineHistory = lazy(() => import('../features/telemedicine/pages/TelemedicineHistory').then(m => ({ default: m.TelemedicineHistory })));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
@@ -539,13 +544,17 @@ export const router = createBrowserRouter([
           </RoleGuard>
         )
       },
-      { path: 'icu/patients/:id', element: <SuspenseWrapper><ICUPatientDetail /></SuspenseWrapper> },
       { path: 'ot/schedule', element: <SuspenseWrapper><OTScheduleBoard /></SuspenseWrapper> },
       { path: 'ot/cases/:id', element: <SuspenseWrapper><OTCaseDetail /></SuspenseWrapper> },
       { path: 'bloodbank', element: <SuspenseWrapper><BloodBankDashboard /></SuspenseWrapper> },
       { path: 'bloodbank/donors', element: <SuspenseWrapper><DonorManagement /></SuspenseWrapper> },
       { path: 'bloodbank/inventory', element: <SuspenseWrapper><BloodInventory /></SuspenseWrapper> },
-      { path: 'bloodbank/requests', element: <SuspenseWrapper><BloodRequests /></SuspenseWrapper> }
+      { path: 'bloodbank/requests', element: <SuspenseWrapper><BloodRequests /></SuspenseWrapper> },
+      // Telemedicine
+      { path: 'telemedicine', element: <SuspenseWrapper><TelemedicineDashboard /></SuspenseWrapper> },
+      { path: 'telemedicine/session/:id', element: <SuspenseWrapper><VideoConsultation /></SuspenseWrapper> },
+      { path: 'telemedicine/session/:id/notes', element: <SuspenseWrapper><SessionNotes /></SuspenseWrapper> },
+      { path: 'telemedicine/history', element: <SuspenseWrapper><TelemedicineHistory /></SuspenseWrapper> }
     ],
   },
   {
@@ -571,6 +580,14 @@ export const router = createBrowserRouter([
       {
         path: 'assistant',
         element: <SuspenseWrapper><PortalAIChatbot /></SuspenseWrapper>
+      },
+      {
+        path: 'waiting-room/:id',
+        element: <SuspenseWrapper><VirtualWaitingRoom /></SuspenseWrapper>
+      },
+      {
+        path: 'session/:id',
+        element: <SuspenseWrapper><VideoConsultation /></SuspenseWrapper>
       }
     ]
   },

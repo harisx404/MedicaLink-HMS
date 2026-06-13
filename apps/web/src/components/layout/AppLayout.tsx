@@ -4,21 +4,22 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 
-import { Home, Users, Calendar, Activity, Settings, Pill, Beaker, Receipt, Heart, Stethoscope, Droplet } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard, Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays, PieChart } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Patients', href: '/patients', icon: Users },
-  { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'EHR', href: '/ehr', icon: Activity },
-  { name: 'Pharmacy', href: '/pharmacy', icon: Pill },
-  { name: 'Laboratory', href: '/lab', icon: Beaker },
-  { name: 'Billing', href: '/billing', icon: Receipt },
-  { name: 'Emergency', href: '/emergency', icon: Activity },
-  { name: 'ICU', href: '/icu', icon: Heart },
-  { name: 'Operation Theater', href: '/ot/schedule', icon: Stethoscope },
-  { name: 'Blood Bank', href: '/bloodbank', icon: Droplet },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/app', icon: LayoutDashboard },
+  { name: 'Appointments', href: '/app/appointments', icon: Calendar },
+  { name: 'Patients', href: '/app/patients', icon: Users },
+  { name: 'Staff Directory', href: '/app/staff', icon: UserCircle },
+  { name: 'Telemedicine', href: '/app/telemedicine', icon: Video },
+  { name: 'Emergency', href: '/app/emergency', icon: Stethoscope },
+  { name: 'ICU', href: '/app/icu', icon: ActivitySquare },
+  { name: 'Operation Theater', href: '/app/ot/schedule', icon: CalendarDays },
+  { name: 'Pharmacy', href: '/app/pharmacy', icon: Pill },
+  { name: 'Laboratory', href: '/app/lab', icon: FlaskConical },
+  { name: 'Blood Bank', href: '/app/bloodbank', icon: Droplet },
+  { name: 'Billing', href: '/app/billing', icon: CreditCard },
+  { name: 'Analytics', href: '/app/analytics', icon: PieChart },
 ];
 
 export function AppLayout() {

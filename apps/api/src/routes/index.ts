@@ -19,6 +19,7 @@ import emergencyRouter from './emergencyRoutes';
 import icuRouter from './icuRoutes';
 import otRoutes from './otRoutes';
 import bloodBankRoutes from './bloodBankRoutes';
+import telemedicineRoutes from './telemedicineRoutes';
 
 const router: Router = Router();
 
@@ -38,6 +39,7 @@ router.use('/emergency', emergencyRouter);
 router.use('/icu', icuRouter);
 router.use('/ot', otRoutes);
 router.use('/bloodbank', bloodBankRoutes);
+router.use('/telemedicine', telemedicineRoutes);
 
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
