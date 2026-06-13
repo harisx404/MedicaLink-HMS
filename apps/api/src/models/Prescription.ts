@@ -47,6 +47,6 @@ prescriptionSchema.index({ tenantId: 1, prescriptionNumber: 1 }, { unique: true 
 prescriptionSchema.index({ tenantId: 1, patient: 1 });
 prescriptionSchema.index({ tenantId: 1, consultation: 1 });
 
-export const getPrescriptionModel = (connection: mongoose.Connection) => {
+export const getPrescriptionModel = (connection: mongoose.Connection): mongoose.Model<PrescriptionDocument> => {
   return connection.models.Prescription || connection.model<PrescriptionDocument>('Prescription', prescriptionSchema);
 };
