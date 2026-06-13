@@ -4,13 +4,18 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 
-import { Home, Users, Calendar, Activity, Settings } from 'lucide-react';
+import { Home, Users, Calendar, Activity, Settings, Pill, Beaker, Receipt, Heart } from 'lucide-react';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Patients', href: '/patients', icon: Users },
   { name: 'Appointments', href: '/appointments', icon: Calendar },
   { name: 'EHR', href: '/ehr', icon: Activity },
+  { name: 'Pharmacy', href: '/pharmacy', icon: Pill },
+  { name: 'Laboratory', href: '/lab', icon: Beaker },
+  { name: 'Billing', href: '/billing', icon: Receipt },
+  { name: 'Emergency', href: '/emergency', icon: Activity },
+  { name: 'ICU', href: '/icu', icon: Heart },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 

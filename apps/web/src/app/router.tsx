@@ -60,6 +60,40 @@ const ReceptionDashboard = lazy(() => import('../features/appointments/pages/Rec
 const QueueBoard = lazy(() => import('../features/appointments/pages/QueueBoard').then(m => ({ default: m.QueueBoard })));
 const ConsultationStart = lazy(() => import('../features/ehr/pages/ConsultationStart').then(m => ({ default: m.ConsultationStart })));
 
+// Lazy loaded pharmacy pages
+const PharmacyDashboard = lazy(() => import('../features/pharmacy/pages/PharmacyDashboard').then(m => ({ default: m.PharmacyDashboard })));
+const DispensingWorkstation = lazy(() => import('../features/pharmacy/pages/DispensingWorkstation').then(m => ({ default: m.DispensingWorkstation })));
+const DrugInventory = lazy(() => import('../features/pharmacy/pages/DrugInventory').then(m => ({ default: m.DrugInventory })));
+const PurchaseOrders = lazy(() => import('../features/pharmacy/pages/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
+const SupplierManagement = lazy(() => import('../features/pharmacy/pages/SupplierManagement').then(m => ({ default: m.SupplierManagement })));
+const NarcoticsRegister = lazy(() => import('../features/pharmacy/pages/NarcoticsRegister').then(m => ({ default: m.NarcoticsRegister })));
+// const PharmacyBilling = React.lazy(() => import('../features/pharmacy/pages/PharmacyBilling').then(m => ({ default: m.PharmacyBilling })));
+// const PharmacyInventory = React.lazy(() => import('../features/pharmacy/pages/PharmacyInventory').then(m => ({ default: m.PharmacyInventory })));
+
+// Lazy loaded lab pages
+const LabDashboard = React.lazy(() => import('../features/lab/pages/LabDashboard').then(m => ({ default: m.LabDashboard })));
+const SampleCollection = React.lazy(() => import('../features/lab/pages/SampleCollection').then(m => ({ default: m.SampleCollection })));
+const ResultEntry = React.lazy(() => import('../features/lab/pages/ResultEntry').then(m => ({ default: m.ResultEntry })));
+const Verification = React.lazy(() => import('../features/lab/pages/Verification').then(m => ({ default: m.Verification })));
+const TestCatalog = React.lazy(() => import('../features/lab/pages/TestCatalog').then(m => ({ default: m.TestCatalog })));
+const LabReportView = React.lazy(() => import('../features/lab/pages/LabReportView').then(m => ({ default: m.LabReportView })));
+
+// Lazy loaded billing pages
+const BillingDashboard = React.lazy(() => import('../features/billing/pages/BillingDashboard').then(m => ({ default: m.BillingDashboard })));
+const BillList = lazy(() => import('../features/billing/pages/BillList').then(m => ({ default: m.BillList })));
+const BillDetail = lazy(() => import('../features/billing/pages/BillDetail').then(m => ({ default: m.BillDetail })));
+const CreateBill = lazy(() => import('../features/billing/pages/CreateBill').then(m => ({ default: m.CreateBill })));
+const ServiceChargeMaster = lazy(() => import('../features/billing/pages/ServiceChargeMaster').then(m => ({ default: m.ServiceChargeMaster })));
+const FinancialReports = lazy(() => import('../features/billing/pages/FinancialReports').then(m => ({ default: m.FinancialReports })));
+const InsuranceClaims = lazy(() => import('../features/billing/pages/InsuranceClaims').then(m => ({ default: m.InsuranceClaims })));
+
+// Emergency & ICU
+const EmergencyDashboard = lazy(() => import('../features/emergency/pages/EmergencyDashboard').then(m => ({ default: m.EmergencyDashboard })));
+const TriageInterface = lazy(() => import('../features/emergency/pages/TriageInterface').then(m => ({ default: m.TriageInterface })));
+const AmbulanceTracking = lazy(() => import('../features/emergency/pages/AmbulanceTracking').then(m => ({ default: m.AmbulanceTracking })));
+const ICUDashboard = lazy(() => import('../features/icu/pages/ICUDashboard').then(m => ({ default: m.ICUDashboard })));
+const ICUPatientDetail = lazy(() => import('../features/icu/pages/ICUPatientDetail').then(m => ({ default: m.ICUPatientDetail })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -329,7 +363,176 @@ export const router = createBrowserRouter([
           </RoleGuard>
         ),
       },
-      // Other routes will be added here
+      {
+        path: 'pharmacy',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST]}>
+            <SuspenseWrapper><PharmacyDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'pharmacy/dispense',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST]}>
+            <SuspenseWrapper><DispensingWorkstation /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'pharmacy/inventory',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><DrugInventory /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'pharmacy/purchase-orders',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><PurchaseOrders /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'pharmacy/suppliers',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><SupplierManagement /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'pharmacy/narcotics',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.PHARMACIST]}>
+            <SuspenseWrapper><NarcoticsRegister /></SuspenseWrapper>
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'lab',
+        element: <SuspenseWrapper><LabDashboard /></SuspenseWrapper>
+      },
+      {
+        path: 'lab/collection',
+        element: <SuspenseWrapper><SampleCollection /></SuspenseWrapper>
+      },
+      {
+        path: 'lab/entry',
+        element: <SuspenseWrapper><ResultEntry /></SuspenseWrapper>
+      },
+      {
+        path: 'lab/verification',
+        element: <SuspenseWrapper><Verification /></SuspenseWrapper>
+      },
+      {
+        path: 'lab/catalog',
+        element: <SuspenseWrapper><TestCatalog /></SuspenseWrapper>
+      },
+      {
+        path: 'lab/report/:id',
+        element: <SuspenseWrapper><LabReportView /></SuspenseWrapper>
+      },
+      {
+        path: 'billing',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF, Role.RECEPTIONIST, Role.DOCTOR]}>
+            <SuspenseWrapper><BillingDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/new',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF]}>
+            <SuspenseWrapper><CreateBill /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/bills',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF, Role.RECEPTIONIST, Role.DOCTOR]}>
+            <SuspenseWrapper><BillList /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/bills/:id',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF, Role.RECEPTIONIST, Role.DOCTOR]}>
+            <SuspenseWrapper><BillDetail /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/insurance',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF]}>
+            <SuspenseWrapper><InsuranceClaims /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/reports',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF]}>
+            <SuspenseWrapper><FinancialReports /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'billing/services',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF]}>
+            <SuspenseWrapper><ServiceChargeMaster /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      // Emergency Routes
+      {
+        path: 'emergency',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.EMERGENCY_STAFF, Role.DOCTOR, Role.NURSE]}>
+            <SuspenseWrapper><EmergencyDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'emergency/triage',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.EMERGENCY_STAFF, Role.NURSE, Role.DOCTOR]}>
+            <SuspenseWrapper><TriageInterface /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'emergency/ambulances',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.EMERGENCY_STAFF]}>
+            <SuspenseWrapper><AmbulanceTracking /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      // ICU Routes
+      {
+        path: 'icu',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.NURSE, Role.EMERGENCY_STAFF]}>
+            <SuspenseWrapper><ICUDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'icu/patients/:id',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.NURSE, Role.EMERGENCY_STAFF]}>
+            <SuspenseWrapper><ICUPatientDetail /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      }
     ],
   },
   {

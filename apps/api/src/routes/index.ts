@@ -12,6 +12,11 @@ import appointmentRouter from './appointmentRoutes';
 import consultationRouter from './consultationRoutes';
 import prescriptionRouter from './prescriptionRoutes';
 import referenceRouter from './referenceRoutes';
+import pharmacyRouter from './pharmacyRoutes';
+import labRouter from './labRoutes';
+import billingRouter from './billingRoutes';
+import emergencyRouter from './emergencyRoutes';
+import icuRouter from './icuRoutes';
 
 const router: Router = Router();
 
@@ -24,6 +29,11 @@ router.use('/appointments', appointmentRouter);
 router.use('/consultations', consultationRouter);
 router.use('/prescriptions', prescriptionRouter);
 router.use('/references', referenceRouter);
+router.use('/pharmacy', pharmacyRouter);
+router.use('/lab', labRouter);
+router.use('/billing', billingRouter);
+router.use('/emergency', emergencyRouter);
+router.use('/icu', icuRouter);
 
 
 // ─── Health Check ─────────────────────────────────────────────────────────────

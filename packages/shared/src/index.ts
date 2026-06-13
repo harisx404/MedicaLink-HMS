@@ -85,6 +85,118 @@ export enum TenantStatus {
   TRIAL = "TRIAL"
 }
 
+// --- Pharmacy Enums ---
+export enum DrugCategory {
+  TABLET = "TABLET",
+  CAPSULE = "CAPSULE",
+  SYRUP = "SYRUP",
+  INJECTION = "INJECTION",
+  TOPICAL = "TOPICAL",
+  INHALER = "INHALER",
+  DROPS = "DROPS",
+  OINTMENT = "OINTMENT",
+  SUPPOSITORY = "SUPPOSITORY",
+  PATCH = "PATCH"
+}
+
+export enum DrugSchedule {
+  OTC = "OTC",
+  H = "H",
+  H1 = "H1",
+  X = "X",
+  NARCOTIC = "NARCOTIC"
+}
+
+export enum DispensingStatus {
+  PENDING = "PENDING",
+  PARTIAL = "PARTIAL",
+  COMPLETED = "COMPLETED",
+  RETURNED = "RETURNED"
+}
+
+export enum PurchaseOrderStatus {
+  DRAFT = "DRAFT",
+  ORDERED = "ORDERED",
+  RECEIVED = "RECEIVED",
+  PARTIAL = "PARTIAL",
+  CANCELLED = "CANCELLED"
+}
+
+export enum StockStatus {
+  IN_STOCK = "IN_STOCK",
+  LOW_STOCK = "LOW_STOCK",
+  OUT_OF_STOCK = "OUT_OF_STOCK"
+}
+
+export enum LabOrderStatus {
+  ORDERED = "ORDERED",
+  SAMPLE_COLLECTED = "SAMPLE_COLLECTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  REPORTED = "REPORTED"
+}
+
+// --- Billing Enums ---
+export enum BillStatus {
+  DRAFT = "DRAFT",
+  GENERATED = "GENERATED",
+  PARTIAL = "PARTIAL",
+  PAID = "PAID",
+  VOID = "VOID",
+  REFUNDED = "REFUNDED"
+}
+
+export enum BillType {
+  OPD = "OPD",
+  IPD = "IPD",
+  EMERGENCY = "EMERGENCY",
+  DAY_CARE = "DAY_CARE",
+  PACKAGE = "PACKAGE"
+}
+
+export enum BillItemCategory {
+  CONSULTATION = "CONSULTATION",
+  PROCEDURE = "PROCEDURE",
+  LAB = "LAB",
+  RADIOLOGY = "RADIOLOGY",
+  PHARMACY = "PHARMACY",
+  ROOM = "ROOM",
+  SERVICE = "SERVICE",
+  PACKAGE = "PACKAGE"
+}
+
+export enum PaymentMode {
+  CASH = "CASH",
+  CARD = "CARD",
+  UPI = "UPI",
+  NEFT = "NEFT",
+  INSURANCE = "INSURANCE",
+  CREDIT = "CREDIT",
+  WALLET = "WALLET"
+}
+
+export enum InsuranceClaimStatus {
+  PENDING = "PENDING",
+  PRE_AUTH_PENDING = "PRE_AUTH_PENDING",
+  PRE_AUTH_APPROVED = "PRE_AUTH_APPROVED",
+  SUBMITTED = "SUBMITTED",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  SETTLED = "SETTLED"
+}
+
+export enum InsurancePanelType {
+  TPA = "TPA",
+  GOVERNMENT = "GOVERNMENT",
+  CORPORATE = "CORPORATE"
+}
+
+export enum CreditNoteStatus {
+  PENDING = "PENDING",
+  APPLIED = "APPLIED",
+  REFUNDED = "REFUNDED"
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -578,3 +690,564 @@ export interface DrugFormulary {
   isFormulary: boolean;
 }
 
+export interface IDrug {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  genericName: string;
+  brand?: string;
+  category: DrugCategory;
+  therapeuticClass?: string;
+  form: string;
+  strength: string;
+  unit?: string;
+  hsnCode?: string;
+  barcode?: string;
+  drugSchedule?: DrugSchedule;
+  purchaseRate: number;
+  sellingRate: number;
+  mrp: number;
+  taxCategory?: number;
+  currentStock: number;
+  minimumStock: number;
+  maximumStock: number;
+  reorderLevel: number;
+  isFormulary: boolean;
+  isActive: boolean;
+  manufacturer?: string;
+  importerName?: string;
+}
+
+export interface IDrugBatch {
+  _id?: string;
+  id?: string;
+  drug: IDrug | string;
+  batchNumber: string;
+  expiryDate: string;
+  manufacturingDate?: string;
+  purchaseDate?: string;
+  quantity: number;
+  remainingQuantity: number;
+  purchaseRate: number;
+  mrp: number;
+  rackLocation?: string;
+  supplierId?: string;
+  purchaseOrderId?: string;
+}
+
+export interface IDispensing {
+  _id?: string;
+  id?: string;
+  dispensingNumber: string;
+  prescription: SharedPrescription | string;
+  patient: SharedPatient | string;
+  dispensedBy: SharedUser | string;
+  items: Array<{
+    drug: IDrug | string;
+    batch: IDrugBatch | string;
+    quantity: number;
+    dose?: string;
+    unitPrice: number;
+    totalPrice: number;
+    instructions?: string;
+  }>;
+  totalAmount: number;
+  paidAmount: number;
+  dispensedAt?: string;
+  returnedAt?: string;
+  status: DispensingStatus;
+}
+
+export interface IPurchaseOrder {
+  _id?: string;
+  id?: string;
+  poNumber: string;
+  supplier: ISupplier | string;
+  items: Array<{
+    drug: IDrug | string;
+    quantity: number;
+    rate: number;
+    total: number;
+  }>;
+  totalAmount: number;
+  status: PurchaseOrderStatus;
+  orderedBy: SharedUser | string;
+  orderedAt: string;
+  expectedDelivery?: string;
+  goodsReceiptNotes?: string[];
+}
+
+export interface IGoodsReceiptNote {
+  _id?: string;
+  id?: string;
+  grnNumber: string;
+  purchaseOrder: IPurchaseOrder | string;
+  receivedBy: SharedUser | string;
+  items: Array<{
+    drug: IDrug | string;
+    receivedQty: number;
+    batchNumber: string;
+    expiryDate: string;
+    rackLocation?: string;
+  }>;
+  discrepancies?: string;
+  status: string;
+  createdAt?: string;
+}
+
+export interface ISupplier {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  contactPerson?: string;
+  phone?: string;
+}
+
+export interface SharedVitals {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  patient: SharedPatient | string;
+  ward?: string | Record<string, unknown>;
+  bed?: string | Record<string, unknown>;
+  recordedBy: SharedUser | string;
+  bp?: { systolic: number; diastolic: number };
+  pulse?: number;
+  temp?: number;
+  respRate?: number;
+  spO2?: number;
+  weight?: number;
+  height?: number;
+  bloodGlucose?: number;
+  urine?: string;
+  pain?: number;
+  timestamp: string;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface SharedPrescription {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  prescriptionNumber: string;
+  consultation: SharedConsultation | string;
+  patient: SharedPatient | string;
+  doctor: SharedDoctor | string;
+  medications: Array<{
+    drugId?: string;
+    drugName: string;
+    genericName?: string;
+    strength?: string;
+    form?: string;
+    dose: string;
+    doseUnit?: string;
+    frequency?: { times: number; period: string; instructions?: string };
+    route?: string;
+    duration: string;
+    quantity: number;
+    whenToTake?: string;
+    instructions?: string;
+    isSubstitutable: boolean;
+  }>;
+  generalInstructions?: string;
+  followUpDate?: string;
+  digitalSignature?: string;
+  qrCode?: string;
+  pharmacyStatus: 'PENDING' | 'DISPENSED' | 'PARTIAL';
+  createdAt?: string;
+}
+
+export interface ICD10Code {
+  _id?: string;
+  id?: string;
+  code: string;
+  description: string;
+  category: string;
+  isBillable: boolean;
+}
+
+export interface DrugFormulary {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  genericName: string;
+  brand: string;
+  category: string;
+  therapeuticClass?: string;
+  form: string;
+  strength: string;
+  unit?: string;
+  isActive: boolean;
+  isFormulary: boolean;
+}
+
+export interface IDrug {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  genericName: string;
+  brand?: string;
+  category: DrugCategory;
+  therapeuticClass?: string;
+  form: string;
+  strength: string;
+  unit?: string;
+  hsnCode?: string;
+  barcode?: string;
+  drugSchedule?: DrugSchedule;
+  purchaseRate: number;
+  sellingRate: number;
+  mrp: number;
+  taxCategory?: number;
+  currentStock: number;
+  minimumStock: number;
+  maximumStock: number;
+  reorderLevel: number;
+  isFormulary: boolean;
+  isActive: boolean;
+  manufacturer?: string;
+  importerName?: string;
+}
+
+export interface IDrugBatch {
+  _id?: string;
+  id?: string;
+  drug: IDrug | string;
+  batchNumber: string;
+  expiryDate: string;
+  manufacturingDate?: string;
+  purchaseDate?: string;
+  quantity: number;
+  remainingQuantity: number;
+  purchaseRate: number;
+  mrp: number;
+  rackLocation?: string;
+  supplierId?: string;
+  purchaseOrderId?: string;
+}
+
+export interface IDispensing {
+  _id?: string;
+  id?: string;
+  dispensingNumber: string;
+  prescription: SharedPrescription | string;
+  patient: SharedPatient | string;
+  dispensedBy: SharedUser | string;
+  items: Array<{
+    drug: IDrug | string;
+    batch: IDrugBatch | string;
+    quantity: number;
+    dose?: string;
+    unitPrice: number;
+    totalPrice: number;
+    instructions?: string;
+  }>;
+  totalAmount: number;
+  paidAmount: number;
+  dispensedAt?: string;
+  returnedAt?: string;
+  status: DispensingStatus;
+}
+
+export interface IPurchaseOrder {
+  _id?: string;
+  id?: string;
+  poNumber: string;
+  supplier: ISupplier | string;
+  items: Array<{
+    drug: IDrug | string;
+    quantity: number;
+    rate: number;
+    total: number;
+  }>;
+  totalAmount: number;
+  status: PurchaseOrderStatus;
+  orderedBy: SharedUser | string;
+  orderedAt: string;
+  expectedDelivery?: string;
+  goodsReceiptNotes?: string[];
+}
+
+export interface IGoodsReceiptNote {
+  _id?: string;
+  id?: string;
+  grnNumber: string;
+  purchaseOrder: IPurchaseOrder | string;
+  receivedBy: SharedUser | string;
+  items: Array<{
+    drug: IDrug | string;
+    receivedQty: number;
+    batchNumber: string;
+    expiryDate: string;
+    rackLocation?: string;
+  }>;
+  discrepancies?: string;
+  status: string;
+  createdAt?: string;
+}
+
+export interface ISupplier {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  gstNumber?: string;
+  licenseNumber?: string;
+  drugs?: string[] | IDrug[];
+  isActive: boolean;
+}
+
+// --- Lab Interfaces ---
+export interface ITestCatalog {
+  _id?: string;
+  id?: string;
+  code: string;
+  name: string;
+  shortName?: string;
+  category: string;
+  sampleType: string;
+  container?: string;
+  volume?: string;
+  instructions?: string;
+  turnaroundTime: number;
+  parameters: Array<{
+    name: string;
+    unit?: string;
+    referenceRanges: Array<{
+      ageMin?: number;
+      ageMax?: number;
+      gender?: 'MALE' | 'FEMALE' | 'OTHER' | 'ALL';
+      minValue?: number;
+      maxValue?: number;
+      normalText?: string;
+    }>;
+    criticalLow?: number;
+    criticalHigh?: number;
+    dataType: 'NUMERIC' | 'TEXT' | 'OPTION';
+  }>;
+  preparation: 'FASTING' | 'RANDOM' | '2HR_POSTPRANDIAL' | 'NONE';
+  price: number;
+  isActive: boolean;
+}
+
+export interface ILabOrder {
+  _id?: string;
+  id?: string;
+  orderNumber: string;
+  patient: any; // Populated Patient
+  doctor?: any; // Populated Doctor
+  tests: Array<{
+    testId: string | ITestCatalog;
+    testName: string;
+    status: LabOrderStatus;
+    priority: 'ROUTINE' | 'URGENT' | 'STAT';
+  }>;
+  urgency: 'ROUTINE' | 'URGENT' | 'STAT';
+  clinicalInfo?: string;
+  orderDate: string;
+  sampleBarcode?: string;
+  collectedBy?: any; // Populated User
+  collectedAt?: string;
+  status: LabOrderStatus;
+  orderedAt: string;
+  resultEnteredAt?: string;
+  verifiedAt?: string;
+  reportedAt?: string;
+}
+
+export interface ILabResult {
+  _id?: string;
+  id?: string;
+  labOrder: string | ILabOrder;
+  test: string | ITestCatalog;
+  parameters: Array<{
+    name: string;
+    value: string;
+    unit?: string;
+    isAbnormal: boolean;
+    isCritical: boolean;
+    referenceRange?: {
+      min?: number;
+      max?: number;
+      normalText?: string;
+    };
+    criticalAcknowledged?: boolean;
+    criticalAcknowledgedBy?: any;
+    criticalAcknowledgedAt?: string;
+  }>;
+  interpretation?: string;
+  comments?: string;
+  performedBy?: any; // Populated User
+  verifiedBy?: any; // Populated User
+  performedAt?: string;
+  verifiedAt?: string;
+  reportedAt?: string;
+  reportPdfUrl?: string;
+  status: 'PENDING' | 'ENTERED' | 'VERIFIED' | 'REPORTED';
+  hasDeltaCheck?: boolean;
+  deltaWarning?: string;
+}
+
+// --- Billing Interfaces ---
+
+export interface IBillItem {
+  _id?: string;
+  category: BillItemCategory;
+  description: string;
+  refId?: string; // Reference to Consultation, LabOrder, Dispensing etc.
+  quantity: number;
+  unitPrice: number;
+  discountPct: number;     // 0–100 percent
+  taxRate: number;         // e.g. 18 for 18%
+  amount: number;          // qty * unitPrice - discount
+  cgstAmount: number;      // amount * taxRate/2 / 100
+  sgstAmount: number;      // amount * taxRate/2 / 100
+  taxAmount: number;       // cgst + sgst
+  total: number;           // amount + taxAmount
+  performedBy?: string;
+  serviceDate?: string;
+}
+
+export interface IPaymentRecord {
+  _id?: string;
+  mode: PaymentMode;
+  amount: number;
+  reference?: string;      // Card last-4, UPI ref, cheque no.
+  date: string;
+  receivedBy?: string;
+}
+
+export interface IInsuranceClaim {
+  insuranceId?: string;
+  policyNumber?: string;
+  tpaName?: string;
+  preAuthNumber?: string;
+  preAuthDate?: string;
+  preAuthAmount?: number;
+  claimNumber?: string;
+  claimDate?: string;
+  claimedAmount?: number;
+  approvedAmount?: number;
+  settledAmount?: number;
+  rejectionReason?: string;
+  status: InsuranceClaimStatus;
+}
+
+export interface IBill {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  billNumber: string;
+  patient: any;               // Populated Patient
+  encounter?: any;            // Populated Consultation
+  billType: BillType;
+  billDate: string;
+  items: IBillItem[];
+  grossAmount: number;
+  discountAmount: number;
+  discountReason?: string;
+  taxableAmount: number;
+  cgstAmount: number;
+  sgstAmount: number;
+  taxAmount: number;
+  roundOff: number;
+  netAmount: number;
+  payments: IPaymentRecord[];
+  totalPaid: number;
+  balance: number;
+  insuranceClaim?: IInsuranceClaim;
+  status: BillStatus;
+  voidReason?: string;
+  createdBy?: any;
+  updatedBy?: any;
+  creditNoteRef?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IServiceCharge {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  code: string;
+  name: string;
+  category: BillItemCategory;
+  price: number;
+  taxRate: number;           // 0, 5, 12, 18
+  department?: string;
+  isPackageable: boolean;
+  isActive: boolean;
+}
+
+export interface IInsurancePanel {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  type: InsurancePanelType;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  empanelledSpecialties?: string[];
+  discountRate?: number;     // Percentage discount for this panel
+  billingFormat?: string;
+  claimSubmissionMethod?: string;
+  isActive: boolean;
+}
+
+export interface ICreditNote {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  creditNoteNumber: string;
+  originalBill: string | IBill;
+  patient: any;
+  amount: number;
+  reason: string;
+  issuedBy?: any;
+  issuedAt: string;
+  status: CreditNoteStatus;
+}
+
+// Billing Report Interfaces
+export interface IDailyCollectionReport {
+  date: string;
+  totalCollection: number;
+  byMode: { mode: PaymentMode; amount: number; count: number }[];
+  byCashier: { userId: string; name: string; amount: number }[];
+  bills: { billNumber: string; patient: string; amount: number; paidAmount: number; balance: number }[];
+}
+
+export interface IRevenueTrend {
+  date: string;
+  revenue: number;
+}
+
+export interface IDeptRevenue {
+  department: string;
+  revenue: number;
+}
+
+export interface IOutstandingEntry {
+  patient: string;
+  uhid: string;
+  billNumber: string;
+  billDate: string;
+  netAmount: number;
+  totalPaid: number;
+  balance: number;
+  agingBucket: '0-30' | '31-60' | '61-90' | '90+';
+  daysSinceBill: number;
+}
+
+export * from './types/emergency.types';
+export * from './types/icu.types';
