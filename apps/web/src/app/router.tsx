@@ -93,6 +93,12 @@ const TriageInterface = lazy(() => import('../features/emergency/pages/TriageInt
 const AmbulanceTracking = lazy(() => import('../features/emergency/pages/AmbulanceTracking').then(m => ({ default: m.AmbulanceTracking })));
 const ICUDashboard = lazy(() => import('../features/icu/pages/ICUDashboard').then(m => ({ default: m.ICUDashboard })));
 const ICUPatientDetail = lazy(() => import('../features/icu/pages/ICUPatientDetail').then(m => ({ default: m.ICUPatientDetail })));
+const OTScheduleBoard = lazy(() => import('../features/ot/pages/OTScheduleBoard').then(m => ({ default: m.OTScheduleBoard })));
+const OTCaseDetail = lazy(() => import('../features/ot/pages/OTCaseDetail').then(m => ({ default: m.OTCaseDetail })));
+const BloodBankDashboard = lazy(() => import('../features/bloodbank/pages/BloodBankDashboard').then(m => ({ default: m.BloodBankDashboard })));
+const DonorManagement = lazy(() => import('../features/bloodbank/pages/DonorManagement').then(m => ({ default: m.DonorManagement })));
+const BloodInventory = lazy(() => import('../features/bloodbank/pages/BloodInventory').then(m => ({ default: m.BloodInventory })));
+const BloodRequests = lazy(() => import('../features/bloodbank/pages/BloodRequests').then(m => ({ default: m.BloodRequests })));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
@@ -532,7 +538,14 @@ export const router = createBrowserRouter([
             <SuspenseWrapper><ICUPatientDetail /></SuspenseWrapper>
           </RoleGuard>
         )
-      }
+      },
+      { path: 'icu/patients/:id', element: <SuspenseWrapper><ICUPatientDetail /></SuspenseWrapper> },
+      { path: 'ot/schedule', element: <SuspenseWrapper><OTScheduleBoard /></SuspenseWrapper> },
+      { path: 'ot/cases/:id', element: <SuspenseWrapper><OTCaseDetail /></SuspenseWrapper> },
+      { path: 'bloodbank', element: <SuspenseWrapper><BloodBankDashboard /></SuspenseWrapper> },
+      { path: 'bloodbank/donors', element: <SuspenseWrapper><DonorManagement /></SuspenseWrapper> },
+      { path: 'bloodbank/inventory', element: <SuspenseWrapper><BloodInventory /></SuspenseWrapper> },
+      { path: 'bloodbank/requests', element: <SuspenseWrapper><BloodRequests /></SuspenseWrapper> }
     ],
   },
   {

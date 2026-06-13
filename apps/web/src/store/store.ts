@@ -12,6 +12,8 @@ import { labApi } from '../features/lab/api/labApi';
 import { billingApi } from '../features/billing/api/billingApi';
 import { emergencyApi } from '../features/emergency/api/emergencyApi';
 import { icuApi } from '../features/icu/api/icuApi';
+import { otApi } from '../features/ot/api/otApi';
+import { bloodBankApi } from '../features/bloodbank/api/bloodBankApi';
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +30,8 @@ export const store = configureStore({
     [billingApi.reducerPath]: billingApi.reducer,
     [emergencyApi.reducerPath]: emergencyApi.reducer,
     [icuApi.reducerPath]: icuApi.reducer,
+    [otApi.reducerPath]: otApi.reducer,
+    [bloodBankApi.reducerPath]: bloodBankApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -42,7 +46,9 @@ export const store = configureStore({
       labApi.middleware,
       billingApi.middleware,
       emergencyApi.middleware,
-      icuApi.middleware
+      icuApi.middleware,
+      otApi.middleware,
+      bloodBankApi.middleware,
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

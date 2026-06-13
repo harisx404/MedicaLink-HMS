@@ -4,7 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 
-import { Home, Users, Calendar, Activity, Settings, Pill, Beaker, Receipt, Heart } from 'lucide-react';
+import { Home, Users, Calendar, Activity, Settings, Pill, Beaker, Receipt, Heart, Stethoscope, Droplet } from 'lucide-react';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { name: 'Billing', href: '/billing', icon: Receipt },
   { name: 'Emergency', href: '/emergency', icon: Activity },
   { name: 'ICU', href: '/icu', icon: Heart },
+  { name: 'Operation Theater', href: '/ot/schedule', icon: Stethoscope },
+  { name: 'Blood Bank', href: '/bloodbank', icon: Droplet },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
