@@ -105,6 +105,13 @@ const VideoConsultation = lazy(() => import('../features/telemedicine/pages/Vide
 const SessionNotes = lazy(() => import('../features/telemedicine/pages/SessionNotes').then(m => ({ default: m.SessionNotes })));
 const TelemedicineHistory = lazy(() => import('../features/telemedicine/pages/TelemedicineHistory').then(m => ({ default: m.TelemedicineHistory })));
 
+// Analytics
+const ExecutiveDashboard = lazy(() => import('../features/analytics/pages/ExecutiveDashboard').then(m => ({ default: m.ExecutiveDashboard })));
+const ClinicalAnalytics = lazy(() => import('../features/analytics/pages/ClinicalAnalytics').then(m => ({ default: m.ClinicalAnalytics })));
+const OperationalAnalytics = lazy(() => import('../features/analytics/pages/OperationalAnalytics').then(m => ({ default: m.OperationalAnalytics })));
+const FinancialAnalytics = lazy(() => import('../features/analytics/pages/FinancialAnalytics').then(m => ({ default: m.FinancialAnalytics })));
+const CustomReportBuilder = lazy(() => import('../features/analytics/pages/CustomReportBuilder').then(m => ({ default: m.CustomReportBuilder })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -554,7 +561,49 @@ export const router = createBrowserRouter([
       { path: 'telemedicine', element: <SuspenseWrapper><TelemedicineDashboard /></SuspenseWrapper> },
       { path: 'telemedicine/session/:id', element: <SuspenseWrapper><VideoConsultation /></SuspenseWrapper> },
       { path: 'telemedicine/session/:id/notes', element: <SuspenseWrapper><SessionNotes /></SuspenseWrapper> },
-      { path: 'telemedicine/history', element: <SuspenseWrapper><TelemedicineHistory /></SuspenseWrapper> }
+      { path: 'telemedicine/history', element: <SuspenseWrapper><TelemedicineHistory /></SuspenseWrapper> },
+      
+      // Analytics (Protected for Hospital Admin & Super Admin)
+      { 
+        path: 'analytics/executive', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><ExecutiveDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'analytics/clinical', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><ClinicalAnalytics /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'analytics/operational', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><OperationalAnalytics /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'analytics/financial', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><FinancialAnalytics /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'analytics/reports', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><CustomReportBuilder /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      }
     ],
   },
   {

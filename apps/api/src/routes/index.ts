@@ -20,6 +20,8 @@ import icuRouter from './icuRoutes';
 import otRoutes from './otRoutes';
 import bloodBankRoutes from './bloodBankRoutes';
 import telemedicineRoutes from './telemedicineRoutes';
+import aiRoutes from './aiRoutes';
+import analyticsRoutes from './analyticsRoutes';
 
 const router: Router = Router();
 
@@ -40,6 +42,8 @@ router.use('/icu', icuRouter);
 router.use('/ot', otRoutes);
 router.use('/bloodbank', bloodBankRoutes);
 router.use('/telemedicine', telemedicineRoutes);
+router.use('/ai', aiRoutes);
+router.use('/analytics', analyticsRoutes);
 
 
 // ─── Health Check ─────────────────────────────────────────────────────────────

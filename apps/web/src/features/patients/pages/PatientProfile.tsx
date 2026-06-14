@@ -5,6 +5,8 @@ import { UHIDDisplay } from '../components/UHIDDisplay';
 import { AllergyBadge } from '../components/AllergyBadge';
 import { PatientPortalCard } from '../components/PatientPortalCard';
 import { AIClinicalSummary } from '../components/AIClinicalSummary';
+import { PatientRiskCard } from '../components/PatientRiskCard';
+import { LabTrendsSummarizer } from '../components/LabTrendsSummarizer';
 import { VisitTimeline } from '../components/VisitTimeline';
 import { InsuranceCard } from '../components/InsuranceCard';
 import { PageWrapper } from '../../../components/layout/PageWrapper';
@@ -165,6 +167,9 @@ export const PatientProfile: React.FC = () => {
             <div className="lg:col-span-2 space-y-6">
               {/* AI Clinical Summary */}
               <AIClinicalSummary patient={patient} />
+              
+              {/* AI Patient Risk Card */}
+              <PatientRiskCard patient={patient} />
 
               {/* Emergency Contact */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
@@ -236,10 +241,14 @@ export const PatientProfile: React.FC = () => {
         )}
 
         {activeTab === 'medical' && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
-            <Activity className="mx-auto text-gray-300 mb-4" size={48} />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Medical Records</h3>
-            <p className="text-gray-500 max-w-md mx-auto">This section will contain detailed clinical notes, laboratory results, and vital signs.</p>
+          <div className="space-y-6">
+            <LabTrendsSummarizer />
+            
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
+              <Activity className="mx-auto text-gray-300 mb-4" size={48} />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Medical Records</h3>
+              <p className="text-gray-500 max-w-md mx-auto">This section will contain detailed clinical notes, laboratory results, and vital signs.</p>
+            </div>
           </div>
         )}
 

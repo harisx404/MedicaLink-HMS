@@ -7,15 +7,18 @@ import {
   AlertTriangle,
   ChevronDown,
   Upload,
-  Download
+  Download,
+  BookOpen
 } from 'lucide-react';
 import { useListDrugsQuery } from '../api/pharmacyApi';
 import { AddDrugModal } from '../components/AddDrugModal';
+import { DrugInfoModal } from '../components/DrugInfoModal';
 
 export const DrugInventory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [infoDrug, setInfoDrug] = useState<string | null>(null);
   
   const { data, isLoading } = useListDrugsQuery({ 
     search: searchTerm,
@@ -143,9 +146,18 @@ export const DrugInventory: React.FC = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
-                          <MoreVertical size={18} />
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => setInfoDrug(drug.name)}
+                            className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            title="AI Drug Monograph"
+                          >
+                            <BookOpen size={18} />
+                          </button>
+                          <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                            <MoreVertical size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -169,6 +181,12 @@ export const DrugInventory: React.FC = () => {
       <AddDrugModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+      
+      <DrugInfoModal 
+        isOpen={!!infoDrug} 
+        onClose={() => setInfoDrug(null)} 
+        drugName={infoDrug}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
+import { ClinicalAssistantDrawer } from '../../features/ai/components/ClinicalAssistantDrawer';
 
 import { LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard, Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays, PieChart } from 'lucide-react';
 
@@ -47,6 +48,8 @@ export function AppLayout() {
           <Outlet />
         </main>
       </motion.div>
+
+      <ClinicalAssistantDrawer />
     </div>
   );
 }

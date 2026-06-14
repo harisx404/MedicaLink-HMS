@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Pill, TestTube, FileType2, CalendarClock } from 'lucide-react';
 import { PrescriptionWriter } from '../PrescriptionWriter';
+import { DischargeSummaryGenerator } from './DischargeSummaryGenerator';
 
 interface Props {
   data: any;
@@ -93,6 +94,8 @@ export const PlanForm: React.FC<Props> = ({ data, onChange, consultation, patien
           />
         </div>
       </div>
+
+      <DischargeSummaryGenerator consultation={consultation} />
 
       {showRxWriter && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

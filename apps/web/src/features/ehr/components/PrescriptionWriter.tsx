@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { Search, Plus, Trash2, ShieldAlert, Loader2 } from 'lucide-react';
+import { Search, Plus, Trash2, ShieldAlert, Loader2, Activity } from 'lucide-react';
 import { useLazySearchDrugsQuery, useCreatePrescriptionMutation } from '../api/ehrApi';
+import { useCheckDrugInteractionsMutation } from '../../ai/api/aiApi';
 import { toast } from 'react-hot-toast';
 
 interface Props {
@@ -15,9 +16,11 @@ export const PrescriptionWriter: React.FC<Props> = ({ consultationId, patientId,
   const [searchTerm, setSearchTerm] = useState('');
   const [searchDrugs, { data: drugResults, isFetching }] = useLazySearchDrugsQuery();
   const [createPrescription, { isLoading }] = useCreatePrescriptionMutation();
+  const [checkInteractions, { isLoading: isChecking }] = useCheckDrugInteractionsMutation();
 
   const [medications, setMedications] = useState<any[]>([]);
   const [generalInstructions, setGeneralInstructions] = useState('');
+  const [interactionResult, setInteractionResult] = useState<string | null>(null);
 
   const handleSearch = () => {
     if (searchTerm.length > 2) searchDrugs(searchTerm);
@@ -58,6 +61,22 @@ export const PrescriptionWriter: React.FC<Props> = ({ consultationId, patientId,
     const newMeds = [...medications];
     newMeds.splice(index, 1);
     setMedications(newMeds);
+    setInteractionResult(null);
+  };
+
+  const handleCheckInteractions = async () => {
+    if (medications.length < 2) {
+      toast('Add at least 2 medications to check for interactions.', { icon: 'ℹ️' });
+      return;
+    }
+    try {
+      const drugNames = medications.map(m => m.drugName);
+      const res = await checkInteractions({ drugs: drugNames }).unwrap();
+      setInteractionResult(res.data);
+      toast.success('Interaction check complete');
+    } catch (e) {
+      toast.error('Failed to check interactions');
+    }
   };
 
   const handleSave = async () => {
@@ -119,7 +138,29 @@ export const PrescriptionWriter: React.FC<Props> = ({ consultationId, patientId,
 
       {/* Selected Medications */}
       <div>
-        <h3 className="font-semibold mb-3">Selected Medications</h3>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-semibold">Selected Medications</h3>
+          {medications.length > 1 && (
+            <Button 
+              onClick={handleCheckInteractions} 
+              disabled={isChecking} 
+              variant="outline" 
+              size="sm"
+              className="text-amber-600 border-amber-200 hover:bg-amber-50"
+            >
+              {isChecking ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Activity className="h-4 w-4 mr-2" />}
+              Check AI Interactions
+            </Button>
+          )}
+        </div>
+
+        {interactionResult && (
+          <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900 whitespace-pre-wrap leading-relaxed shadow-sm">
+            <div className="font-bold mb-2 flex items-center"><Activity className="h-4 w-4 mr-2" /> AI Interaction Report:</div>
+            {interactionResult}
+          </div>
+        )}
+
         {medications.length === 0 ? (
           <div className="p-8 text-center border-2 border-dashed border-border rounded-xl bg-muted/20">
             <p className="text-muted-foreground text-sm">No medications added to the prescription yet.</p>

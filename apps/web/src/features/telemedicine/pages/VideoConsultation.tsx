@@ -19,6 +19,10 @@ export const VideoConsultation: React.FC = () => {
   const [callEnded, setCallEnded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
+  const [activeTab, setActiveTab] = useState<'chat' | 'vitals' | 'notes' | null>(null);
+  const [messages, setMessages] = useState<{sender: string, text: string}[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [notes, setNotes] = useState('');
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
@@ -69,6 +73,10 @@ export const VideoConsultation: React.FC = () => {
 
     socketRef.current.on('call-ended', () => {
       handleCallEnded();
+    });
+
+    socketRef.current.on('chat-message', (msg: {sender: string, text: string}) => {
+      setMessages(prev => [...prev, msg]);
     });
 
     return () => {
@@ -173,6 +181,14 @@ export const VideoConsultation: React.FC = () => {
     }
   };
 
+  const sendMessage = () => {
+    if (!chatInput.trim()) return;
+    const msg = { sender: isDoctor ? 'Doctor' : 'Patient', text: chatInput };
+    setMessages(prev => [...prev, msg]);
+    socketRef.current?.emit('chat-message', { roomId: id, ...msg });
+    setChatInput('');
+  };
+
   if (isLoading) return <div className="h-screen flex justify-center items-center bg-slate-900 text-white">Loading Consultation...</div>;
 
   return (
@@ -247,6 +263,80 @@ export const VideoConsultation: React.FC = () => {
         </div>
       </div>
 
+      {/* Collapsible Sidebar */}
+      {activeTab && (
+        <div className="absolute right-0 top-16 bottom-24 w-80 bg-slate-800 border-l border-slate-700 z-20 flex flex-col shadow-2xl transition-all duration-300">
+          <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+            <h3 className="text-white font-medium capitalize flex items-center gap-2">
+              {activeTab === 'chat' && <MessageSquare className="h-4 w-4" />}
+              {activeTab === 'vitals' && <Activity className="h-4 w-4" />}
+              {activeTab === 'notes' && <MonitorUp className="h-4 w-4" />}
+              {activeTab}
+            </h3>
+            <button onClick={() => setActiveTab(null)} className="text-slate-400 hover:text-white">✕</button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            {activeTab === 'chat' && (
+              <div className="space-y-4 flex flex-col h-full">
+                <div className="flex-1 overflow-y-auto space-y-3">
+                  {messages.map((m, i) => (
+                    <div key={i} className={`flex flex-col ${m.sender === (isDoctor ? 'Doctor' : 'Patient') ? 'items-end' : 'items-start'}`}>
+                      <span className="text-xs text-slate-500 mb-1">{m.sender}</span>
+                      <div className={`px-3 py-2 rounded-lg text-sm max-w-[85%] ${m.sender === (isDoctor ? 'Doctor' : 'Patient') ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-200'}`}>
+                        {m.text}
+                      </div>
+                    </div>
+                  ))}
+                  {messages.length === 0 && <p className="text-center text-slate-500 text-sm mt-10">No messages yet. Say hi!</p>}
+                </div>
+                <div className="pt-4 border-t border-slate-700 flex gap-2">
+                  <input 
+                    type="text" 
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && sendMessage()}
+                    placeholder="Type message..." 
+                    className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  />
+                  <button onClick={sendMessage} className="bg-indigo-600 px-3 py-2 rounded-lg text-white font-medium text-sm hover:bg-indigo-700">Send</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'notes' && (
+              <div className="h-full flex flex-col gap-2">
+                <p className="text-xs text-slate-400 mb-2">Private quick notes. These will auto-save to your consultation notes.</p>
+                <textarea 
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Patient reports mild fever and headache..."
+                  className="flex-1 bg-slate-700 border border-slate-600 rounded-lg p-3 text-sm text-white resize-none focus:outline-none focus:border-indigo-500"
+                ></textarea>
+              </div>
+            )}
+
+            {activeTab === 'vitals' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Temperature (°C)</label>
+                  <input type="number" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" placeholder="37.2" />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Blood Pressure (mmHg)</label>
+                  <input type="text" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" placeholder="120/80" />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Heart Rate (bpm)</label>
+                  <input type="number" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" placeholder="80" />
+                </div>
+                <button className="w-full mt-4 bg-indigo-600 py-2 rounded-lg text-white font-medium text-sm hover:bg-indigo-700">Update Vitals</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Controls Bar */}
       <div className="h-24 bg-slate-900 flex justify-center items-center gap-4 absolute bottom-0 left-0 right-0 z-10">
         <button 
@@ -264,14 +354,27 @@ export const VideoConsultation: React.FC = () => {
         </button>
 
         {isDoctor && (
-          <button className="h-14 w-14 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center text-white transition-colors">
+          <button 
+            onClick={() => setActiveTab(activeTab === 'notes' ? null : 'notes')}
+            className={`h-14 w-14 rounded-full flex items-center justify-center transition-colors ${activeTab === 'notes' ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}
+          >
             <MonitorUp className="h-6 w-6" />
           </button>
         )}
 
-        <button className="h-14 w-14 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center text-white transition-colors relative">
+        <button 
+          onClick={() => setActiveTab(activeTab === 'chat' ? null : 'chat')}
+          className={`h-14 w-14 rounded-full flex items-center justify-center transition-colors relative ${activeTab === 'chat' ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}
+        >
           <MessageSquare className="h-6 w-6" />
-          <span className="absolute top-0 right-0 h-3 w-3 bg-indigo-500 border-2 border-slate-700 rounded-full"></span>
+          <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 border-2 border-slate-700 rounded-full"></span>
+        </button>
+
+        <button 
+          onClick={() => setActiveTab(activeTab === 'vitals' ? null : 'vitals')}
+          className={`h-14 w-14 rounded-full flex items-center justify-center transition-colors ${activeTab === 'vitals' ? 'bg-indigo-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}
+        >
+          <Activity className="h-6 w-6" />
         </button>
 
         <div className="w-8"></div> {/* Spacer */}

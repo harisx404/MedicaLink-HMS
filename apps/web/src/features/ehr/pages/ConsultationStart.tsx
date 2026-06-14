@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useGetAppointmentsQuery, useUpdateAppointmentStatusMutation } from '../../appointments/api/appointmentApi';
 import { useStartConsultationMutation, useUpdateConsultationMutation, useSignConsultationMutation } from '../api/ehrApi';
+import { useVoiceToSoapMutation } from '../../ai/api/aiApi';
 import type { SharedConsultation, SharedPatient } from '@medicalink/shared';
 import { PageHeader } from '../../../components/common';
 import { Button } from '../../../components/ui/Button';
@@ -10,7 +11,7 @@ import { ObjectiveForm } from '../components/SOAP/ObjectiveForm';
 import { AssessmentForm } from '../components/SOAP/AssessmentForm';
 import { PlanForm } from '../components/SOAP/PlanForm';
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/Tabs';
-import { Save, FileSignature, AlertCircle, Loader2 } from 'lucide-react';
+import { Save, FileSignature, AlertCircle, Loader2, Mic, StopCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export const ConsultationStart = () => {
@@ -28,6 +29,9 @@ export const ConsultationStart = () => {
   const [consultation, setConsultation] = useState<SharedConsultation | null>(null);
   const [activeTab, setActiveTab] = useState('subjective');
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  
+  const [voiceToSoap] = useVoiceToSoapMutation();
 
   useEffect(() => {
     if (appointmentRes && !consultation) {
@@ -93,6 +97,41 @@ export const ConsultationStart = () => {
     }
   };
 
+  const handleDictation = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      // In a real implementation, we would stop MediaRecorder, get audioBlob, send to API.
+      // Since browsers block microphone without HTTPS or localhost, we will use a simulated 
+      // dictation using a prompt to get a simulated transcript from the doctor.
+      const simulatedTranscript = window.prompt("Simulated Dictation: Enter the consultation transcript:");
+      if (!simulatedTranscript) return;
+
+      toast.loading('AI is transcribing and structuring SOAP notes...', { id: 'soap-ai' });
+      try {
+        const res = await voiceToSoap({ transcript: simulatedTranscript }).unwrap();
+        const generatedSoap = res.data;
+        
+        // Merge generated data into consultation
+        setConsultation(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            subjective: { ...prev.subjective, ...generatedSoap.subjective },
+            objective: { ...prev.objective, ...generatedSoap.objective },
+            assessment: { ...prev.assessment, ...generatedSoap.assessment },
+            plan: { ...prev.plan, ...generatedSoap.plan }
+          };
+        });
+        toast.success('SOAP Notes generated successfully!', { id: 'soap-ai' });
+      } catch (e: any) {
+        toast.error('Failed to generate SOAP notes.', { id: 'soap-ai' });
+      }
+    } else {
+      setIsRecording(true);
+      toast('Recording started... Click Stop Dictation when done.', { icon: '🎙️' });
+    }
+  };
+
   if (loadingAppt || !consultation) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -119,6 +158,16 @@ export const ConsultationStart = () => {
         action={
           <div className="flex space-x-2 items-center">
             {isAutoSaving && <span className="text-xs text-muted-foreground flex items-center"><Save className="h-3 w-3 mr-1" /> Auto-saving...</span>}
+            
+            <Button 
+              variant={isRecording ? "danger" : "outline"} 
+              className={isRecording ? "animate-pulse" : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"}
+              onClick={handleDictation}
+            >
+              {isRecording ? <StopCircle className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
+              {isRecording ? "Stop Dictation" : "AI Dictation"}
+            </Button>
+
             <Button variant="outline" onClick={() => updateConsultation({ id: consultation._id || consultation.id || '', data: consultation })}>
               <Save className="h-4 w-4 mr-2" /> Save Draft
             </Button>

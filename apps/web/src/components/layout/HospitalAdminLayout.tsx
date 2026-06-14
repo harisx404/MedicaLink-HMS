@@ -10,7 +10,8 @@ import {
   Users, 
   Settings, 
   Bed,
-  Shield
+  Shield,
+  Activity
 } from 'lucide-react';
 
 const HOSPITAL_ADMIN_NAV_ITEMS = [
@@ -19,6 +20,7 @@ const HOSPITAL_ADMIN_NAV_ITEMS = [
   { name: 'Wards & Beds', href: '/admin/wards', icon: Bed },
   { name: 'Staff', href: '/admin/users', icon: Users },
   { name: 'Roles', href: '/admin/roles', icon: Shield },
+  { name: 'Analytics', href: '/analytics/executive', icon: Activity },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

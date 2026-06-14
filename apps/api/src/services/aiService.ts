@@ -179,4 +179,132 @@ export class AIService {
       throw error;
     }
   }
+
+  /**
+   * Calculates drug dosage based on patient parameters.
+   */
+  static async dosageCalculator(drug: string, weight: number, age: number, renalFunction?: number): Promise<string> {
+    if (!GEMINI_API_KEY) return 'Dosage calculation currently disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Provide a recommended dosage for the following medication:
+        Drug: ${drug}
+        Patient Weight: ${weight} kg
+        Patient Age: ${age} years
+        ${renalFunction ? `Renal Function (eGFR): ${renalFunction} mL/min/1.73m2` : ''}
+
+        Provide the recommended dose, frequency, max dose, and monitoring parameters.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to calculate dosage', error);
+      return 'Could not calculate dosage at this time.';
+    }
+  }
+
+  /**
+   * Retrieves drug information monograph.
+   */
+  static async getDrugInfo(drugName: string): Promise<string> {
+    if (!GEMINI_API_KEY) return 'Drug info currently disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Provide a concise drug monograph summary for: ${drugName}.
+        Include:
+        - Common side effects
+        - Contraindications
+        - Monitoring parameters
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to get drug info', error);
+      return 'Could not retrieve drug information at this time.';
+    }
+  }
+
+  /**
+   * Summarizes lab trends for a patient.
+   */
+  static async summarizeLabTrends(labResults: any[]): Promise<string> {
+    if (!GEMINI_API_KEY) return 'Lab trend summarization disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Analyze the following chronological lab results:
+        ${JSON.stringify(labResults)}
+        
+        Identify trends (improving/worsening) and flag concerning patterns. Provide a concise 2-paragraph summary.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to summarize lab trends', error);
+      return 'Could not summarize lab trends at this time.';
+    }
+  }
+
+  /**
+   * Generates a professional discharge summary.
+   */
+  static async generateDischargeSummary(consultationData: any, hospitalCourse: any): Promise<string> {
+    if (!GEMINI_API_KEY) return 'Discharge summary generation disabled.';
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Generate a professional discharge summary template.
+        Consultation Data: ${JSON.stringify(consultationData)}
+        Hospitalization Course: ${JSON.stringify(hospitalCourse)}
+        
+        Output format:
+        1. Admission Diagnoses
+        2. Discharge Diagnoses
+        3. Hospital Course
+        4. Discharge Medications
+        5. Follow-up Instructions
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      logger.error('Failed to generate discharge summary', error);
+      return 'Could not generate discharge summary at this time.';
+    }
+  }
+
+  /**
+   * Calculates patient risk scores (Readmission, Length of Stay, Mortality).
+   */
+  static async patientRiskScore(patientHistory: any, currentVitals: any): Promise<any> {
+    if (!GEMINI_API_KEY) return { readmissionRisk: 'Low', sepsisRisk: 'Low', reasoning: 'AI disabled' };
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const prompt = `
+        Calculate the risk stratification for the following patient.
+        History: ${JSON.stringify(patientHistory)}
+        Vitals: ${JSON.stringify(currentVitals)}
+        
+        Evaluate:
+        - 30-day readmission risk (Low/Medium/High)
+        - Sepsis risk based on SIRS criteria from vitals (Low/Medium/High)
+        
+        Format as JSON object:
+        { "readmissionRisk": "...", "sepsisRisk": "...", "reasoning": "..." }
+        Output ONLY valid JSON.
+      `;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().replace(/```json\n?|\n?```/g, '').trim();
+      return JSON.parse(text);
+    } catch (error) {
+      logger.error('Failed to calculate patient risk score', error);
+      return { readmissionRisk: 'Unknown', sepsisRisk: 'Unknown', reasoning: 'Error calculating risk' };
+    }
+  }
 }

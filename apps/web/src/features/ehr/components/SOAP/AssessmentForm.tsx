@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
-import { Search, Plus, Trash2, Bot, Loader2 } from 'lucide-react';
+import { Search, Plus, Trash2, Bot, Loader2, Sparkles } from 'lucide-react';
 import { useLazySearchICD10Query } from '../../api/ehrApi';
+import { useSuggestDiagnosisMutation } from '../../../ai/api/aiApi';
+import toast from 'react-hot-toast';
 
 interface Props {
   data: any;
@@ -9,11 +11,45 @@ interface Props {
   consultation?: any;
 }
 
-export const AssessmentForm: React.FC<Props> = ({ data, onChange }) => {
+export const AssessmentForm: React.FC<Props> = ({ data, onChange, consultation }) => {
   const diagnoses = data.diagnoses || [];
   
   const [searchTerm, setSearchTerm] = useState('');
   const [searchICD10, { data: icdResults, isFetching }] = useLazySearchICD10Query();
+  const [suggestDiagnosis, { isLoading: isSuggesting }] = useSuggestDiagnosisMutation();
+
+  const handleSuggest = async () => {
+    if (!consultation?.subjective?.symptoms) {
+      toast.error('Please add symptoms first.');
+      return;
+    }
+    const symptoms = consultation.subjective.symptoms.map((s: any) => s.symptom);
+    const vitals = consultation.objective?.vitals || {};
+    try {
+      const res = await suggestDiagnosis({ symptoms, vitals }).unwrap();
+      const suggestions = res.data;
+      if (suggestions && suggestions.length > 0) {
+        // Add the top suggestion or all
+        const newDiags = [...diagnoses];
+        suggestions.forEach((sugg: any) => {
+          if (!newDiags.find(d => d.icdCode === sugg.icdCode)) {
+            newDiags.push({
+              icdCode: sugg.icdCode || 'AI-SUGG',
+              description: sugg.description,
+              type: 'DIFFERENTIAL',
+              status: 'PROVISIONAL'
+            });
+          }
+        });
+        onChange({ ...data, diagnoses: newDiags });
+        toast.success('AI Suggestions added');
+      } else {
+        toast('AI could not find matching diagnoses.', { icon: '🤖' });
+      }
+    } catch (e) {
+      toast.error('Failed to get AI suggestions');
+    }
+  };
 
   const handleSearch = () => {
     if (searchTerm.length > 2) {
@@ -47,7 +83,18 @@ export const AssessmentForm: React.FC<Props> = ({ data, onChange }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Diagnoses</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Diagnoses</h3>
+          <Button 
+            variant="outline" 
+            className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+            onClick={handleSuggest}
+            disabled={isSuggesting}
+          >
+            {isSuggesting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+            AI Suggest Diagnoses
+          </Button>
+        </div>
         
         {/* ICD-10 Search Box */}
         <div className="bg-muted/30 p-4 rounded-lg border border-border mb-6">
