@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { ZodError } from 'zod';
 import mongoose from 'mongoose';
 import { sendError } from '../utils/apiResponse';
@@ -87,10 +87,10 @@ export function errorHandler(
  * Wraps async route handlers to automatically forward errors to errorHandler.
  * Eliminates try-catch boilerplate in every controller.
  */
-export function asyncHandler<T extends Request>(
-  fn: (req: T, res: Response, next: NextFunction) => Promise<unknown>
-) {
-  return (req: T, res: Response, next: NextFunction): void => {
+
+
+export const asyncHandler = (fn: any): RequestHandler => {
+  return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
-}
+};

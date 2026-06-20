@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\haris\\OneDrive\\Desktop\\Development\\MedicaLink-HMS\\apps\\api\\logs\\.bd9ab2597d83cc27f2ba985ba9483fdc160773d8-audit.json",
+    "files": [
+        {
+            "date": 1781460461265,
+            "name": "C:\\Users\\haris\\OneDrive\\Desktop\\Development\\MedicaLink-HMS\\apps\\api\\logs\\combined-2026-06-14.log",
+            "hash": "7b5c3df67bc9be56a32cd2869abd81168d549bab9b029c479b65921abd396141"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -21,7 +21,7 @@ import {
   submitClaim,
   updateClaimStatus,
   listInsurancePanels,
-  createInsurancePanel
+  addInsurancePanel
 } from '../controllers/insuranceController';
 
 import {
@@ -68,7 +68,7 @@ router.post('/insurance-claims/:id/submit', authorize(writeAccessRoles), submitC
 router.put('/insurance-claims/:id', authorize(writeAccessRoles), updateClaimStatus);
 
 router.get('/panels', authorize(readAccessRoles), listInsurancePanels);
-router.post('/panels', authorize([Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]), createInsurancePanel);
+router.post('/panels', authorize([Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]), addInsurancePanel);
 
 // --- Reports & Analytics Routes ---
 const reportsAccessRoles = [Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.BILLING_STAFF];

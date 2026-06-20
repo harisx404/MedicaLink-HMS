@@ -33,6 +33,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+debug.log
 
 # Misc
 .DS_Store
@@ -45,3 +46,7 @@ medicalink-hms-blueprint.md
 # Diagnostic / Local Scripts
 check_*.js
 test_*.js
+
+# Sensitive local credential files
+credentials.md
+test_credentials.md

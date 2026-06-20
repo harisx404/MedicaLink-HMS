@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "MedicaLink HMS",
+    "slug": "medicalink-hms-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "medicalink",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4F46E5"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.medicalink.hms",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4F46E5"
+      },
+      "package": "com.medicalink.hms",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": []
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow MedicaLink HMS to access your camera to scan QR codes and barcodes."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4F46E5"
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:5000/api/v1",
+      "eas": {
+        "projectId": "local"
+      }
+    }
+  }
+}

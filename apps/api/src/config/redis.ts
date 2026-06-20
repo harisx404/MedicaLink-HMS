@@ -80,10 +80,16 @@ export function getRedisSubClient(): Redis {
  * Connects all Redis clients and verifies the connection.
  */
 export async function connectRedis(): Promise<void> {
-  const client = getRedisClient();
-  await client.connect();
-  await client.ping();
-  logger.info('✅ Redis ping successful');
+  try {
+    const client = getRedisClient();
+    // ioredis auto-connects by default, but if lazyConnect is true we call connect()
+    // However, if retryStrategy returns null, connect() will throw. Let's catch it.
+    await client.connect();
+    await client.ping();
+    logger.info('✅ Redis ping successful');
+  } catch (err) {
+    logger.warn('Redis connection failed. Running without Redis caching/queues. Please ensure Redis is running locally on port 6379.');
+  }
 }
 
 /**

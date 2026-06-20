@@ -23,6 +23,8 @@ import telemedicineRoutes from './telemedicineRoutes';
 import aiRoutes from './aiRoutes';
 import analyticsRoutes from './analyticsRoutes';
 
+import hrRoutes from './hrRoutes';
+
 const router: Router = Router();
 
 router.use('/auth', authRouter);
@@ -44,6 +46,7 @@ router.use('/bloodbank', bloodBankRoutes);
 router.use('/telemedicine', telemedicineRoutes);
 router.use('/ai', aiRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/hr', hrRoutes);
 
 
 // ─── Health Check ─────────────────────────────────────────────────────────────

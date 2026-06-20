@@ -25,28 +25,26 @@ const transports: winston.transport[] = [
   }),
 ];
 
-// In production, write to rotating log files
-if (!isDev) {
-  const logsDir = path.join(process.cwd(), 'logs');
+// Always write to rotating log files for easier debugging locally
+const logsDir = path.join(process.cwd(), 'logs');
 
-  transports.push(
-    new DailyRotateFile({
-      filename: path.join(logsDir, 'error-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      level: 'error',
-      maxSize: '20m',
-      maxFiles: '30d',
-      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-    }),
-    new DailyRotateFile({
-      filename: path.join(logsDir, 'combined-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d',
-      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-    })
-  );
-}
+transports.push(
+  new DailyRotateFile({
+    filename: path.join(logsDir, 'error-%DATE%.log'),
+    datePattern: 'YYYY-MM-DD',
+    level: 'error',
+    maxSize: '20m',
+    maxFiles: '30d',
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  }),
+  new DailyRotateFile({
+    filename: path.join(logsDir, 'combined-%DATE%.log'),
+    datePattern: 'YYYY-MM-DD',
+    maxSize: '20m',
+    maxFiles: '14d',
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  })
+);
 
 export const logger = winston.createLogger({
   level: isDev ? 'debug' : 'info',

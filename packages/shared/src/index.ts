@@ -1081,7 +1081,7 @@ export interface ILabResult {
       normalText?: string;
     };
     criticalAcknowledged?: boolean;
-    criticalAcknowledgedBy?: any;
+    criticalAcknowledgedBy?: unknown;
     criticalAcknowledgedAt?: string;
   }>;
   interpretation?: string;
@@ -1210,10 +1210,10 @@ export interface ICreditNote {
   tenantId: string;
   creditNoteNumber: string;
   originalBill: string | IBill;
-  patient: any;
+  patient: unknown;
   amount: number;
   reason: string;
-  issuedBy?: any;
+  issuedBy?: unknown;
   issuedAt: string;
   status: CreditNoteStatus;
 }
@@ -1254,3 +1254,4 @@ export * from './types/icu.types';
 export * from './types/ot.types';
 export * from './types/bloodbank.types';
 export * from './types/telemedicine.types';
+export * from './types/hr.types';

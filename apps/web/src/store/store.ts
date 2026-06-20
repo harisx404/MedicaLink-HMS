@@ -17,6 +17,7 @@ import { bloodBankApi } from '../features/bloodbank/api/bloodBankApi';
 import { telemedicineApi } from '../features/telemedicine/api/telemedicineApi';
 import { aiApi } from '../features/ai/api/aiApi';
 import { analyticsApi } from '../features/analytics/api/analyticsApi';
+import { hrApi } from '../features/hr/api/hrApi';
 
 export const store = configureStore({
   reducer: {
@@ -38,6 +39,7 @@ export const store = configureStore({
     [telemedicineApi.reducerPath]: telemedicineApi.reducer,
     [aiApi.reducerPath]: aiApi.reducer,
     [analyticsApi.reducerPath]: analyticsApi.reducer,
+    [hrApi.reducerPath]: hrApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -58,6 +60,7 @@ export const store = configureStore({
       telemedicineApi.middleware,
       aiApi.middleware,
       analyticsApi.middleware,
+      hrApi.middleware,
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

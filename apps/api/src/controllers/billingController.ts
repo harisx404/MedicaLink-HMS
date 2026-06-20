@@ -1,312 +1,265 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { sendSuccess, sendError, sendPaginated } from '../utils/apiResponse';
-import { getBillModel } from '../models/Bill';
+import { AppError, asyncHandler } from '../middlewares/errorHandler';
+import { getBillModel, IBillDocument } from '../models/Bill';
 import { getCreditNoteModel } from '../models/CreditNote';
-import { 
-  calculateBillTotals, 
-  autoFetchPendingCharges, 
-  generateBillNumber, 
+import {
+  calculateBillTotals,
+  autoFetchPendingCharges,
+  generateBillNumber,
   generateCreditNoteNumber,
-  recalculatePaymentTotals 
+  recalculatePaymentTotals,
 } from '../services/billingService';
 import { BillStatus, CreditNoteStatus } from '@medicalink/shared';
+import mongoose from 'mongoose';
 
-export const createBill = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const userId = (req.user as any).userId || (req.user as any).id;
-    const { patient, encounter, billType, items, insuranceClaim } = req.body;
-
-    const Bill = getBillModel(req.tenantDb!);
-
-    // Calculate totals
-    const totals = calculateBillTotals(items || []);
-
-    const bill = new Bill({
-      tenantId,
-      billNumber: generateBillNumber(),
-      patient,
-      encounter,
-      billType,
-      items: totals.items,
-      grossAmount: totals.grossAmount,
-      discountAmount: totals.discountAmount,
-      taxableAmount: totals.taxableAmount,
-      cgstAmount: totals.cgstAmount,
-      sgstAmount: totals.sgstAmount,
-      taxAmount: totals.taxAmount,
-      roundOff: totals.roundOff,
-      netAmount: totals.netAmount,
-      insuranceClaim,
-      status: BillStatus.DRAFT,
-      createdBy: userId,
-      updatedBy: userId
-    });
-
-    await bill.save();
-    
-    // Populate patient for response
-    await bill.populate('patient', 'firstName lastName uhid');
-
-    return sendSuccess(res, 'Bill created successfully', bill, 201);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
+// Helper: extract the authenticated user's tenantId and userId safely.
+// All billing routes are protected by `authenticate`, so req.user is guaranteed.
+const getAuthUser = (req: Request) => {
+  if (!req.user) throw new AppError('Authentication required', 401);
+  return { tenantId: req.user.tenantId, userId: req.user.userId };
 };
 
-export const getPendingCharges = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const { patientId, consultationId } = req.query;
+export const createBill: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId, userId } = getAuthUser(req);
+  const { patient, encounter, billType, items, insuranceClaim } = req.body;
 
-    if (!patientId) {
-      return sendError(res, 'patientId is required', 400);
-    }
+  const Bill = getBillModel(req.tenantDb!);
+  const totals = calculateBillTotals(items || []);
 
-    const pendingItems = await autoFetchPendingCharges(
-      req.tenantDb!,
-      tenantId,
-      patientId as string,
-      consultationId as string | undefined
-    );
+  const bill = new Bill({
+    tenantId,
+    billNumber: generateBillNumber(),
+    patient,
+    encounter,
+    billType,
+    items: totals.items.map(item => ({
+      ...item,
+      refId: item.refId ? new mongoose.Types.ObjectId(item.refId) : undefined,
+      performedBy: item.performedBy ? new mongoose.Types.ObjectId(item.performedBy) : undefined,
+      serviceDate: item.serviceDate ? new Date(item.serviceDate) : undefined,
+    })),
+    grossAmount: totals.grossAmount,
+    discountAmount: totals.discountAmount,
+    taxableAmount: totals.taxableAmount,
+    cgstAmount: totals.cgstAmount,
+    sgstAmount: totals.sgstAmount,
+    taxAmount: totals.taxAmount,
+    roundOff: totals.roundOff,
+    netAmount: totals.netAmount,
+    insuranceClaim,
+    status: BillStatus.DRAFT,
+    createdBy: userId,
+    updatedBy: userId,
+  });
 
-    return sendSuccess(res, 'Pending charges fetched successfully', pendingItems);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
+  await bill.save();
+  await bill.populate('patient', 'firstName lastName uhid');
+
+  return sendSuccess(res, 'Bill created successfully', bill, 201);
+});
+
+export const getPendingCharges: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const { patientId, consultationId } = req.query;
+
+  if (!patientId) throw new AppError('patientId is required', 400);
+
+  const pendingItems = await autoFetchPendingCharges(
+    req.tenantDb!,
+    tenantId,
+    patientId as string,
+    consultationId as string | undefined
+  );
+
+  return sendSuccess(res, 'Pending charges fetched successfully', pendingItems);
+});
+
+export const listBills: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const { patientId, status, startDate, endDate, page = 1, limit = 10 } = req.query;
+
+  const query: mongoose.FilterQuery<IBillDocument> = { tenantId };
+  if (patientId) query.patient = patientId;
+  if (status) query.status = status;
+  if (startDate && endDate) {
+    query.billDate = {
+      $gte: new Date(startDate as string),
+      $lte: new Date(endDate as string),
+    };
   }
-};
 
-export const listBills = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const { patientId, status, startDate, endDate, page = 1, limit = 10 } = req.query;
+  const Bill = getBillModel(req.tenantDb!);
+  const skip = (Number(page) - 1) * Number(limit);
 
-    const query: any = { tenantId };
-    if (patientId) query.patient = patientId;
-    if (status) query.status = status;
-    if (startDate && endDate) {
-      query.billDate = { 
-        $gte: new Date(startDate as string), 
-        $lte: new Date(endDate as string) 
-      };
-    }
-
-    const Bill = getBillModel(req.tenantDb!);
-    const skip = (Number(page) - 1) * Number(limit);
-
-    const bills = await Bill.find(query)
+  const [bills, total] = await Promise.all([
+    Bill.find(query)
       .populate('patient', 'firstName lastName uhid phone')
       .sort({ billDate: -1 })
       .skip(skip)
-      .limit(Number(limit));
+      .limit(Number(limit)),
+    Bill.countDocuments(query),
+  ]);
 
-    const total = await Bill.countDocuments(query);
+  return sendPaginated(res, 'Bills fetched successfully', bills, total, Number(page), Number(limit));
+});
 
-    return sendPaginated(res, 'Bills fetched successfully', bills, total, Number(page), Number(limit));
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
+export const getBillDetail: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const Bill = getBillModel(req.tenantDb!);
+
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId })
+    .populate('patient', 'firstName lastName uhid email phone dateOfBirth gender')
+    .populate('createdBy', 'firstName lastName')
+    .populate('payments.receivedBy', 'firstName lastName');
+
+  if (!bill) throw new AppError('Bill not found', 404);
+
+  return sendSuccess(res, 'Bill details fetched', bill);
+});
+
+export const updateBill: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId, userId } = getAuthUser(req);
+  const { items, insuranceClaim, discountReason } = req.body;
+  const Bill = getBillModel(req.tenantDb!);
+
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId });
+  if (!bill) throw new AppError('Bill not found', 404);
+  if (bill.status !== BillStatus.DRAFT) throw new AppError('Only DRAFT bills can be modified', 400);
+
+  if (items) {
+    const totals = calculateBillTotals(items);
+    bill.items = totals.items.map(item => ({
+      ...item,
+      refId: item.refId ? new mongoose.Types.ObjectId(item.refId) : undefined,
+      performedBy: item.performedBy ? new mongoose.Types.ObjectId(item.performedBy) : undefined,
+      serviceDate: item.serviceDate ? new Date(item.serviceDate) : undefined,
+    })) as typeof bill.items;
+    bill.grossAmount = totals.grossAmount;
+    bill.discountAmount = totals.discountAmount;
+    bill.taxableAmount = totals.taxableAmount;
+    bill.cgstAmount = totals.cgstAmount;
+    bill.sgstAmount = totals.sgstAmount;
+    bill.taxAmount = totals.taxAmount;
+    bill.roundOff = totals.roundOff;
+    bill.netAmount = totals.netAmount;
   }
-};
 
-export const getBillDetail = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const Bill = getBillModel(req.tenantDb!);
+  if (insuranceClaim) bill.insuranceClaim = insuranceClaim;
+  if (discountReason !== undefined) bill.discountReason = discountReason;
+  bill.updatedBy = new mongoose.Types.ObjectId(userId);
 
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId })
-      .populate('patient', 'firstName lastName uhid email phone dateOfBirth gender')
-      .populate('createdBy', 'firstName lastName')
-      .populate('payments.receivedBy', 'firstName lastName');
+  await bill.save();
+  return sendSuccess(res, 'Bill updated successfully', bill);
+});
 
-    if (!bill) {
-      return sendError(res, 'Bill not found', 404);
-    }
+export const finalizeBill: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const Bill = getBillModel(req.tenantDb!);
 
-    return sendSuccess(res, 'Bill details fetched', bill);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId });
+  if (!bill) throw new AppError('Bill not found', 404);
+  if (bill.status !== BillStatus.DRAFT) throw new AppError('Bill is already finalized or voided', 400);
+
+  bill.status = BillStatus.GENERATED;
+  await bill.save();
+
+  return sendSuccess(res, 'Bill finalized successfully', bill);
+});
+
+export const recordPayment: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId, userId } = getAuthUser(req);
+  const { mode, amount, reference, date } = req.body;
+
+  const Bill = getBillModel(req.tenantDb!);
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId });
+
+  if (!bill) throw new AppError('Bill not found', 404);
+  if (['DRAFT', 'VOID', 'REFUNDED'].includes(bill.status)) {
+    throw new AppError(`Cannot record payment for bill in ${bill.status} status`, 400);
   }
-};
 
-export const updateBill = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const userId = (req.user as any).userId || (req.user as any).id;
-    const { items, insuranceClaim, discountReason } = req.body;
-    const Bill = getBillModel(req.tenantDb!);
+  bill.payments.push({
+    mode,
+    amount,
+    reference,
+    date: date ? new Date(date) : new Date(),
+    receivedBy: new mongoose.Types.ObjectId(userId),
+  });
 
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId });
-    if (!bill) return sendError(res, 'Bill not found', 404);
+  const { totalPaid, balance, newStatus } = recalculatePaymentTotals(bill);
+  bill.totalPaid = totalPaid;
+  bill.balance = balance;
+  bill.status = newStatus as BillStatus;
 
-    if (bill.status !== BillStatus.DRAFT) {
-      return sendError(res, 'Only DRAFT bills can be modified', 400);
-    }
+  await bill.save();
+  return sendSuccess(res, 'Payment recorded successfully', bill);
+});
 
-    // Recalculate if items provided
-    if (items) {
-      const totals = calculateBillTotals(items);
-      bill.items = totals.items as any;
-      bill.grossAmount = totals.grossAmount;
-      bill.discountAmount = totals.discountAmount;
-      bill.taxableAmount = totals.taxableAmount;
-      bill.cgstAmount = totals.cgstAmount;
-      bill.sgstAmount = totals.sgstAmount;
-      bill.taxAmount = totals.taxAmount;
-      bill.roundOff = totals.roundOff;
-      bill.netAmount = totals.netAmount;
-    }
+export const voidBill: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const { voidReason } = req.body;
 
-    if (insuranceClaim) bill.insuranceClaim = insuranceClaim;
-    if (discountReason !== undefined) bill.discountReason = discountReason;
-    
-    bill.updatedBy = userId;
+  if (!voidReason) throw new AppError('Void reason is required', 400);
 
-    await bill.save();
-    return sendSuccess(res, 'Bill updated successfully', bill);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
+  const Bill = getBillModel(req.tenantDb!);
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId });
+
+  if (!bill) throw new AppError('Bill not found', 404);
+  if (bill.status === BillStatus.PAID) {
+    throw new AppError('Cannot void a fully paid bill. Issue a refund/credit note instead.', 400);
   }
-};
 
-export const finalizeBill = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const Bill = getBillModel(req.tenantDb!);
+  bill.status = BillStatus.VOID;
+  bill.voidReason = voidReason;
+  await bill.save();
 
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId });
-    if (!bill) return sendError(res, 'Bill not found', 404);
+  return sendSuccess(res, 'Bill voided successfully', bill);
+});
 
-    if (bill.status !== BillStatus.DRAFT) {
-      return sendError(res, 'Bill is already finalized or voided', 400);
-    }
+export const issueCreditNote: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId, userId } = getAuthUser(req);
+  const { amount, reason } = req.body;
 
-    bill.status = BillStatus.GENERATED;
-    await bill.save();
+  const Bill = getBillModel(req.tenantDb!);
+  const CreditNote = getCreditNoteModel(req.tenantDb!);
 
-    return sendSuccess(res, 'Bill finalized successfully', bill);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
-};
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId });
+  if (!bill) throw new AppError('Bill not found', 404);
+  if (!amount || !reason) throw new AppError('Amount and reason are required', 400);
+  if (amount > bill.totalPaid) throw new AppError('Refund amount cannot exceed total paid', 400);
 
-export const recordPayment = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const userId = (req.user as any).userId || (req.user as any).id;
-    const { mode, amount, reference, date } = req.body;
+  const creditNote = new CreditNote({
+    tenantId,
+    creditNoteNumber: generateCreditNoteNumber(),
+    originalBill: bill._id,
+    patient: bill.patient,
+    amount,
+    reason,
+    issuedBy: userId,
+    status: CreditNoteStatus.REFUNDED,
+  });
 
-    const Bill = getBillModel(req.tenantDb!);
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId });
-    
-    if (!bill) return sendError(res, 'Bill not found', 404);
-    if (['DRAFT', 'VOID', 'REFUNDED'].includes(bill.status)) {
-      return sendError(res, `Cannot record payment for bill in ${bill.status} status`, 400);
-    }
+  await creditNote.save();
 
-    bill.payments.push({
-      mode,
-      amount,
-      reference,
-      date: date ? new Date(date) : new Date(),
-      receivedBy: userId
-    });
+  bill.creditNoteRef = creditNote._id as mongoose.Types.ObjectId;
+  bill.status = BillStatus.REFUNDED;
+  await bill.save();
 
-    const { totalPaid, balance, newStatus } = recalculatePaymentTotals(bill);
-    bill.totalPaid = totalPaid;
-    bill.balance = balance;
-    bill.status = newStatus as BillStatus;
+  return sendSuccess(res, 'Credit note issued and bill refunded', creditNote, 201);
+});
 
-    await bill.save();
-    return sendSuccess(res, 'Payment recorded successfully', bill);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
-};
+export const downloadBillPdf: RequestHandler = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { tenantId } = getAuthUser(req);
+  const Bill = getBillModel(req.tenantDb!);
 
-export const voidBill = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const { voidReason } = req.body;
-    
-    if (!voidReason) return sendError(res, 'Void reason is required', 400);
+  const bill = await Bill.findOne({ _id: req.params.id, tenantId })
+    .populate('patient', 'firstName lastName uhid address phone email')
+    .populate('createdBy', 'firstName lastName');
 
-    const Bill = getBillModel(req.tenantDb!);
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId });
-    
-    if (!bill) return sendError(res, 'Bill not found', 404);
-    if (bill.status === BillStatus.PAID) {
-      return sendError(res, 'Cannot void a fully paid bill. Issue a refund/credit note instead.', 400);
-    }
+  if (!bill) throw new AppError('Bill not found', 404);
 
-    bill.status = BillStatus.VOID;
-    bill.voidReason = voidReason;
-    await bill.save();
-
-    return sendSuccess(res, 'Bill voided successfully', bill);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
-};
-
-export const issueCreditNote = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const userId = (req.user as any).userId || (req.user as any).id;
-    const { amount, reason } = req.body;
-
-    const Bill = getBillModel(req.tenantDb!);
-    const CreditNote = getCreditNoteModel(req.tenantDb!);
-
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId });
-    if (!bill) return sendError(res, 'Bill not found', 404);
-
-    if (!amount || !reason) return sendError(res, 'Amount and reason are required', 400);
-    if (amount > bill.totalPaid) return sendError(res, 'Refund amount cannot exceed total paid', 400);
-
-    const creditNote = new CreditNote({
-      tenantId,
-      creditNoteNumber: generateCreditNoteNumber(),
-      originalBill: bill._id,
-      patient: bill.patient,
-      amount,
-      reason,
-      issuedBy: userId,
-      status: CreditNoteStatus.REFUNDED
-    });
-
-    await creditNote.save();
-
-    // Link and update bill status
-    bill.creditNoteRef = creditNote._id as any;
-    bill.status = BillStatus.REFUNDED;
-    await bill.save();
-
-    return sendSuccess(res, 'Credit note issued and bill refunded', creditNote, 201);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
-};
-
-export const downloadBillPdf = async (req: Request, res: Response) => {
-  try {
-    const tenantId = (req.user as any).tenantId;
-    const Bill = getBillModel(req.tenantDb!);
-
-    const bill = await Bill.findOne({ _id: req.params.id, tenantId })
-      .populate('patient', 'firstName lastName uhid address phone email')
-      .populate('createdBy', 'firstName lastName');
-
-    if (!bill) return sendError(res, 'Bill not found', 404);
-
-    // In a real implementation with PDFKit, we would call:
-    // const pdfBuffer = await generateBillPdf(bill, hospitalSettings);
-    // res.set('Content-Type', 'application/pdf');
-    // res.set('Content-Disposition', `attachment; filename=Invoice-${bill.billNumber}.pdf`);
-    // return res.send(pdfBuffer);
-    
-    // For this blueprint implementation without full PDFKit setup:
-    return sendError(res, 'PDF generation is configured for client-side (window.print) in this phase', 501);
-  } catch (error: any) {
-    return sendError(res, error.message, 500);
-  }
-};
+  // PDF generation is handled client-side via window.print() in this phase.
+  // Phase 18 will integrate server-side PDFKit generation.
+  return sendError(res, 'PDF generation is configured for client-side (window.print) in this phase', 501);
+});

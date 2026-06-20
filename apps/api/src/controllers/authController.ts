@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import { asyncHandler } from '../middlewares/errorHandler';
+import { asyncHandler, AppError } from '../middlewares/errorHandler';
 import { authService } from '../services/authService';
 import { sendSuccess } from '../utils/apiResponse';
 import { env } from '../config/env';
 import mongoose, { Connection } from 'mongoose';
 import { RequestHandler } from 'express';
 import { Tenant as TenantModel } from '../models/Tenant';
+import { getPushTokenModel } from '../models/PushToken';
 
 export const authController: {
   registerHospital: RequestHandler;
@@ -19,11 +20,11 @@ export const authController: {
   enable2FA: RequestHandler;
   verify2FA: RequestHandler;
   getMe: RequestHandler;
+  registerPushToken: RequestHandler;
 } = {
   registerHospital: asyncHandler(async (req: Request, res: Response) => {
     const data = req.body;
     const result = await authService.registerHospital(data);
-    
     return sendSuccess(res, 'Hospital registered successfully', result, 201);
   }),
 
@@ -31,23 +32,18 @@ export const authController: {
     const { email, password } = req.body;
     let tenantDb = req.tenantDb as Connection;
 
-    console.log('[DEBUG authController] Login attempt for:', email);
-    console.log('[DEBUG authController] Initial tenantDb set?', !!tenantDb);
-
+    // If tenant middleware didn't resolve the DB (e.g. login from root domain),
+    // fall back to resolving by admin email from the main DB.
     if (!tenantDb) {
       const tenant = await TenantModel.findOne({ adminEmail: email });
       if (tenant) {
         tenantDb = mongoose.connection.useDb(tenant.database.name, { useCache: true });
-        console.log('[DEBUG authController] Resolved tenantDb from email:', tenantDb.name);
       } else {
         tenantDb = mongoose.connection;
-        console.log('[DEBUG authController] Defaulting to main DB:', tenantDb.name);
       }
-    } else {
-      console.log('[DEBUG authController] Using provided tenantDb:', tenantDb.name);
     }
 
-    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
     const result = await authService.login({ email, password }, tenantDb, ip, device);
@@ -57,7 +53,7 @@ export const authController: {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: 30 * 24 * 60 * 60 * 1000,
       });
     }
 
@@ -67,7 +63,7 @@ export const authController: {
   refresh: asyncHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
     const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
-    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
     const result = await authService.refreshAccessToken(refreshToken, tenantDb, ip, device);
@@ -85,11 +81,11 @@ export const authController: {
   logout: asyncHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
     const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
-    
+
     if (refreshToken) {
       await authService.logout(refreshToken, tenantDb);
     }
-    
+
     res.clearCookie('refreshToken');
     return sendSuccess(res, 'Logged out successfully');
   }),
@@ -120,26 +116,26 @@ export const authController: {
   }),
 
   setup2FA: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.userId as string;
+    if (!req.user) throw new AppError('Authentication required', 401);
     const tenantDb = req.tenantDb as Connection;
 
-    const result = await authService.setup2FA(userId, tenantDb);
+    const result = await authService.setup2FA(req.user.userId, tenantDb);
     return sendSuccess(res, '2FA setup initialized', result);
   }),
 
   enable2FA: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.userId as string;
+    if (!req.user) throw new AppError('Authentication required', 401);
     const { totpCode } = req.body;
     const tenantDb = req.tenantDb as Connection;
 
-    await authService.enable2FA(userId, tenantDb, totpCode);
+    await authService.enable2FA(req.user.userId, tenantDb, totpCode);
     return sendSuccess(res, '2FA enabled successfully');
   }),
 
   verify2FA: asyncHandler(async (req: Request, res: Response) => {
     const { userId, totpCode } = req.body;
     const tenantDb = req.tenantDb as Connection;
-    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const device = req.headers['user-agent'] || 'unknown';
 
     const result = await authService.verify2FA(userId, tenantDb, totpCode, ip, device);
@@ -157,10 +153,25 @@ export const authController: {
   }),
 
   getMe: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.userId as string;
+    if (!req.user) throw new AppError('Authentication required', 401);
     const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
 
-    const user = await authService.getCurrentUser(userId, tenantDb);
+    const user = await authService.getCurrentUser(req.user.userId, tenantDb);
     return sendSuccess(res, 'User profile fetched', user);
+  }),
+
+  registerPushToken: asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError('Authentication required', 401);
+    const tenantDb = (req.tenantDb as Connection) || mongoose.connection;
+    const { token, platform } = req.body;
+
+    const PushToken = getPushTokenModel(tenantDb);
+    await PushToken.findOneAndUpdate(
+      { userId: req.user.userId, token },
+      { tenantId: tenantDb.name, platform },
+      { upsert: true, new: true }
+    );
+
+    return sendSuccess(res, 'Push token registered successfully');
   }),
 };

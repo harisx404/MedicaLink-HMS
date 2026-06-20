@@ -7,7 +7,7 @@ import { getConsultationModel } from '../models/Consultation';
 import { BillItemCategory } from '@medicalink/shared';
 
 export interface BillItemInput {
-  category: string;
+  category: BillItemCategory;
   description: string;
   refId?: string;
   quantity: number;

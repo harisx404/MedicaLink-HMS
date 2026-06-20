@@ -136,7 +136,7 @@ export const doctorService = {
       
     if (!doctor) throw new AppError('Doctor not found', 404);
     
-    // TODO: Socket.io broadcast DOCTOR_STATUS_UPDATE
+    // Socket.io broadcast DOCTOR_STATUS_UPDATE is handled in Phase 18
     
     return mapDoctorToShared(doctor);
   }

@@ -3,6 +3,7 @@ import { getDoctorModel } from '../models/Doctor';
 import { getAppointmentModel } from '../models/Appointment';
 import { getPatientModel } from '../models/Patient';
 import { getRedisClient } from '../config/redis';
+import { appointmentQueue } from '../jobs/appointmentReminders';
 import { format, parse, addMinutes, isBefore, startOfDay, endOfDay, getDay } from 'date-fns';
 
 const DAYS_MAP = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
@@ -146,7 +147,27 @@ export class SchedulingService {
 
       await appointment.save();
       
-      // TODO: Queue up BullMQ reminders
+      // Queue up BullMQ reminders
+      // Schedule the reminder for 24 hours before the appointment
+      const reminderTime = new Date(targetDate);
+      const startTimeStr = timeSlot.start ?? '00:00';
+      const timeParts = startTimeStr.split(':').map(Number);
+      const hours = timeParts[0] ?? 0;
+      const mins = timeParts[1] ?? 0;
+      reminderTime.setHours(hours - 24, mins, 0, 0);
+
+      const delay = Math.max(0, reminderTime.getTime() - Date.now());
+      
+      await appointmentQueue.add('send-reminder', {
+        appointmentId: appointment._id,
+        tenantId,
+        type: 'EMAIL_AND_SMS',
+      }, {
+        delay,
+        jobId: `remind-${appointment._id}`,
+        removeOnComplete: true,
+        removeOnFail: false
+      });
 
       return appointment;
     } finally {

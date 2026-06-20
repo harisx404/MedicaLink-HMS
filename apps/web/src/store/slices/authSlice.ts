@@ -5,6 +5,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   tenantSlug: string | null;
+  tenantId: string | null;
   isAuthenticated: boolean;
   requires2FA: boolean;
   tempUserId: string | null;
@@ -21,6 +22,7 @@ const getInitialState = (): AuthState => {
         user: null,
         token: null,
         tenantSlug,
+        tenantId: null,
         isAuthenticated: false,
         requires2FA: false,
         tempUserId: null,
@@ -28,14 +30,15 @@ const getInitialState = (): AuthState => {
         error: null,
       };
     }
-  } catch (error) {
-    console.error('Failed to parse tenant state from localStorage', error);
+  } catch {
+    // Failed to read localStorage — not fatal, continue with defaults
   }
 
   return {
     user: null,
     token: null,
     tenantSlug: null,
+    tenantId: null,
     isAuthenticated: false,
     requires2FA: false,
     tempUserId: null,
@@ -64,6 +67,7 @@ const authSlice = createSlice({
       state.user = user;
       state.token = token;
       state.tenantSlug = tenantSlug || state.tenantSlug;
+      state.tenantId = user.tenantId ?? null;
       state.isAuthenticated = true;
       state.requires2FA = false;
       state.tempUserId = null;
@@ -88,6 +92,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.tenantId = null;
       state.isAuthenticated = false;
       state.requires2FA = false;
       state.tempUserId = null;

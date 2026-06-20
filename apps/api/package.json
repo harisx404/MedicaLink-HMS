@@ -9,7 +9,9 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "seed": "ts-node-dev src/seed.ts"
+    "seed": "ts-node-dev src/seed.ts",
+    "seed:full": "ts-node-dev src/seedFull.ts",
+    "db:seed": "ts-node-dev src/scripts/seed.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -17,6 +19,7 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
+    "axios": "^1.18.0",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.78.0",
     "cloudinary": "^2.10.0",
@@ -46,6 +49,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.5.0",
     "@medicalink/eslint-config": "workspace:*",
     "@medicalink/typescript-config": "workspace:*",
     "@types/compression": "^1.8.1",

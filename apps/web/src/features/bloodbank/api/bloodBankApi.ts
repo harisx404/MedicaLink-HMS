@@ -7,13 +7,12 @@ export const bloodBankApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api/v1/bloodbank',
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      const tenantId = ((getState() as RootState).auth as any).tenantId;
+      const { token, tenantSlug } = (getState() as RootState).auth;
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
-      if (tenantId) {
-        headers.set('x-tenant-slug', tenantId);
+      if (tenantSlug) {
+        headers.set('x-tenant-slug', tenantSlug);
       }
       return headers;
     },

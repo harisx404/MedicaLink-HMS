@@ -112,6 +112,13 @@ const OperationalAnalytics = lazy(() => import('../features/analytics/pages/Oper
 const FinancialAnalytics = lazy(() => import('../features/analytics/pages/FinancialAnalytics').then(m => ({ default: m.FinancialAnalytics })));
 const CustomReportBuilder = lazy(() => import('../features/analytics/pages/CustomReportBuilder').then(m => ({ default: m.CustomReportBuilder })));
 
+// HR & Staff Management
+const HRDashboard = lazy(() => import('../features/hr/pages/HRDashboard').then(m => ({ default: m.HRDashboard })));
+const EmployeeDirectory = lazy(() => import('../features/hr/pages/EmployeeDirectory').then(m => ({ default: m.EmployeeDirectory })));
+const AttendanceTerminal = lazy(() => import('../features/hr/pages/AttendanceTerminal').then(m => ({ default: m.AttendanceTerminal })));
+const LeaveManagement = lazy(() => import('../features/hr/pages/LeaveManagement').then(m => ({ default: m.LeaveManagement })));
+const PayrollProcessing = lazy(() => import('../features/hr/pages/PayrollProcessing').then(m => ({ default: m.PayrollProcessing })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -601,6 +608,45 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
             <SuspenseWrapper><CustomReportBuilder /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      // HR Routes
+      { 
+        path: 'hr/dashboard', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.HR_MANAGER]}>
+            <SuspenseWrapper><HRDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'hr/employees', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.HR_MANAGER]}>
+            <SuspenseWrapper><EmployeeDirectory /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'hr/attendance', 
+        element: (
+          <SuspenseWrapper><AttendanceTerminal /></SuspenseWrapper>
+        ) 
+      },
+      { 
+        path: 'hr/leaves', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.HR_MANAGER]}>
+            <SuspenseWrapper><LeaveManagement /></SuspenseWrapper>
+          </RoleGuard>
+        ) 
+      },
+      { 
+        path: 'hr/payroll', 
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.HR_MANAGER]}>
+            <SuspenseWrapper><PayrollProcessing /></SuspenseWrapper>
           </RoleGuard>
         ) 
       }

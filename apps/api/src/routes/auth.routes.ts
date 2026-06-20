@@ -12,6 +12,7 @@ import {
   verify2FASchema,
   refreshSchema,
 } from '../validators/authValidator';
+import { z } from 'zod';
 import type { Router as ExpressRouter } from 'express';
 
 const router: ExpressRouter = Router();
@@ -32,5 +33,15 @@ router.post('/logout', authController.logout);
 router.get('/me', authController.getMe);
 router.post('/setup-2fa', authController.setup2FA);
 router.post('/enable-2fa', validate(enable2FASchema), authController.enable2FA);
+
+// Push Token
+const pushTokenSchema = z.object({
+  body: z.object({
+    token: z.string().min(1, 'Push token is required'),
+    platform: z.enum(['ios', 'android', 'web']),
+  }),
+});
+
+router.post('/register-push-token', validate(pushTokenSchema), authController.registerPushToken);
 
 export default router;

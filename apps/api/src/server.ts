@@ -1,6 +1,4 @@
 import http from 'http';
-import fs from 'fs';
-import path from 'path';
 import { createApp } from './app';
 import { env } from './config/env';
 import { connectMainDb, disconnectAll } from './config/db';
@@ -10,24 +8,21 @@ import { initSocketServer } from './sockets/index';
 import { logger } from './utils/logger';
 import './jobs/appointmentReminders';
 
-const logFile = fs.createWriteStream(path.join(__dirname, '../debug.log'), { flags: 'a' });
-const originalLog = console.log;
-const originalError = console.error;
-console.log = function(...args) { logFile.write('[LOG] ' + args.join(' ') + '\n'); originalLog.apply(console, args); };
-console.error = function(...args) { logFile.write('[ERR] ' + args.join(' ') + '\n'); originalError.apply(console, args); };
-
 async function bootstrap(): Promise<void> {
   try {
     // ── Infrastructure Connections ──────────────────────────────────────────
     logger.info('Connecting to infrastructure...');
     await connectMainDb();
-    
+
     try {
       await connectRedis();
     } catch {
-      logger.warn('Redis connection failed. Running without Redis caching/queues. Please ensure Redis is running locally on port 6379.');
+      logger.warn(
+        'Redis connection failed. Running without Redis caching/queues. ' +
+        'Please ensure Redis is running locally on port 6379.'
+      );
     }
-    
+
     initCloudinary();
 
     // ── Create App and HTTP Server ──────────────────────────────────────────

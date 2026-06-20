@@ -1,88 +1,88 @@
 import { Queue, Worker, Job } from 'bullmq';
 import { getRedisClient } from '../config/redis';
+import { logger } from '../utils/logger';
 import { Tenant } from '../models/Tenant';
 import { getTenantDb } from '../config/db';
 import { getAppointmentModel } from '../models/Appointment';
 import { getPatientModel } from '../models/Patient';
 
-// import { sendEmail } from '../utils/email';
-
-const sendEmail = async (to: string, subject: string, html: string) => {
-  console.log(`[EMAIL MOCK] To: ${to} | Subject: ${subject} | HTML: ${html.substring(0, 10)}...`);
-};
-import twilio from 'twilio';
-
 // Use redis instance from config
 const connection = getRedisClient();
 
-export const appointmentQueue = new Queue('appointment-reminders', { 
-  connection: connection as never 
+export const appointmentQueue = new Queue('appointment-reminders', {
+  connection: connection as never,
 });
 
-const sendSMS = async (to: string, body: string) => {
-  if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-    console.log(`[SMS MOCK] To: ${to} | Body: ${body}`);
-    return;
-  }
-  const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-  await client.messages.create({
-    body,
-    from: process.env.TWILIO_PHONE_NUMBER,
-    to
-  });
+const sendEmailNotification = async (to: string, subject: string, html: string): Promise<void> => {
+  // TODO(Phase-18): Wire up SMTP via emailService when notification hub is implemented.
+  // For now, this is a no-op placeholder that logs at debug level only.
+  logger.debug(`[Email] To: ${to} | Subject: ${subject} | Preview: ${html.substring(0, 40)}...`);
 };
 
-export const appointmentWorker = new Worker('appointment-reminders', async (job: Job) => {
-  const { appointmentId, tenantId, type } = job.data;
-  
-  try {
-    const tenant = await Tenant.findOne({ slug: tenantId }); // Using tenantId as slug for now or we need id
-    if (!tenant) throw new Error('Tenant not found');
+const sendSmsNotification = async (to: string, body: string): Promise<void> => {
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  const from = process.env.TWILIO_PHONE_NUMBER;
+
+  if (!sid || !token || !from) {
+    logger.debug(`[SMS] To: ${to} | Body: ${body}`);
+    return;
+  }
+
+  // Lazy-load twilio only when credentials are present to avoid startup overhead
+  const twilio = await import('twilio');
+  const client = twilio.default(sid, token);
+  await client.messages.create({ body, from, to });
+};
+
+export const appointmentWorker = new Worker(
+  'appointment-reminders',
+  async (job: Job) => {
+    const { appointmentId, tenantId, type } = job.data as {
+      appointmentId: string;
+      tenantId: string;
+      type: string;
+    };
+
+    const tenant = await Tenant.findOne({ slug: tenantId });
+    if (!tenant) throw new Error(`Tenant not found: ${tenantId}`);
 
     const tenantDb = await getTenantDb(tenant.slug);
     const Appointment = getAppointmentModel(tenantDb);
-    getPatientModel(tenantDb);
+    getPatientModel(tenantDb); // Register model for populate
 
     const appointment = await Appointment.findById(appointmentId)
       .populate('patient')
-      .populate({ path: 'doctor', populate: { path: 'userId' }});
+      .populate({ path: 'doctor', populate: { path: 'userId' } });
 
-    if (!appointment || appointment.status === 'CANCELLED') {
-      return; // Appointment cancelled or doesn't exist
-    }
+    if (!appointment || appointment.status === 'CANCELLED') return;
 
     const patient = appointment.patient as unknown as Record<string, unknown>;
-    const doctorUser = (appointment.doctor as unknown as Record<string, unknown>)?.userId as Record<string, unknown>;
+    const doctorUser = (appointment.doctor as unknown as Record<string, unknown>)
+      ?.userId as Record<string, unknown>;
 
     const timeStr = appointment.timeSlot.start;
     const docName = `Dr. ${doctorUser?.firstName} ${doctorUser?.lastName}`;
-    
     const message = `Reminder: Your appointment with ${docName} is at ${timeStr} today. Token: ${appointment.tokenNumber}. ${tenant.name}`;
 
-    // SMS
     if (patient.phone) {
-      await sendSMS(patient.phone as string, message);
+      await sendSmsNotification(patient.phone as string, message);
     }
 
-    // Email
     if (patient.email) {
-      await sendEmail(
+      await sendEmailNotification(
         patient.email as string,
         'Appointment Reminder',
         `<p>${message}</p>`
       );
     }
 
-    // Mark reminder as sent
-    appointment.reminders.push({
-      type,
-      sentAt: new Date(),
-      status: 'SENT'
-    });
+    appointment.reminders.push({ type, sentAt: new Date(), status: 'SENT' });
     await appointment.save();
+  },
+  { connection: connection as never }
+);
 
-  } catch (error) {
-    console.error(`Error processing reminder job ${job.id}:`, error);
-    throw error;
-  }
-}, { connection: connection as never });
+appointmentWorker.on('failed', (job, err) => {
+  logger.error(`Appointment reminder job ${job?.id} failed:`, err);
+});
