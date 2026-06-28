@@ -74,7 +74,8 @@ const consultationSchema = new Schema<ConsultationDocument>({
   timestamps: true
 });
 
-// Create compound indexes for faster searching
+// Create compound indexes for faster searching (Phase 19 Performance Optimization)
+consultationSchema.index({ patient: 1, visitDate: -1 });
 consultationSchema.index({ tenantId: 1, patient: 1 });
 consultationSchema.index({ tenantId: 1, doctor: 1 });
 consultationSchema.index({ tenantId: 1, consultationNumber: 1 }, { unique: true });

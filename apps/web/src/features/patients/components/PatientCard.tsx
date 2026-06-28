@@ -14,7 +14,7 @@ interface PatientCardProps {
   className?: string;
 }
 
-export const PatientCard: React.FC<PatientCardProps> = ({ patient, onClick, className }) => {
+export const PatientCard: React.FC<PatientCardProps> = React.memo(({ patient, onClick, className }) => {
   const age = formatPatientAge(patient.dateOfBirth);
   
   const statusColors = {
@@ -93,4 +93,6 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient, onClick, clas
       )}
     </motion.div>
   );
-};
+});
+
+PatientCard.displayName = 'PatientCard';

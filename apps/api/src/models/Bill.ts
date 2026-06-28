@@ -163,6 +163,9 @@ billSchema.index({ tenantId: 1, status: 1 });
 billSchema.index({ tenantId: 1, billDate: -1 });
 billSchema.index({ tenantId: 1, 'insuranceClaim.status': 1 });
 
+// Phase 19 Performance Optimization
+billSchema.index({ patient: 1, status: 1, billDate: -1 });
+
 export const getBillModel = (connection: mongoose.Connection): Model<IBillDocument> => {
   return connection.models.Bill || connection.model<IBillDocument>('Bill', billSchema);
 };

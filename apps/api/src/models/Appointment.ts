@@ -94,9 +94,10 @@ const appointmentSchema = new Schema<AppointmentDocument>(
   { timestamps: true }
 );
 
-// Indexes
+// Indexes (Phase 19 Performance Optimization)
 appointmentSchema.index({ doctor: 1, appointmentDate: 1 });
 appointmentSchema.index({ patient: 1, appointmentDate: 1 });
+appointmentSchema.index({ patient: 1, status: 1 });
 appointmentSchema.index({ tenantId: 1, status: 1 });
 
 // Pre-save hook to generate appointmentNumber

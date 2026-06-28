@@ -227,8 +227,11 @@ const patientSchema = new Schema<PatientDocument>(
   { timestamps: true }
 );
 
-// Indexes for searching
+// Indexes for searching (Phase 19 Performance Optimization)
 patientSchema.index({ firstName: 1, lastName: 1 });
+patientSchema.index({ phone: 1 });
+patientSchema.index({ email: 1 });
+patientSchema.index({ uhid: 1 }, { unique: true });
 
 // UHID Generation Pre-Save Hook
 patientSchema.pre('save', async function (next) {
