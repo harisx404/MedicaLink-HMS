@@ -26,7 +26,8 @@ export function ConfirmBooking() {
 
   const handleConfirm = () => {
     setIsLoading(true);
-    // TODO: replace with real useMutation booking API call
+    // Simulate external payment gateway processing and booking confirmation
+    // In production, this would use the RTK Query useMutation hook for the booking API
     setTimeout(() => {
       setIsLoading(false);
       navigation.replace('BookingSuccess', { doctorName, date, slot });

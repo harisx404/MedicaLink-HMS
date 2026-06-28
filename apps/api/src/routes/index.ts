@@ -22,8 +22,9 @@ import bloodBankRoutes from './bloodBankRoutes';
 import telemedicineRoutes from './telemedicineRoutes';
 import aiRoutes from './aiRoutes';
 import analyticsRoutes from './analyticsRoutes';
-
 import hrRoutes from './hrRoutes';
+import { notificationRoutes } from './notificationRoutes';
+import { messageRoutes } from './messageRoutes';
 
 const router: Router = Router();
 
@@ -47,7 +48,8 @@ router.use('/telemedicine', telemedicineRoutes);
 router.use('/ai', aiRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/hr', hrRoutes);
-
+router.use('/notifications', notificationRoutes);
+router.use('/messages', messageRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {
@@ -68,11 +70,5 @@ router.get('/', (_req: Request, res: Response) => {
     health: '/api/v1/health',
   });
 });
-
-// ─── Module Routes ────────────────────────────────────────────────────────────
-// Phase 1+: routes will be registered here as modules are built
-// Example:
-// import authRouter from './auth.routes';
-// router.use('/auth', authRouter);
 
 export default router;

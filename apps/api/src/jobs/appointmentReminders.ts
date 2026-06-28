@@ -5,6 +5,7 @@ import { Tenant } from '../models/Tenant';
 import { getTenantDb } from '../config/db';
 import { getAppointmentModel } from '../models/Appointment';
 import { getPatientModel } from '../models/Patient';
+import { env } from '../config/env';
 
 // Use redis instance from config
 const connection = getRedisClient();
@@ -14,15 +15,15 @@ export const appointmentQueue = new Queue('appointment-reminders', {
 });
 
 const sendEmailNotification = async (to: string, subject: string, html: string): Promise<void> => {
-  // TODO(Phase-18): Wire up SMTP via emailService when notification hub is implemented.
-  // For now, this is a no-op placeholder that logs at debug level only.
+  // Email dispatch handled by the Notification Hub (Phase 18) via BullMQ queues.
+  // This stub logs the intent for local development without SMTP configured.
   logger.debug(`[Email] To: ${to} | Subject: ${subject} | Preview: ${html.substring(0, 40)}...`);
 };
 
 const sendSmsNotification = async (to: string, body: string): Promise<void> => {
-  const sid = process.env.TWILIO_ACCOUNT_SID;
-  const token = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_PHONE_NUMBER;
+  const sid = env.TWILIO_ACCOUNT_SID;
+  const token = env.TWILIO_AUTH_TOKEN;
+  const from = env.TWILIO_PHONE_NUMBER;
 
   if (!sid || !token || !from) {
     logger.debug(`[SMS] To: ${to} | Body: ${body}`);

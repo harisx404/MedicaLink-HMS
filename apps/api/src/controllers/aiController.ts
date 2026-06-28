@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { AIService } from '../services/aiService';
 import { logger } from '../utils/logger';
-import Redis from 'ioredis';
+import { getRedisClient } from '../config/redis';
 
-const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
-
-export const getCachedOrFetch = async (key: string, fetchFn: () => Promise<any>, ttlSeconds: number = 3600) => {
-  if (!redis) return await fetchFn();
+export const getCachedOrFetch = async <T>(key: string, fetchFn: () => Promise<T>, ttlSeconds: number = 3600): Promise<T> => {
+  const redis = getRedisClient();
   try {
     const cached = await redis.get(key);
     if (cached) return JSON.parse(cached);

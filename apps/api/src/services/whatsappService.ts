@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger';
+import { env } from '../config/env';
 
 /**
  * WhatsApp Integration Service
@@ -6,9 +7,9 @@ import { logger } from '../utils/logger';
  * Currently runs in "Mock Mode" for development to prevent API errors if credentials are missing.
  */
 export class WhatsAppService {
-  private static TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
-  private static TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-  private static TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+  private static TWILIO_SID = env.TWILIO_ACCOUNT_SID;
+  private static TWILIO_TOKEN = env.TWILIO_AUTH_TOKEN;
+  private static TWILIO_WHATSAPP_NUMBER = env.TWILIO_WHATSAPP_NUMBER;
   
   // Example initialization of Twilio client (stubbed)
   // private static client = this.TWILIO_SID ? require('twilio')(this.TWILIO_SID, this.TWILIO_TOKEN) : null;
