@@ -1,5 +1,6 @@
-import { Bell, Search, Globe } from 'lucide-react';
+import { Search, Globe } from 'lucide-react';
 import { useAppSelector } from '../../store/hooks';
+import { NotificationBell } from '../../features/notifications/components/NotificationBell';
 
 export function Header() {
   const { user } = useAppSelector((state) => state.auth);
@@ -26,10 +27,7 @@ export function Header() {
         </button>
 
         {/* Notifications */}
-        <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive border-2 border-card"></span>
-        </button>
+        <NotificationBell />
 
         {/* User Profile */}
         <div className="flex items-center gap-3 pl-4 border-l border-border/40">

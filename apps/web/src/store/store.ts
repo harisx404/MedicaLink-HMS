@@ -18,6 +18,8 @@ import { telemedicineApi } from '../features/telemedicine/api/telemedicineApi';
 import { aiApi } from '../features/ai/api/aiApi';
 import { analyticsApi } from '../features/analytics/api/analyticsApi';
 import { hrApi } from '../features/hr/api/hrApi';
+import { notificationApi } from '../features/notifications/api/notificationApi';
+import { messageApi } from '../features/messages/api/messageApi';
 
 export const store = configureStore({
   reducer: {
@@ -40,6 +42,8 @@ export const store = configureStore({
     [aiApi.reducerPath]: aiApi.reducer,
     [analyticsApi.reducerPath]: analyticsApi.reducer,
     [hrApi.reducerPath]: hrApi.reducer,
+    [notificationApi.reducerPath]: notificationApi.reducer,
+    [messageApi.reducerPath]: messageApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -61,6 +65,8 @@ export const store = configureStore({
       aiApi.middleware,
       analyticsApi.middleware,
       hrApi.middleware,
+      notificationApi.middleware,
+      messageApi.middleware,
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

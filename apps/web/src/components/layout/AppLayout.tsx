@@ -4,35 +4,32 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 import { ClinicalAssistantDrawer } from '../../features/ai/components/ClinicalAssistantDrawer';
-
-import { LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard, Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays, PieChart } from 'lucide-react';
+import {
+  LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard,
+  Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays,
+  PieChart, Bell, MessageSquare,
+} from 'lucide-react';
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/app', icon: LayoutDashboard },
-  { name: 'Appointments', href: '/app/appointments', icon: Calendar },
-  { name: 'Patients', href: '/app/patients', icon: Users },
-  { name: 'Staff Directory', href: '/app/staff', icon: UserCircle },
-  { name: 'Telemedicine', href: '/app/telemedicine', icon: Video },
-  { name: 'Emergency', href: '/app/emergency', icon: Stethoscope },
-  { name: 'ICU', href: '/app/icu', icon: ActivitySquare },
-  { name: 'Operation Theater', href: '/app/ot/schedule', icon: CalendarDays },
-  { name: 'Pharmacy', href: '/app/pharmacy', icon: Pill },
-  { name: 'Laboratory', href: '/app/lab', icon: FlaskConical },
-  { name: 'Blood Bank', href: '/app/bloodbank', icon: Droplet },
-  { name: 'Billing', href: '/app/billing', icon: CreditCard },
-  { name: 'Analytics', href: '/app/analytics', icon: PieChart },
+  { name: 'Dashboard',       href: '/dashboard',           icon: LayoutDashboard },
+  { name: 'Appointments',    href: '/appointments',         icon: Calendar },
+  { name: 'Patients',        href: '/patients',             icon: Users },
+  { name: 'Staff Directory', href: '/staff-directory',      icon: UserCircle },
+  { name: 'Telemedicine',    href: '/telemedicine',         icon: Video },
+  { name: 'Emergency',       href: '/emergency',            icon: Stethoscope },
+  { name: 'ICU',             href: '/icu',                  icon: ActivitySquare },
+  { name: 'Operation Theater', href: '/ot/schedule',        icon: CalendarDays },
+  { name: 'Pharmacy',        href: '/pharmacy',             icon: Pill },
+  { name: 'Laboratory',      href: '/lab',                  icon: FlaskConical },
+  { name: 'Blood Bank',      href: '/bloodbank',            icon: Droplet },
+  { name: 'Billing',         href: '/billing',              icon: CreditCard },
+  { name: 'Analytics',       href: '/analytics/executive',  icon: PieChart },
+  { name: 'Notifications',   href: '/notifications',        icon: Bell },
+  { name: 'Messages',        href: '/messages',             icon: MessageSquare },
 ];
 
 export function AppLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // In Phase 1, we will uncomment this to enforce authentication
-  /*
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  */
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">

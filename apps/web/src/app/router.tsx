@@ -119,6 +119,10 @@ const AttendanceTerminal = lazy(() => import('../features/hr/pages/AttendanceTer
 const LeaveManagement = lazy(() => import('../features/hr/pages/LeaveManagement').then(m => ({ default: m.LeaveManagement })));
 const PayrollProcessing = lazy(() => import('../features/hr/pages/PayrollProcessing').then(m => ({ default: m.PayrollProcessing })));
 
+// Notifications & Messaging (Phase 18)
+const NotificationCenterPage = lazy(() => import('../features/notifications/pages/NotificationCenterPage').then(m => ({ default: m.NotificationCenterPage })));
+const InternalMessagingPage = lazy(() => import('../features/messages/pages/InternalMessagingPage').then(m => ({ default: m.InternalMessagingPage })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -649,6 +653,15 @@ export const router = createBrowserRouter([
             <SuspenseWrapper><PayrollProcessing /></SuspenseWrapper>
           </RoleGuard>
         ) 
+      },
+      // Phase 18 — Notifications & Messaging
+      {
+        path: 'notifications',
+        element: <SuspenseWrapper><NotificationCenterPage /></SuspenseWrapper>
+      },
+      {
+        path: 'messages',
+        element: <SuspenseWrapper><InternalMessagingPage /></SuspenseWrapper>
       }
     ],
   },
