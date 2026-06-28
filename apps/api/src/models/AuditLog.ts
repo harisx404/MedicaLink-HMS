@@ -1,40 +1,44 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
+import { SharedAuditLog, AuditAction, AuditOutcome } from '@medicalink/shared';
 
-export interface AuditLogDocument extends Document {
-  action: string;
-  actor: string;
-  actorEmail?: string;
-  actorRole?: string;
-  tenantId?: string;
-  resource: string;
-  resourceId?: string;
-  details?: Record<string, unknown>;
-  ip?: string;
-  userAgent?: string;
-  timestamp: Date;
+export interface IAuditLog extends Document, Omit<SharedAuditLog, '_id' | 'id'> {
+  // Mongoose Specific additions if any
 }
 
-const auditLogSchema = new Schema<AuditLogDocument>(
+const auditLogSchema = new Schema<IAuditLog>(
   {
-    action: { type: String, required: true },
-    actor: { type: String, required: true },
-    actorEmail: { type: String },
-    actorRole: { type: String },
-    tenantId: { type: String },
+    tenantId: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userRole: { type: String, required: true },
+    userEmail: { type: String, required: true },
+    action: { 
+      type: String, 
+      enum: Object.values(AuditAction),
+      required: true 
+    },
     resource: { type: String, required: true },
     resourceId: { type: String },
-    details: { type: Schema.Types.Mixed },
-    ip: { type: String },
-    userAgent: { type: String },
-    timestamp: { type: Date, default: Date.now },
+    ipAddress: { type: String, required: true },
+    userAgent: { type: String, required: true },
+    changes: {
+      before: { type: Schema.Types.Mixed },
+      after: { type: Schema.Types.Mixed }
+    },
+    outcome: { 
+      type: String, 
+      enum: Object.values(AuditOutcome),
+      required: true 
+    },
+    timestamp: { type: Date, default: Date.now, required: true }
   },
-  // No timestamps because timestamp is explicitly set above, and audit logs are append-only.
-  { timestamps: false }
+  {
+    timestamps: true,
+  }
 );
 
+// High-performance compound indexes for audit log querying
 auditLogSchema.index({ tenantId: 1, timestamp: -1 });
-auditLogSchema.index({ actor: 1, timestamp: -1 });
-auditLogSchema.index({ resource: 1, resourceId: 1 });
-auditLogSchema.index({ action: 1 });
+auditLogSchema.index({ tenantId: 1, userId: 1, timestamp: -1 });
+auditLogSchema.index({ tenantId: 1, resource: 1, resourceId: 1 });
 
-export const AuditLog: Model<AuditLogDocument> = mongoose.model<AuditLogDocument>('AuditLog', auditLogSchema);
+export const AuditLog = mongoose.model<IAuditLog>('AuditLog', auditLogSchema);

@@ -7,6 +7,7 @@ import { initCloudinary } from './config/cloudinary';
 import { initSocketServer } from './sockets/index';
 import { logger } from './utils/logger';
 import './jobs/appointmentReminders';
+import './jobs/notificationJobs';
 
 async function bootstrap(): Promise<void> {
   try {

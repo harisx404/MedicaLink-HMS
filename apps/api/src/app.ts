@@ -10,16 +10,34 @@ import { API_PREFIX } from './utils/constants';
 import { logger } from './utils/logger';
 import { errorHandler } from './middlewares/errorHandler';
 import { publicRateLimiter } from './middlewares/rateLimiter';
+import { xssClean } from './middlewares/xssClean';
 import router from './routes/index';
 
 export function createApp(): Application {
   const app = express();
 
+  // Remove X-Powered-By to prevent framework footprinting
+  app.disable('x-powered-by');
+
   // ── Security Headers ───────────────────────────────────────────────────────
   app.use(
     helmet({
-      contentSecurityPolicy: env.NODE_ENV === 'production',
-      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'nonce-{RANDOM}'"],
+          styleSrc: ["'self'", "fonts.googleapis.com"],
+          imgSrc: ["'self'", "data:", "res.cloudinary.com"],
+          connectSrc: ["'self'", "*.medicalink.app", "wss://"],
+          frameSrc: ["'none'"],
+          objectSrc: ["'none'"]
+        }
+      },
+      hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+      noSniff: true,
+      xssFilter: true,
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      crossOriginEmbedderPolicy: false, // Required for some modern features, adjust as needed
     })
   );
 
@@ -51,6 +69,9 @@ export function createApp(): Application {
   // ── NoSQL Injection Prevention ────────────────────────────────────────────
   app.use(mongoSanitize());
 
+  // ── XSS Prevention ────────────────────────────────────────────────────────
+  app.use(xssClean());
+
   // ── HTTP Request Logging ──────────────────────────────────────────────────
   if (env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -69,7 +90,7 @@ export function createApp(): Application {
   // ── Public Rate Limit ──────────────────────────────────────────────────────
   app.use(publicRateLimiter);
 
-  // ── API Routes ────────────────────────────────────────────────────────────
+  // ── API Routes (all routes registered in routes/index.ts) ─────────────────
   app.use(API_PREFIX, router);
 
   // ── 404 Handler ───────────────────────────────────────────────────────────
