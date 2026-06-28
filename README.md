@@ -69,6 +69,17 @@ The system is built in distinct, fully functional phases:
 - AI-Assisted Clinical Summary Generation.
 - Integrated Prescription Builder with real-time drug search and PDF generation.
 
+### Phase 8-12: Clinical & Financial Operations
+- **Pharmacy & Lab**: FEFO batch management, delta-checks, Barcode generation.
+- **Billing**: Multi-currency, insurance panels, service charge masters.
+- **Emergency & ICU**: MLAS triage, real-time ambulance tracking, ventilator charts.
+- **OT & Blood Bank**: Surgical scheduling, blood stock matrices.
+
+### Phase 13-19: Advanced Ecosystem
+- **Telemedicine & Mobile**: React Native Expo app for patients and doctors, WebRTC.
+- **HR & Comms**: Payroll processing, attendance terminals, internal messaging hub.
+- **Security & Performance**: OWASP A01-A10 compliance, AES-256-GCM encryption, Redis caching.
+
 ---
 
 ## 💻 Tech Stack

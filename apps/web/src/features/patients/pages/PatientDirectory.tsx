@@ -5,6 +5,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import { Search, Plus, Filter, Users, LayoutGrid, List as ListIcon, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageWrapper } from '../../../components/layout/PageWrapper';
+import type { SharedPatient } from '@medicalink/shared';
 
 export const PatientDirectory: React.FC = () => {
   const navigate = useNavigate();
@@ -136,7 +137,7 @@ export const PatientDirectory: React.FC = () => {
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
               : "flex flex-col gap-4"
           }>
-            {patients.map((patient) => (
+            {patients.map((patient: SharedPatient) => (
               <PatientCard 
                 key={patient.id} 
                 patient={patient} 

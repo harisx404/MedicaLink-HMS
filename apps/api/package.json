@@ -41,11 +41,13 @@
     "nodemailer": "^8.0.10",
     "pdfkit": "^0.19.1",
     "qrcode": "^1.5.4",
+    "rate-limit-redis": "^5.0.0",
     "socket.io": "^4.8.3",
     "speakeasy": "^2.0.0",
     "twilio": "^6.0.2",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
+    "xss": "^1.0.15",
     "zod": "^4.4.3"
   },
   "devDependencies": {
