@@ -46,7 +46,9 @@ export function createApp(): Application {
     cors({
       origin: (origin, callback) => {
         const allowed = [env.CLIENT_URL];
-        if (!origin || allowed.some((o) => origin.startsWith(o))) {
+        // Allow Vercel preview and production deployments
+        const isVercelPreview = origin?.endsWith('.vercel.app');
+        if (!origin || isVercelPreview || allowed.some((o) => origin.startsWith(o))) {
           callback(null, true);
         } else {
           callback(new Error(`CORS: origin not allowed — ${origin}`));

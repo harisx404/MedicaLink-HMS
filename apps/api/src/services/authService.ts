@@ -108,11 +108,9 @@ export const authService = {
     device: string
   ): Promise<{ user: AuthUser; accessToken?: string; refreshToken?: string; requires2FA?: boolean }> {
     const User = getUserModel(tenantDb);
-    console.log('[DEBUG authService] Checking user:', data.email);
     const user = await User.findOne({ email: data.email }).select('+password +twoFactorSecret').exec();
 
     if (!user) {
-      console.log('[DEBUG authService] User not found');
       await auditService.logAuthEvent('AUTH_FAILED_LOGIN', {
         actor: 'unknown',
         actorEmail: data.email,
@@ -133,7 +131,6 @@ export const authService = {
     }
 
     const isValid = await user.comparePassword(data.password || '');
-    console.log('[DEBUG authService] Password is valid?', isValid);
     if (!isValid) {
       await user.incrementLoginAttempts();
       await auditService.logAuthEvent('AUTH_FAILED_LOGIN', {

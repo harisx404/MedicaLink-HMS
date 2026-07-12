@@ -127,7 +127,7 @@ export class NotificationService {
    */
   static async markAsRead(tenantDb: mongoose.Connection, tenantId: string, userId: string, notificationIds?: string[]) {
     const Notification = getNotificationModel(tenantDb);
-    const query: any = { tenantId, userId, isRead: false };
+    const query: Record<string, unknown> = { tenantId, userId, isRead: false };
     
     if (notificationIds && notificationIds.length > 0) {
       query._id = { $in: notificationIds };

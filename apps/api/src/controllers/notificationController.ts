@@ -13,7 +13,7 @@ export const getNotifications: RequestHandler = asyncHandler(async (req: Request
   const skip = (page - 1) * limit;
 
   // Filters
-  const query: any = { tenantId, userId };
+  const query: Record<string, unknown> = { tenantId, userId };
   
   if (req.query.category) query.category = req.query.category;
   if (req.query.isRead !== undefined) query.isRead = req.query.isRead === 'true';

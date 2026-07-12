@@ -11,8 +11,12 @@ const envSchema = z.object({
   MONGO_URI: z.string().min(1, 'MONGO_URI is required'),
   MAIN_DB_NAME: z.string().default('medicalink_main'),
 
-  // Redis
-  REDIS_URL: z.string().min(1, 'REDIS_URL is required'),
+  // Redis (local dev via ioredis)
+  REDIS_URL: z.string().optional().default('redis://localhost:6379'),
+
+  // Upstash Redis (serverless / production)
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
   // JWT & Crypto
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 chars'),
