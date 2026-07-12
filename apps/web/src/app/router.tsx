@@ -67,8 +67,6 @@ const DrugInventory = lazy(() => import('../features/pharmacy/pages/DrugInventor
 const PurchaseOrders = lazy(() => import('../features/pharmacy/pages/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
 const SupplierManagement = lazy(() => import('../features/pharmacy/pages/SupplierManagement').then(m => ({ default: m.SupplierManagement })));
 const NarcoticsRegister = lazy(() => import('../features/pharmacy/pages/NarcoticsRegister').then(m => ({ default: m.NarcoticsRegister })));
-// const PharmacyBilling = React.lazy(() => import('../features/pharmacy/pages/PharmacyBilling').then(m => ({ default: m.PharmacyBilling })));
-// const PharmacyInventory = React.lazy(() => import('../features/pharmacy/pages/PharmacyInventory').then(m => ({ default: m.PharmacyInventory })));
 
 // Lazy loaded lab pages
 const LabDashboard = React.lazy(() => import('../features/lab/pages/LabDashboard').then(m => ({ default: m.LabDashboard })));
