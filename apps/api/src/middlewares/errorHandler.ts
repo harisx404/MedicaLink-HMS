@@ -87,9 +87,7 @@ export function errorHandler(
  * Wraps async route handlers to automatically forward errors to errorHandler.
  * Eliminates try-catch boilerplate in every controller.
  */
-
-
-export const asyncHandler = (fn: any): RequestHandler => {
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown> | void): RequestHandler => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

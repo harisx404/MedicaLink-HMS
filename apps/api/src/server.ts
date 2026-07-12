@@ -64,5 +64,12 @@ async function bootstrap(): Promise<void> {
     process.exit(1);
   }
 }
+/**
+ * Only start the server when running directly (local dev via ts-node-dev / node).
+ * In serverless mode (Vercel), the app is exported from api/index.ts instead.
+ */
+const isServerless = process.env.VERCEL === '1';
 
-bootstrap();
+if (!isServerless) {
+  bootstrap();
+}
