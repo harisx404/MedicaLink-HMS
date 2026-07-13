@@ -12,6 +12,8 @@ import { errorHandler } from './middlewares/errorHandler';
 import { publicRateLimiter } from './middlewares/rateLimiter';
 import { xssClean } from './middlewares/xssClean';
 import router from './routes/index';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 export function createApp(): Application {
   const app = express();
@@ -91,6 +93,16 @@ export function createApp(): Application {
 
   // ── Public Rate Limit ──────────────────────────────────────────────────────
   app.use(publicRateLimiter);
+
+  // ── Swagger API Documentation ──────────────────────────────────────────────
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'MedicaLink HMS API Docs',
+  }));
+  app.get('/api/docs.json', (_req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
 
   // ── API Routes (all routes registered in routes/index.ts) ─────────────────
   app.use(API_PREFIX, router);
