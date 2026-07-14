@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { name: 'Staff Directory', href: '/staff-directory',      icon: UserCircle },
   { name: 'Telemedicine',    href: '/telemedicine',         icon: Video },
   { name: 'Emergency',       href: '/emergency',            icon: Stethoscope },
+  { name: 'Nursing & Wards', href: '/nursing',              icon: ActivitySquare },
   { name: 'ICU',             href: '/icu',                  icon: ActivitySquare },
   { name: 'Operation Theater', href: '/ot/schedule',        icon: CalendarDays },
   { name: 'Pharmacy',        href: '/pharmacy',             icon: Pill },

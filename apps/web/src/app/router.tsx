@@ -121,6 +121,11 @@ const PayrollProcessing = lazy(() => import('../features/hr/pages/PayrollProcess
 const NotificationCenterPage = lazy(() => import('../features/notifications/pages/NotificationCenterPage').then(m => ({ default: m.NotificationCenterPage })));
 const InternalMessagingPage = lazy(() => import('../features/messages/pages/InternalMessagingPage').then(m => ({ default: m.InternalMessagingPage })));
 
+// Nursing & Ward Management
+const NurseDashboard = lazy(() => import('../features/nursing/pages/NurseDashboard').then(m => ({ default: m.NurseDashboard })));
+const PatientNursingView = lazy(() => import('../features/nursing/pages/PatientNursingView').then(m => ({ default: m.PatientNursingView })));
+const ShiftHandover = lazy(() => import('../features/nursing/pages/ShiftHandover').then(m => ({ default: m.ShiftHandover })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -660,6 +665,31 @@ export const router = createBrowserRouter([
       {
         path: 'messages',
         element: <SuspenseWrapper><InternalMessagingPage /></SuspenseWrapper>
+      },
+      // Nursing Routes
+      {
+        path: 'nursing',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.NURSE, Role.DOCTOR]}>
+            <SuspenseWrapper><NurseDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'nursing/patient/:id',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.NURSE, Role.DOCTOR]}>
+            <SuspenseWrapper><PatientNursingView /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'nursing/handover',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.NURSE]}>
+            <SuspenseWrapper><ShiftHandover /></SuspenseWrapper>
+          </RoleGuard>
+        )
       }
     ],
   },

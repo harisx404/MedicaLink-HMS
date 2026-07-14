@@ -23,6 +23,7 @@ import telemedicineRoutes from './telemedicineRoutes';
 import aiRoutes from './aiRoutes';
 import analyticsRoutes from './analyticsRoutes';
 import hrRoutes from './hrRoutes';
+import nursingRoutes from './nursing.routes';
 import { notificationRoutes } from './notificationRoutes';
 import { messageRoutes } from './messageRoutes';
 
@@ -50,6 +51,7 @@ router.use('/analytics', analyticsRoutes);
 router.use('/hr', hrRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/messages', messageRoutes);
+router.use('/nursing', nursingRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {

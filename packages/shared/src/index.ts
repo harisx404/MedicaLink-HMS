@@ -628,6 +628,7 @@ export interface SharedVitals {
   bloodGlucose?: number;
   urine?: string;
   pain?: number;
+  newsScore?: number;
   timestamp: string;
   notes?: string;
   createdAt?: string;
@@ -823,6 +824,7 @@ export interface SharedVitals {
   bloodGlucose?: number;
   urine?: string;
   pain?: number;
+  newsScore?: number;
   timestamp: string;
   notes?: string;
   createdAt?: string;

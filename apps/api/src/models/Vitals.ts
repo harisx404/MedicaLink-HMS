@@ -22,6 +22,7 @@ const vitalsSchema = new Schema<VitalsDocument>({
   bloodGlucose: Number,
   urine: String,
   pain: Number,
+  newsScore: Number,
   
   timestamp: { type: String, required: true },
   notes: String

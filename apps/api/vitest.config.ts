@@ -21,6 +21,7 @@ export default defineConfig({
       ],
     },
     testTimeout: 30000,
+    fileParallelism: false,
   },
   resolve: {
     alias: {
