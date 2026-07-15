@@ -29,6 +29,9 @@ import { messageRoutes } from './messageRoutes';
 import { radiologyRoutes } from './radiology.routes';
 import inventoryRoutes from './inventory.routes';
 import fhirRoutes from './fhir.routes';
+import documentRoutes from './document.routes';
+import consentRoutes from './consent.routes';
+import complianceRoutes from './compliance.routes';
 
 const router: Router = Router();
 
@@ -58,6 +61,9 @@ router.use('/nursing', nursingRoutes);
 router.use('/radiology', radiologyRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/fhir', fhirRoutes);
+router.use('/documents', documentRoutes);
+router.use('/consents', consentRoutes);
+router.use('/compliance', complianceRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {
