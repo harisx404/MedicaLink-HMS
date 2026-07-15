@@ -21,6 +21,7 @@ import { hrApi } from '../features/hr/api/hrApi';
 import { notificationApi } from '../features/notifications/api/notificationApi';
 import { messageApi } from '../features/messages/api/messageApi';
 import { nursingApi } from '../features/nursing/nursingApi';
+import { radiologyApi } from '../features/radiology/radiologyApi';
 
 export const store = configureStore({
   reducer: {
@@ -46,6 +47,7 @@ export const store = configureStore({
     [notificationApi.reducerPath]: notificationApi.reducer,
     [messageApi.reducerPath]: messageApi.reducer,
     [nursingApi.reducerPath]: nursingApi.reducer,
+    [radiologyApi.reducerPath]: radiologyApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -69,7 +71,8 @@ export const store = configureStore({
       hrApi.middleware,
       notificationApi.middleware,
       messageApi.middleware,
-      nursingApi.middleware
+      nursingApi.middleware,
+      radiologyApi.middleware
     ),
   devTools: import.meta.env.MODE !== 'production',
 });

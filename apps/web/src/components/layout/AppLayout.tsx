@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { name: 'Operation Theater', href: '/ot/schedule',        icon: CalendarDays },
   { name: 'Pharmacy',        href: '/pharmacy',             icon: Pill },
   { name: 'Laboratory',      href: '/lab',                  icon: FlaskConical },
+  { name: 'Radiology',       href: '/radiology',            icon: ActivitySquare },
   { name: 'Blood Bank',      href: '/bloodbank',            icon: Droplet },
   { name: 'Billing',         href: '/billing',              icon: CreditCard },
   { name: 'Analytics',       href: '/analytics/executive',  icon: PieChart },

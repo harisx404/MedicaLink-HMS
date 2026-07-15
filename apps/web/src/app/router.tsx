@@ -126,6 +126,11 @@ const NurseDashboard = lazy(() => import('../features/nursing/pages/NurseDashboa
 const PatientNursingView = lazy(() => import('../features/nursing/pages/PatientNursingView').then(m => ({ default: m.PatientNursingView })));
 const ShiftHandover = lazy(() => import('../features/nursing/pages/ShiftHandover').then(m => ({ default: m.ShiftHandover })));
 
+// Radiology & Imaging
+const RadiologyDashboard = lazy(() => import('../features/radiology/pages/RadiologyDashboard').then(m => ({ default: m.RadiologyDashboard })));
+const OrderQueue = lazy(() => import('../features/radiology/pages/OrderQueue').then(m => ({ default: m.OrderQueue })));
+const ReportWriter = lazy(() => import('../features/radiology/pages/ReportWriter').then(m => ({ default: m.ReportWriter })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -688,6 +693,31 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.NURSE]}>
             <SuspenseWrapper><ShiftHandover /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      // Radiology Routes
+      {
+        path: 'radiology',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.NURSE, Role.LAB_TECHNICIAN, Role.RADIOLOGIST]}>
+            <SuspenseWrapper><RadiologyDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'radiology/orders',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.NURSE, Role.LAB_TECHNICIAN, Role.RADIOLOGIST]}>
+            <SuspenseWrapper><OrderQueue /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'radiology/reports/:orderId',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.RADIOLOGIST]}>
+            <SuspenseWrapper><ReportWriter /></SuspenseWrapper>
           </RoleGuard>
         )
       }
