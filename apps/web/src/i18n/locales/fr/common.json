@@ -1,0 +1,20 @@
+{
+  "translation": {
+    "common": {
+      "dashboard": "Tableau de bord",
+      "patients": "Patients",
+      "appointments": "Rendez-vous",
+      "ehr": "DSE",
+      "pharmacy": "Pharmacie",
+      "lab": "Laboratoire",
+      "radiology": "Radiologie",
+      "inventory": "Inventaire",
+      "billing": "Facturation",
+      "settings": "Paramètres",
+      "logout": "Déconnexion",
+      "search": "Rechercher...",
+      "notifications": "Notifications",
+      "profile": "Profil"
+    }
+  }
+}

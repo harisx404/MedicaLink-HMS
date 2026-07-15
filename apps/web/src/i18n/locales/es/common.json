@@ -1,0 +1,20 @@
+{
+  "translation": {
+    "common": {
+      "dashboard": "Tablero",
+      "patients": "Pacientes",
+      "appointments": "Citas",
+      "ehr": "HCE",
+      "pharmacy": "Farmacia",
+      "lab": "Laboratorio",
+      "radiology": "Radiología",
+      "inventory": "Inventario",
+      "billing": "Facturación",
+      "settings": "Ajustes",
+      "logout": "Cerrar sesión",
+      "search": "Buscar...",
+      "notifications": "Notificaciones",
+      "profile": "Perfil"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "translation": {
+    "common": {
+      "dashboard": "لوحة القيادة",
+      "patients": "المرضى",
+      "appointments": "المواعيد",
+      "ehr": "السجل الصحي",
+      "pharmacy": "صيدلية",
+      "lab": "مختبر",
+      "radiology": "الأشعة",
+      "inventory": "المخزون",
+      "billing": "الفواتير",
+      "settings": "الإعدادات",
+      "logout": "تسجيل خروج",
+      "search": "بحث...",
+      "notifications": "إشعارات",
+      "profile": "الملف الشخصي"
+    }
+  }
+}

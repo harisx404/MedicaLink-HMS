@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { motion } from 'framer-motion';
 import { ClinicalAssistantDrawer } from '../../features/ai/components/ClinicalAssistantDrawer';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard,
   Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays,
@@ -11,35 +12,41 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { name: 'Dashboard',       href: '/dashboard',           icon: LayoutDashboard },
-  { name: 'Appointments',    href: '/appointments',         icon: Calendar },
-  { name: 'Patients',        href: '/patients',             icon: Users },
-  { name: 'Staff Directory', href: '/staff-directory',      icon: UserCircle },
-  { name: 'Telemedicine',    href: '/telemedicine',         icon: Video },
-  { name: 'Emergency',       href: '/emergency',            icon: Stethoscope },
-  { name: 'Nursing & Wards', href: '/nursing',              icon: ActivitySquare },
-  { name: 'ICU',             href: '/icu',                  icon: ActivitySquare },
-  { name: 'Operation Theater', href: '/ot/schedule',        icon: CalendarDays },
-  { name: 'Pharmacy',        href: '/pharmacy',             icon: Pill },
-  { name: 'Laboratory',      href: '/lab',                  icon: FlaskConical },
-  { name: 'Radiology',       href: '/radiology',            icon: ActivitySquare },
-  { name: 'Inventory',       href: '/inventory',            icon: Package },
-  { name: 'Blood Bank',      href: '/bloodbank',            icon: Droplet },
-  { name: 'Billing',         href: '/billing',              icon: CreditCard },
-  { name: 'Analytics',       href: '/analytics/executive',  icon: PieChart },
-  { name: 'Notifications',   href: '/notifications',        icon: Bell },
-  { name: 'Messages',        href: '/messages',             icon: MessageSquare },
+  { name: 'Dashboard',       href: '/dashboard',           icon: LayoutDashboard, key: 'dashboard' },
+  { name: 'Appointments',    href: '/appointments',         icon: Calendar, key: 'appointments' },
+  { name: 'Patients',        href: '/patients',             icon: Users, key: 'patients' },
+  { name: 'Staff Directory', href: '/staff-directory',      icon: UserCircle, key: 'staff' },
+  { name: 'Telemedicine',    href: '/telemedicine',         icon: Video, key: 'telemedicine' },
+  { name: 'Emergency',       href: '/emergency',            icon: Stethoscope, key: 'emergency' },
+  { name: 'Nursing & Wards', href: '/nursing',              icon: ActivitySquare, key: 'nursing' },
+  { name: 'ICU',             href: '/icu',                  icon: ActivitySquare, key: 'icu' },
+  { name: 'Operation Theater', href: '/ot/schedule',        icon: CalendarDays, key: 'ot' },
+  { name: 'Pharmacy',        href: '/pharmacy',             icon: Pill, key: 'pharmacy' },
+  { name: 'Laboratory',      href: '/lab',                  icon: FlaskConical, key: 'lab' },
+  { name: 'Radiology',       href: '/radiology',            icon: ActivitySquare, key: 'radiology' },
+  { name: 'Inventory',       href: '/inventory',            icon: Package, key: 'inventory' },
+  { name: 'Blood Bank',      href: '/bloodbank',            icon: Droplet, key: 'bloodbank' },
+  { name: 'Billing',         href: '/billing',              icon: CreditCard, key: 'billing' },
+  { name: 'Analytics',       href: '/analytics/executive',  icon: PieChart, key: 'analytics' },
+  { name: 'Notifications',   href: '/notifications',        icon: Bell, key: 'notifications' },
+  { name: 'Messages',        href: '/messages',             icon: MessageSquare, key: 'messages' },
 ];
 
 export function AppLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { t } = useTranslation();
+
+  const translatedNavItems = NAV_ITEMS.map(item => ({
+    ...item,
+    name: t(item.key, { defaultValue: item.name })
+  }));
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      <Sidebar isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} navItems={NAV_ITEMS} />
+      <Sidebar isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} navItems={translatedNavItems} />
       <motion.div
         initial={false}
-        animate={{ marginLeft: isCollapsed ? 80 : 256 }}
+        animate={{ marginInlineStart: isCollapsed ? 80 : 256 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
         className="flex-1 flex flex-col min-h-screen relative"
       >

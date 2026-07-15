@@ -22,11 +22,11 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
   const dispatch = useAppDispatch();
 
   return (
-    <motion.aside
+      <motion.aside
       initial={false}
       animate={{ width: isCollapsed ? 80 : 256 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
-      className="h-screen flex flex-col bg-[#0A1628] border-r border-[#1e293b]/50 fixed left-0 top-0 z-20 text-slate-300"
+      className="h-screen flex flex-col bg-[#0A1628] border-e border-[#1e293b]/50 fixed start-0 top-0 z-20 text-slate-300"
     >
       {/* Logo Area */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-[#1e293b]/50 overflow-hidden">
@@ -38,7 +38,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.15 }}
-              className="flex items-center gap-2 text-white pl-2"
+              className="flex items-center gap-2 text-white ps-2"
             >
               <Activity className="h-6 w-6 text-teal-400" />
               <span className="font-heading font-bold text-xl tracking-tight text-white">MedicaLink</span>
@@ -62,7 +62,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
             onClick={onToggleCollapse}
             className="p-1 rounded bg-[#1e293b] hover:bg-[#334155] text-slate-400 hover:text-white transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
           </button>
         )}
       </div>
@@ -73,7 +73,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
             onClick={onToggleCollapse}
             className="p-1.5 rounded-full bg-[#1e293b] hover:bg-[#334155] text-slate-400 hover:text-white transition-colors"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 rtl:rotate-180" />
           </button>
         </div>
       )}
@@ -92,8 +92,8 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
                 "flex items-center rounded-lg text-sm font-medium transition-all duration-200 group relative py-2.5",
                 isCollapsed ? "justify-center px-0" : "px-3 gap-3",
                 isActive
-                  ? "bg-indigo-600/20 text-white border-l-4 border-indigo-500 rounded-l-none"
-                  : "text-slate-400 hover:bg-slate-800/40 hover:text-white border-l-4 border-transparent"
+                  ? "bg-indigo-600/20 text-white border-s-4 border-indigo-500 rounded-s-none"
+                  : "text-slate-400 hover:bg-slate-800/40 hover:text-white border-s-4 border-transparent"
               )}
             >
               <Icon className={cn("h-5 w-5 flex-shrink-0 transition-colors duration-200", 
@@ -113,7 +113,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
 
               {/* Tooltip for collapsed mode */}
               {isCollapsed && (
-                <div className="absolute left-16 scale-0 rounded bg-[#1e293b] p-2 text-xs font-semibold text-white shadow-md group-hover:scale-100 transition-all origin-left duration-150 z-30 whitespace-nowrap">
+                <div className="absolute start-16 scale-0 rounded bg-[#1e293b] p-2 text-xs font-semibold text-white shadow-md group-hover:scale-100 transition-all ltr:origin-left rtl:origin-right duration-150 z-30 whitespace-nowrap">
                   {item.name}
                 </div>
               )}
@@ -131,7 +131,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
             isCollapsed ? "justify-center px-0" : "px-3 gap-3"
           )}
         >
-          <LogOut className="h-5 w-5 flex-shrink-0" />
+          <LogOut className="h-5 w-5 flex-shrink-0 rtl:rotate-180" />
           {!isCollapsed && (
             <motion.span
               initial={{ opacity: 0 }}
@@ -144,7 +144,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse, navItems }: SidebarProp
           )}
 
           {isCollapsed && (
-            <div className="absolute left-16 scale-0 rounded bg-[#1e293b] p-2 text-xs font-semibold text-rose-300 shadow-md group-hover:scale-100 transition-all origin-left duration-150 z-30 whitespace-nowrap">
+            <div className="absolute start-16 scale-0 rounded bg-[#1e293b] p-2 text-xs font-semibold text-rose-300 shadow-md group-hover:scale-100 transition-all ltr:origin-left rtl:origin-right duration-150 z-30 whitespace-nowrap">
               Log Out
             </div>
           )}

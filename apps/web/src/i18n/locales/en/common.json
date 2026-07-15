@@ -1,0 +1,20 @@
+{
+  "translation": {
+    "common": {
+      "dashboard": "Dashboard",
+      "patients": "Patients",
+      "appointments": "Appointments",
+      "ehr": "EHR",
+      "pharmacy": "Pharmacy",
+      "lab": "Laboratory",
+      "radiology": "Radiology",
+      "inventory": "Inventory",
+      "billing": "Billing",
+      "settings": "Settings",
+      "logout": "Logout",
+      "search": "Search...",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    }
+  }
+}
