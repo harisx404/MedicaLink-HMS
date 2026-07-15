@@ -66,6 +66,7 @@ export function createApp(): Application {
   app.use(cookieParser());
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.text({ type: 'text/plain', limit: '5mb' })); // For raw HL7 messages
 
   // ── Response Compression ──────────────────────────────────────────────────
   app.use(compression());
