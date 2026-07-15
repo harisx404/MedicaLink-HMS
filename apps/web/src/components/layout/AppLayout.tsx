@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Calendar, Pill, FlaskConical, CreditCard,
   Stethoscope, Droplet, UserCircle, Video, ActivitySquare, CalendarDays,
-  PieChart, Bell, MessageSquare, Package,
+  PieChart, Bell, MessageSquare, Package, FileText, FileSignature, ShieldCheck,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -30,6 +30,9 @@ const NAV_ITEMS = [
   { name: 'Analytics',       href: '/analytics/executive',  icon: PieChart, key: 'analytics' },
   { name: 'Notifications',   href: '/notifications',        icon: Bell, key: 'notifications' },
   { name: 'Messages',        href: '/messages',             icon: MessageSquare, key: 'messages' },
+  { name: 'Documents',       href: '/documents',            icon: FileText, key: 'documents' },
+  { name: 'Consents',        href: '/consents',             icon: FileSignature, key: 'consents' },
+  { name: 'Compliance',      href: '/compliance',           icon: ShieldCheck, key: 'compliance' },
 ];
 
 export function AppLayout() {

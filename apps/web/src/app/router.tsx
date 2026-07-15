@@ -139,6 +139,11 @@ const AssetRegister = lazy(() => import('../features/inventory/pages/AssetRegist
 const InventoryPurchaseOrders = lazy(() => import('../features/inventory/pages/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
 const VendorManagement = lazy(() => import('../features/inventory/pages/VendorManagement').then(m => ({ default: m.VendorManagement })));
 
+// Document & Compliance Pages
+const DocumentRepository = lazy(() => import('../features/documents/pages/DocumentRepository').then(m => ({ default: m.DocumentRepository })));
+const ConsentManagement = lazy(() => import('../features/documents/pages/ConsentManagement').then(m => ({ default: m.ConsentManagement })));
+const ComplianceDashboard = lazy(() => import('../features/compliance/pages/ComplianceDashboard').then(m => ({ default: m.ComplianceDashboard })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -775,6 +780,27 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER]}>
             <SuspenseWrapper><VendorManagement /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      // Document Management & Compliance
+      {
+        path: 'documents',
+        element: (
+          <SuspenseWrapper><DocumentRepository /></SuspenseWrapper>
+        )
+      },
+      {
+        path: 'consents',
+        element: (
+          <SuspenseWrapper><ConsentManagement /></SuspenseWrapper>
+        )
+      },
+      {
+        path: 'compliance',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><ComplianceDashboard /></SuspenseWrapper>
           </RoleGuard>
         )
       }

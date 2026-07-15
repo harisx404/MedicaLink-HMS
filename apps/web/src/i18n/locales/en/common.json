@@ -14,7 +14,10 @@
       "logout": "Logout",
       "search": "Search...",
       "notifications": "Notifications",
-      "profile": "Profile"
+      "profile": "Profile",
+      "documents": "Documents",
+      "consents": "Consents",
+      "compliance": "Compliance"
     }
   }
 }
