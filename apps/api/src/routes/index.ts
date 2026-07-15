@@ -27,6 +27,7 @@ import nursingRoutes from './nursing.routes';
 import { notificationRoutes } from './notificationRoutes';
 import { messageRoutes } from './messageRoutes';
 import { radiologyRoutes } from './radiology.routes';
+import inventoryRoutes from './inventory.routes';
 
 const router: Router = Router();
 
@@ -54,6 +55,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/messages', messageRoutes);
 router.use('/nursing', nursingRoutes);
 router.use('/radiology', radiologyRoutes);
+router.use('/inventory', inventoryRoutes);
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {
   sendSuccess(res, 'MedicaLink HMS API is healthy', {

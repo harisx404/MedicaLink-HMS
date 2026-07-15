@@ -126,10 +126,18 @@ const NurseDashboard = lazy(() => import('../features/nursing/pages/NurseDashboa
 const PatientNursingView = lazy(() => import('../features/nursing/pages/PatientNursingView').then(m => ({ default: m.PatientNursingView })));
 const ShiftHandover = lazy(() => import('../features/nursing/pages/ShiftHandover').then(m => ({ default: m.ShiftHandover })));
 
-// Radiology & Imaging
+// Radiology Pages
 const RadiologyDashboard = lazy(() => import('../features/radiology/pages/RadiologyDashboard').then(m => ({ default: m.RadiologyDashboard })));
 const OrderQueue = lazy(() => import('../features/radiology/pages/OrderQueue').then(m => ({ default: m.OrderQueue })));
 const ReportWriter = lazy(() => import('../features/radiology/pages/ReportWriter').then(m => ({ default: m.ReportWriter })));
+
+// Inventory Pages
+const InventoryDashboard = lazy(() => import('../features/inventory/pages/InventoryDashboard').then(m => ({ default: m.InventoryDashboard })));
+const StockList = lazy(() => import('../features/inventory/pages/StockList').then(m => ({ default: m.StockList })));
+const StockMovement = lazy(() => import('../features/inventory/pages/StockMovement').then(m => ({ default: m.StockMovement })));
+const AssetRegister = lazy(() => import('../features/inventory/pages/AssetRegister').then(m => ({ default: m.AssetRegister })));
+const InventoryPurchaseOrders = lazy(() => import('../features/inventory/pages/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
+const VendorManagement = lazy(() => import('../features/inventory/pages/VendorManagement').then(m => ({ default: m.VendorManagement })));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
@@ -718,6 +726,55 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.RADIOLOGIST]}>
             <SuspenseWrapper><ReportWriter /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      // Inventory Routes
+      {
+        path: 'inventory',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><InventoryDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'inventory/items',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER, Role.NURSE, Role.PHARMACIST, Role.LAB_TECHNICIAN, Role.RADIOLOGIST]}>
+            <SuspenseWrapper><StockList /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'inventory/transactions',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER, Role.NURSE, Role.PHARMACIST]}>
+            <SuspenseWrapper><StockMovement /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'inventory/assets',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><AssetRegister /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'inventory/purchase-orders',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><InventoryPurchaseOrders /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'inventory/vendors',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN, Role.INVENTORY_MANAGER]}>
+            <SuspenseWrapper><VendorManagement /></SuspenseWrapper>
           </RoleGuard>
         )
       }

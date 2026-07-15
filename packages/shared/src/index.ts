@@ -197,6 +197,26 @@ export enum CreditNoteStatus {
   REFUNDED = "REFUNDED"
 }
 
+// --- Inventory Enums ---
+export enum InventoryCategory {
+  CONSUMABLE = "CONSUMABLE",
+  EQUIPMENT = "EQUIPMENT",
+  LINEN = "LINEN",
+  FURNITURE = "FURNITURE",
+  IT = "IT",
+  STATIONARY = "STATIONARY",
+  OTHER = "OTHER"
+}
+
+export enum GeneralPurchaseOrderStatus {
+  DRAFT = "DRAFT",
+  APPROVED = "APPROVED",
+  ORDERED = "ORDERED",
+  RECEIVED = "RECEIVED",
+  PARTIAL = "PARTIAL",
+  CANCELLED = "CANCELLED"
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -1249,6 +1269,117 @@ export interface IOutstandingEntry {
   balance: number;
   agingBucket: '0-30' | '31-60' | '61-90' | '90+';
   daysSinceBill: number;
+}
+
+// --- Phase 25: Inventory Interfaces ---
+
+export interface IInventoryItem {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  code: string;
+  name: string;
+  category: InventoryCategory;
+  unit: string;
+  specifications?: string;
+  currentStock: number;
+  minimumStock: number;
+  maximumStock: number;
+  reorderLevel: number;
+  unitCost: number;
+  location: {
+    building?: string;
+    floor?: string;
+    storeroom?: string;
+  };
+  isAsset: boolean;
+  supplier?: IVendor | string;
+  isActive: boolean;
+}
+
+export interface IAssetRecord {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  assetNumber: string;
+  item: IInventoryItem | string;
+  serialNumber?: string;
+  purchaseDate?: string;
+  purchaseCost?: number;
+  warrantyExpiry?: string;
+  location: {
+    building?: string;
+    floor?: string;
+    room?: string;
+  };
+  assignedTo?: string; // Department
+  condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'OUT_OF_SERVICE';
+  maintenanceSchedule?: string;
+  lastMaintenance?: string;
+  nextMaintenance?: string;
+  depreciationRate?: number;
+  currentValue?: number;
+  status: 'ACTIVE' | 'IN_MAINTENANCE' | 'CONDEMNED' | 'DISPOSED';
+}
+
+export interface IStockTransaction {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  item: IInventoryItem | string;
+  transactionType: 'RECEIPT' | 'ISSUE' | 'RETURN' | 'ADJUSTMENT' | 'TRANSFER' | 'DAMAGE';
+  quantity: number;
+  unitCost?: number;
+  totalCost?: number;
+  fromDepartment?: string;
+  toDepartment?: string;
+  reference?: string;
+  performedBy: SharedUser | string;
+  timestamp: string;
+  notes?: string;
+}
+
+export interface IGeneralPurchaseOrder {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  poNumber: string;
+  vendor: IVendor | string;
+  items: Array<{
+    item: IInventoryItem | string;
+    quantity: number;
+    unitRate: number;
+    total: number;
+  }>;
+  totalAmount: number;
+  status: GeneralPurchaseOrderStatus;
+  requestedBy: SharedUser | string;
+  approvedBy?: SharedUser | string;
+  orderedAt?: string;
+  expectedDelivery?: string;
+}
+
+export interface IVendor {
+  _id?: string;
+  id?: string;
+  tenantId: string;
+  name: string;
+  category?: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  address?: Address;
+  gstNumber?: string;
+  panNumber?: string;
+  bankDetails?: {
+    accountNumber?: string;
+    bankName?: string;
+    ifsc?: string;
+  };
+  rating?: number;
+  paymentTerms?: string;
+  items?: IInventoryItem[] | string[];
+  isActive: boolean;
 }
 
 export * from './types/emergency.types';
