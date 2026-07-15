@@ -1390,3 +1390,4 @@ export * from './types/telemedicine.types';
 export * from './types/hr.types';
 export * from './types/notification.types';
 export * from './types/audit.types';
+export * from './types/document';
