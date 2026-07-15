@@ -23,7 +23,9 @@ import { messageApi } from '../features/messages/api/messageApi';
 import { nursingApi } from '../features/nursing/nursingApi';
 import { radiologyApi } from '../features/radiology/radiologyApi';
 import { inventoryApi } from '../features/inventory/inventoryApi';
-
+import { documentsApi } from '../features/documents/api/documentsApi';
+import { consentsApi } from '../features/documents/api/consentsApi';
+import { complianceApi } from '../features/compliance/api/complianceApi';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -50,6 +52,9 @@ export const store = configureStore({
     [nursingApi.reducerPath]: nursingApi.reducer,
     [radiologyApi.reducerPath]: radiologyApi.reducer,
     [inventoryApi.reducerPath]: inventoryApi.reducer,
+    [documentsApi.reducerPath]: documentsApi.reducer,
+    [consentsApi.reducerPath]: consentsApi.reducer,
+    [complianceApi.reducerPath]: complianceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -75,7 +80,10 @@ export const store = configureStore({
       messageApi.middleware,
       nursingApi.middleware,
       radiologyApi.middleware,
-      inventoryApi.middleware
+      inventoryApi.middleware,
+      documentsApi.middleware,
+      consentsApi.middleware,
+      complianceApi.middleware
     ),
   devTools: import.meta.env.MODE !== 'production',
 });
