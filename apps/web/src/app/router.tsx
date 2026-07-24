@@ -143,6 +143,7 @@ const VendorManagement = lazy(() => import('../features/inventory/pages/VendorMa
 const DocumentRepository = lazy(() => import('../features/documents/pages/DocumentRepository').then(m => ({ default: m.DocumentRepository })));
 const ConsentManagement = lazy(() => import('../features/documents/pages/ConsentManagement').then(m => ({ default: m.ConsentManagement })));
 const ComplianceDashboard = lazy(() => import('../features/compliance/pages/ComplianceDashboard').then(m => ({ default: m.ComplianceDashboard })));
+const ComplianceAuditPage = lazy(() => import('../features/compliance/pages/ComplianceAuditPage').then(m => ({ default: m.ComplianceAuditPage })));
 
 // Landing Page
 const LandingPage = lazy(() => import('../pages/Landing/LandingPage').then(m => ({ default: m.LandingPage })));
@@ -805,6 +806,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
             <SuspenseWrapper><ComplianceDashboard /></SuspenseWrapper>
+          </RoleGuard>
+        )
+      },
+      {
+        path: 'compliance-audit',
+        element: (
+          <RoleGuard allowedRoles={[Role.SUPER_ADMIN, Role.HOSPITAL_ADMIN]}>
+            <SuspenseWrapper><ComplianceAuditPage /></SuspenseWrapper>
           </RoleGuard>
         )
       }

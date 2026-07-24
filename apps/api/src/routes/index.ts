@@ -32,6 +32,7 @@ import fhirRoutes from './fhir.routes';
 import documentRoutes from './document.routes';
 import consentRoutes from './consent.routes';
 import complianceRoutes from './compliance.routes';
+import complianceAuditRoutes from './complianceAudit.routes';
 
 const router: Router = Router();
 
@@ -64,6 +65,7 @@ router.use('/fhir', fhirRoutes);
 router.use('/documents', documentRoutes);
 router.use('/consents', consentRoutes);
 router.use('/compliance', complianceRoutes);
+router.use('/compliance/audit-report', complianceAuditRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {

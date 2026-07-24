@@ -26,6 +26,7 @@ import { inventoryApi } from '../features/inventory/inventoryApi';
 import { documentsApi } from '../features/documents/api/documentsApi';
 import { consentsApi } from '../features/documents/api/consentsApi';
 import { complianceApi } from '../features/compliance/api/complianceApi';
+import { complianceAuditApi } from '../features/compliance/api/complianceAuditApi';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -55,6 +56,7 @@ export const store = configureStore({
     [documentsApi.reducerPath]: documentsApi.reducer,
     [consentsApi.reducerPath]: consentsApi.reducer,
     [complianceApi.reducerPath]: complianceApi.reducer,
+    [complianceAuditApi.reducerPath]: complianceAuditApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -83,7 +85,8 @@ export const store = configureStore({
       inventoryApi.middleware,
       documentsApi.middleware,
       consentsApi.middleware,
-      complianceApi.middleware
+      complianceApi.middleware,
+      complianceAuditApi.middleware
     ),
   devTools: import.meta.env.MODE !== 'production',
 });
