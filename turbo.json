@@ -1,7 +1,27 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
-  "globalEnv": ["NODE_ENV", "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_PHONE_NUMBER", "TWILIO_WHATSAPP_NUMBER", "MONGO_URI", "MAIN_DB_NAME", "GEMINI_API_KEY"],
+  "globalEnv": [
+    "NODE_ENV",
+    "TWILIO_ACCOUNT_SID",
+    "TWILIO_AUTH_TOKEN",
+    "TWILIO_PHONE_NUMBER",
+    "TWILIO_WHATSAPP_NUMBER",
+    "MONGO_URI",
+    "MAIN_DB_NAME",
+    "GEMINI_API_KEY",
+    "MONGODB_URI",
+    "VERCEL",
+    "JWT_ACCESS_SECRET",
+    "JWT_REFRESH_SECRET",
+    "JWT_ACCESS_EXPIRES_IN",
+    "JWT_REFRESH_EXPIRES_IN",
+    "ENCRYPTION_KEY",
+    "CLIENT_URL",
+    "API_URL",
+    "EMAIL_FROM",
+    "PORT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
