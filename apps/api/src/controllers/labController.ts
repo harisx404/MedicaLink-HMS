@@ -63,7 +63,7 @@ export const listOrders = async (req: Request, res: Response) => {
     const LabOrder = getLabOrderModel(req.tenantDb!);
     const { status, patientId, startDate, endDate } = req.query;
     
-    let query: any = { tenantId: req.user?.tenantId };
+    const query: any = { tenantId: req.user?.tenantId };
     
     if (status) {
       query.status = status;

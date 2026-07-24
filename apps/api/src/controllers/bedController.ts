@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, RequestHandler } from 'express';
 import Bed from '../models/Bed';
 import Ward from '../models/Ward';

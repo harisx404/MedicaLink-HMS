@@ -143,7 +143,6 @@ export const doctorService = {
 };
 
 // Helper to map Mongoose doc to Shared interface
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapDoctorToShared(doc: any): SharedDoctor {
   return {
     id: doc._id.toString(),

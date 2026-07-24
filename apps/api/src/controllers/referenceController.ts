@@ -46,7 +46,7 @@ export const searchDrugs = async (req: Request, res: Response) => {
   const tenantDb = await getTenantDb(tenantId);
   const DrugFormulary = getDrugFormularyModel(tenantDb) as any;
 
-  let query: any = { tenantId, isActive: true };
+  const query: any = { tenantId, isActive: true };
   if (q && typeof q === 'string') {
     const searchRegex = new RegExp(q, 'i');
     query.$or = [

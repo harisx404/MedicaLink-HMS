@@ -7,7 +7,7 @@ export const listTestCatalog = async (req: Request, res: Response) => {
     const TestCatalog = getTestCatalogModel(req.tenantDb!);
     const { search, category, activeOnly } = req.query;
     
-    let query: any = { tenantId: req.user?.tenantId };
+    const query: any = { tenantId: req.user?.tenantId };
     
     if (activeOnly === 'true') {
       query.isActive = true;

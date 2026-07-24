@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 import mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';

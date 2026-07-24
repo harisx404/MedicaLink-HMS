@@ -505,7 +505,6 @@ export const authService = {
     });
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async verifyEmail(_token: string, _tenantDb: Connection): Promise<void> {
     // Similar to reset password but for email verification... (omitted for brevity, assume simple)
     throw new AppError('Not implemented', 501);

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getPatientModel } from '../models/Patient';
 import { getVitalsModel } from '../models/Vitals';
 import { FhirService } from '../services/fhir.service';
+import { Hl7Service } from '../services/hl7.service';
 import { AppError } from '../middlewares/errorHandler';
 
 export class FhirController {
@@ -129,8 +130,7 @@ export class FhirController {
         throw new AppError('No HL7 message provided', 400);
       }
 
-      // We need Hl7Service imported at the top. Wait, I will use a local import to avoid replacing the whole file if possible, or I'll just use require for now, or better: I will import it at the top using another replace_file_content.
-      const { Hl7Service } = require('../services/hl7.service');
+
       
       const result = await Hl7Service.processMessage(req.tenantDb!, req.user!.tenantId, rawMessage);
       
