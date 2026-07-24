@@ -144,6 +144,9 @@ const DocumentRepository = lazy(() => import('../features/documents/pages/Docume
 const ConsentManagement = lazy(() => import('../features/documents/pages/ConsentManagement').then(m => ({ default: m.ConsentManagement })));
 const ComplianceDashboard = lazy(() => import('../features/compliance/pages/ComplianceDashboard').then(m => ({ default: m.ComplianceDashboard })));
 
+// Landing Page
+const LandingPage = lazy(() => import('../pages/Landing/LandingPage').then(m => ({ default: m.LandingPage })));
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-app"><LoadingSpinner size="lg" className="text-primary" /></div>}>
     {children}
@@ -151,6 +154,12 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 export const router = createBrowserRouter([
+  // Public Landing Page
+  {
+    path: '/',
+    element: <SuspenseWrapper><LandingPage /></SuspenseWrapper>,
+  },
+  
   // Auth Routes
   {
     path: '/login',
@@ -263,7 +272,6 @@ export const router = createBrowserRouter([
 
   // Protected Routes (Hospital Admin, Doctor, Nurse, etc)
   {
-    path: '/',
     element: (
       <ProtectedRoute>
         <AppLayout />
@@ -271,11 +279,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
-        element: <Navigate to="/dashboard" replace />,
-      },
-      {
-        path: 'dashboard',
+        path: '/dashboard',
         element: (
           <PageWrapper title="Dashboard">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
