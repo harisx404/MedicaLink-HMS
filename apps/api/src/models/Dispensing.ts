@@ -6,9 +6,7 @@ export interface DispensingDocument extends Omit<IDispensing, '_id' | 'id' | 'di
   returnedAt?: Date;
 }
 
-export interface DispensingModel extends Model<DispensingDocument> {
-  // Add static methods if needed later
-}
+export type DispensingModel = Model<DispensingDocument>;
 
 const dispensingItemSchema = new Schema({
   drug: { type: Schema.Types.ObjectId, ref: 'Drug', required: true },

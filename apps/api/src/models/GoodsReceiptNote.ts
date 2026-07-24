@@ -5,9 +5,7 @@ export interface GoodsReceiptNoteDocument extends Omit<IGoodsReceiptNote, '_id' 
   createdAt?: Date;
 }
 
-export interface GoodsReceiptNoteModel extends Model<GoodsReceiptNoteDocument> {
-  // Add static methods if needed later
-}
+export type GoodsReceiptNoteModel = Model<GoodsReceiptNoteDocument>;
 
 const grnItemSchema = new Schema({
   drug: { type: Schema.Types.ObjectId, ref: 'Drug', required: true },

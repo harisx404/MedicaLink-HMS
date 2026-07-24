@@ -1,11 +1,8 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import { ISupplier } from '@medicalink/shared';
 
-export interface SupplierDocument extends Omit<ISupplier, '_id' | 'id'>, Document {}
-
-export interface SupplierModel extends Model<SupplierDocument> {
-  // Add static methods if needed later
-}
+export type SupplierDocument = Omit<ISupplier, '_id' | 'id'> & Document;
+export type SupplierModel = Model<SupplierDocument>;
 
 const supplierSchema = new Schema<SupplierDocument>(
   {

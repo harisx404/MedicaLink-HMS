@@ -19,7 +19,7 @@ export interface GeneralPurchaseOrderDocument extends Document {
   tenantId: string;
 }
 
-export interface GeneralPurchaseOrderModel extends Model<GeneralPurchaseOrderDocument> {}
+export type GeneralPurchaseOrderModel = Model<GeneralPurchaseOrderDocument>;
 
 const generalPurchaseOrderItemSchema = new Schema({
   item: { type: Schema.Types.ObjectId, ref: 'InventoryItem', required: true },

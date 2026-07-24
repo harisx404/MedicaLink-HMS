@@ -6,9 +6,7 @@ export interface PurchaseOrderDocument extends Omit<IPurchaseOrder, '_id' | 'id'
   expectedDelivery?: Date;
 }
 
-export interface PurchaseOrderModel extends Model<PurchaseOrderDocument> {
-  // Add static methods if needed later
-}
+export type PurchaseOrderModel = Model<PurchaseOrderDocument>;
 
 const purchaseOrderItemSchema = new Schema({
   drug: { type: Schema.Types.ObjectId, ref: 'Drug', required: true },

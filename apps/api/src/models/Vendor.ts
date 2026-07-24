@@ -27,7 +27,7 @@ export interface VendorDocument extends Document {
   tenantId: string;
 }
 
-export interface VendorModel extends Model<VendorDocument> {}
+export type VendorModel = Model<VendorDocument>;
 
 const vendorSchema = new Schema<VendorDocument>(
   {

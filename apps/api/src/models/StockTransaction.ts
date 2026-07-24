@@ -15,7 +15,7 @@ export interface StockTransactionDocument extends Document {
   tenantId: string;
 }
 
-export interface StockTransactionModel extends Model<StockTransactionDocument> {}
+export type StockTransactionModel = Model<StockTransactionDocument>;
 
 const stockTransactionSchema = new Schema<StockTransactionDocument>(
   {

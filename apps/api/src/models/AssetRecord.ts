@@ -23,7 +23,7 @@ export interface AssetRecordDocument extends Document {
   tenantId: string;
 }
 
-export interface AssetRecordModel extends Model<AssetRecordDocument> {}
+export type AssetRecordModel = Model<AssetRecordDocument>;
 
 const assetRecordSchema = new Schema<AssetRecordDocument>(
   {

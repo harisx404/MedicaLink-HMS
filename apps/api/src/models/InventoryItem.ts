@@ -23,7 +23,7 @@ export interface InventoryItemDocument extends Document {
   tenantId: string;
 }
 
-export interface InventoryItemModel extends Model<InventoryItemDocument> {}
+export type InventoryItemModel = Model<InventoryItemDocument>;
 
 const inventoryItemSchema = new Schema<InventoryItemDocument>(
   {
