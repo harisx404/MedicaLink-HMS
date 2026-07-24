@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageWrapper } from '../../../components/layout/PageWrapper';
 import { useGetRadiologyOrderByIdQuery, useGetReportByOrderIdQuery, useSaveReportMutation } from '../radiologyApi';
@@ -11,23 +11,28 @@ export const ReportWriter: React.FC = () => {
   const { data: reportData } = useGetReportByOrderIdQuery(orderId!, { skip: !orderId });
   const [saveReport, { isLoading: isSaving }] = useSaveReportMutation();
 
-  const [formData, setFormData] = useState({
-    findings: '',
-    impression: '',
-    criticalFindings: false,
-    status: 'DRAFT'
-  });
+  const report = reportData?.data;
 
-  useEffect(() => {
-    if (reportData?.data) {
-      setFormData({
-        findings: reportData.data.findings || '',
-        impression: reportData.data.impression || '',
-        criticalFindings: reportData.data.criticalFindings || false,
-        status: reportData.data.status || 'DRAFT'
-      });
-    }
-  }, [reportData]);
+  const [formState, setFormState] = useState<{ findings?: string; impression?: string; criticalFindings?: boolean; status?: string }>({});
+
+  const formData = {
+    findings: formState.findings ?? report?.findings ?? '',
+    impression: formState.impression ?? report?.impression ?? '',
+    criticalFindings: formState.criticalFindings ?? report?.criticalFindings ?? false,
+    status: formState.status ?? report?.status ?? 'DRAFT'
+  };
+
+  const setFormData = (updater: any) => {
+    setFormState(prev => {
+      const current = {
+        findings: prev.findings ?? report?.findings ?? '',
+        impression: prev.impression ?? report?.impression ?? '',
+        criticalFindings: prev.criticalFindings ?? report?.criticalFindings ?? false,
+        status: prev.status ?? report?.status ?? 'DRAFT'
+      };
+      return typeof updater === 'function' ? updater(current) : updater;
+    });
+  };
 
   const order = orderData?.data;
 
@@ -39,13 +44,13 @@ export const ReportWriter: React.FC = () => {
     if (status === 'FINAL') {
       navigate('/radiology/orders');
     } else {
-      setFormData(prev => ({ ...prev, status }));
+      setFormData((prev: any) => ({ ...prev, status }));
     }
   };
 
   const insertTemplate = () => {
     if (order?.modality === 'XRAY') {
-      setFormData(prev => ({
+      setFormData((prev: any) => ({
         ...prev,
         findings: 'The cardiac silhouette and mediastinal contours are within normal limits. The lungs are clear without focal consolidation, pneumothorax, or pleural effusion. The osseous structures are unremarkable.',
         impression: 'No acute cardiopulmonary process.'
@@ -100,7 +105,7 @@ export const ReportWriter: React.FC = () => {
               <textarea 
                 className="w-full border border-slate-300 rounded-md p-3 h-48 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 value={formData.findings}
-                onChange={e => setFormData(p => ({ ...p, findings: e.target.value }))}
+                onChange={e => setFormData((p: any) => ({ ...p, findings: e.target.value }))}
                 placeholder="Detailed findings..."
               />
             </div>
@@ -110,7 +115,7 @@ export const ReportWriter: React.FC = () => {
               <textarea 
                 className="w-full border border-slate-300 rounded-md p-3 h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-medium"
                 value={formData.impression}
-                onChange={e => setFormData(p => ({ ...p, impression: e.target.value }))}
+                onChange={e => setFormData((p: any) => ({ ...p, impression: e.target.value }))}
                 placeholder="Overall impression / diagnosis..."
               />
             </div>
@@ -120,7 +125,7 @@ export const ReportWriter: React.FC = () => {
                 type="checkbox" 
                 className="w-4 h-4 text-red-600 rounded border-red-300"
                 checked={formData.criticalFindings}
-                onChange={e => setFormData(p => ({ ...p, criticalFindings: e.target.checked }))}
+                onChange={e => setFormData((p: any) => ({ ...p, criticalFindings: e.target.checked }))}
               />
               <span className="text-sm font-medium text-red-800">Flag as Critical Finding</span>
             </label>

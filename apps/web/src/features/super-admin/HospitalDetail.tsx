@@ -40,7 +40,7 @@ export const HospitalDetail = () => {
       const updatedFeatures = { ...tenant.features, [featureKey]: !currentValue };
       await updateFeatures({ id, features: updatedFeatures }).unwrap();
       toast.success('Features updated successfully');
-    } catch (err) {
+    } catch {
       toast.error('Failed to update features');
     }
   };

@@ -43,10 +43,10 @@ export const DicomViewer: React.FC<DicomViewerProps> = ({
     // and load the imageIds here.
     // For portfolio demo, if no valid DICOM IDs are provided, we show a mock UI over the fallback.
     
-    // Cleanup function
+    const currentElem = elementRef.current;
     return () => {
-      if (elementRef.current) {
-        // cornerstone.disable(elementRef.current);
+      if (currentElem) {
+        // cornerstone.disable(currentElem);
       }
     };
   }, [isReady, imageIds]);

@@ -76,7 +76,7 @@ export const PurchaseOrders: React.FC = () => {
                       {typeof po.vendor === 'object' ? (po.vendor as any).name : 'Unknown Vendor'}
                     </td>
                     <td className="px-6 py-4 text-slate-400">
-                      {po.orderedAt ? new Date(po.orderedAt).toLocaleDateString() : new Date((po as any).createdAt || Date.now()).toLocaleDateString()}
+                      {po.orderedAt ? new Date(po.orderedAt).toLocaleDateString() : (po as any).createdAt ? new Date((po as any).createdAt).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 font-medium text-white">
                       ${po.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetCaseByIdQuery, useUpdateCaseStatusMutation } from '../api/otApi';
 import { OTCaseStatus } from '@medicalink/shared';
@@ -12,18 +12,11 @@ export const OTCaseDetail: React.FC = () => {
   const [updateStatus, { isLoading: isUpdatingStatus }] = useUpdateCaseStatusMutation();
   // const [updateSection, { isLoading: isUpdatingSection }] = useUpdateCaseSectionMutation();
 
-  const [activeTab, setActiveTab] = useState<'schedule' | 'preOp' | 'intraOp' | 'postOp'>('schedule');
-
   const otCase = caseData?.data;
-
-  // Set default active tab based on status
-  useEffect(() => {
-    if (!otCase) return;
-    if (otCase.status === OTCaseStatus.SCHEDULED) setActiveTab('preOp');
-    else if (otCase.status === OTCaseStatus.IN_PREP) setActiveTab('preOp');
-    else if (otCase.status === OTCaseStatus.IN_PROGRESS) setActiveTab('intraOp');
-    else if (otCase.status === OTCaseStatus.COMPLETED) setActiveTab('postOp');
-  }, [otCase?.status]);
+  const initialTab = otCase?.status === OTCaseStatus.IN_PROGRESS ? 'intraOp' : otCase?.status === OTCaseStatus.COMPLETED ? 'postOp' : otCase?.status ? 'preOp' : 'schedule';
+  const [userTab, setUserTab] = useState<'schedule' | 'preOp' | 'intraOp' | 'postOp' | null>(null);
+  const activeTab = userTab || initialTab;
+  const setActiveTab = (tab: 'schedule' | 'preOp' | 'intraOp' | 'postOp') => setUserTab(tab);
 
   if (isLoading || !otCase) {
     return <div className="p-12 text-center text-slate-500 animate-pulse">Loading case details...</div>;
@@ -214,7 +207,7 @@ export const OTCaseDetail: React.FC = () => {
                    </div>
                    <div>
                      <h3 className="text-emerald-900 font-bold text-lg">Case In Progress</h3>
-                     <p className="text-emerald-700 text-sm">Timer started at {new Date(otCase.intraOp?.actualStartTime || Date.now()).toLocaleTimeString()}</p>
+                     <p className="text-emerald-700 text-sm">Timer started at {otCase.intraOp?.actualStartTime ? new Date(otCase.intraOp.actualStartTime).toLocaleTimeString() : 'N/A'}</p>
                    </div>
                  </div>
                  <div className="text-4xl font-mono font-bold text-emerald-600 tracking-widest">

@@ -26,7 +26,7 @@ export const SampleCollection: React.FC = () => {
   const handleCollect = async (orderId: string) => {
     try {
       // In a real app, we'd open a modal to scan barcode
-      const sampleBarcode = `SMPL-${Date.now().toString().slice(-6)}`;
+      const sampleBarcode = `SMPL-${orderId.slice(-6).toUpperCase()}`;
       await collectSample({ id: orderId, sampleBarcode }).unwrap();
       // Show success toast here
     } catch (error) {

@@ -67,7 +67,7 @@ export const SubscriptionPlans = () => {
     try {
       await updateTenant({ id: tenantId, data: { plan: newPlan } }).unwrap();
       toast.success(`Plan updated to ${newPlan}`);
-    } catch (err) {
+    } catch {
       toast.error('Failed to update plan');
     }
   };

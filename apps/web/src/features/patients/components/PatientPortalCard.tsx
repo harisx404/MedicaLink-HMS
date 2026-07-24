@@ -19,7 +19,7 @@ export const PatientPortalCard: React.FC<PatientPortalCardProps> = ({ patient })
     try {
       await enablePortal(patient.id).unwrap();
       toast.success('Patient Portal activated successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to activate Patient Portal');
     }
   };

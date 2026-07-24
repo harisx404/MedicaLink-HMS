@@ -20,7 +20,7 @@ export const LabTrendsSummarizer: React.FC = () => {
       
       const res = await getLabTrends({ labResults: mockLabResults }).unwrap();
       setSummary(res.data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate lab trends summary');
     }
   };

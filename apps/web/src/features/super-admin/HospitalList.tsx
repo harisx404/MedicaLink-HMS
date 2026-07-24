@@ -26,7 +26,7 @@ export const HospitalList = () => {
       try {
         await deactivateTenant(id).unwrap();
         toast.success('Hospital deactivated successfully');
-      } catch (err) {
+      } catch {
         toast.error('Failed to deactivate hospital');
       }
     }
