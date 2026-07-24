@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import Peer from 'simple-peer';
@@ -30,6 +30,19 @@ export const VideoConsultation: React.FC = () => {
   const socketRef = useRef<Socket | null>(null);
 
   const isDoctor = window.location.pathname.includes('/app/telemedicine');
+
+  const handleCallEnded = useCallback(() => {
+    setCallEnded(true);
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+    }
+    if (id && isDoctor) {
+      updateStatus({ id, status: TeleconsultationStatus.COMPLETED });
+      navigate(`/app/telemedicine/session/${id}/notes`);
+    } else {
+      navigate('/portal/dashboard');
+    }
+  }, [id, isDoctor, navigate, updateStatus]);
 
   useEffect(() => {
     const token = localStorage.getItem('token') || '';
@@ -147,18 +160,7 @@ export const VideoConsultation: React.FC = () => {
     connectionRef.current = peer;
   };
 
-  const handleCallEnded = () => {
-    setCallEnded(true);
-    if (connectionRef.current) {
-      connectionRef.current.destroy();
-    }
-    if (id && isDoctor) {
-      updateStatus({ id, status: TeleconsultationStatus.COMPLETED });
-      navigate(`/app/telemedicine/session/${id}/notes`);
-    } else {
-      navigate('/portal/dashboard');
-    }
-  };
+
 
   const leaveCall = () => {
     socketRef.current?.emit('call-ended', { roomId: id });

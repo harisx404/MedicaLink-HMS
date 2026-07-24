@@ -15,6 +15,22 @@ interface Props {
   height?: number;
 }
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const date = new Date(label);
+    const formattedLabel = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    return (
+      <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-lg">
+        <p className="text-sm text-slate-500 mb-1">{formattedLabel}</p>
+        <p className="text-lg font-bold text-indigo-600">
+          ₹{payload[0].value.toLocaleString('en-IN')}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const RevenueLineChart: React.FC<Props> = ({ data, height = 300 }) => {
   const formatYAxis = (tickItem: number) => {
     if (tickItem === 0) return '0';
@@ -26,20 +42,6 @@ export const RevenueLineChart: React.FC<Props> = ({ data, height = 300 }) => {
   const formatXAxis = (tickItem: string) => {
     const date = new Date(tickItem);
     return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  };
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-lg">
-          <p className="text-sm text-slate-500 mb-1">{formatXAxis(label)}</p>
-          <p className="text-lg font-bold text-indigo-600">
-            ₹{payload[0].value.toLocaleString('en-IN')}
-          </p>
-        </div>
-      );
-    }
-    return null;
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Check, IndianRupee, CreditCard, Smartphone, ShieldAlert } from 'lucide-react';
 import { PaymentMode } from '@medicalink/shared';
 
@@ -23,20 +23,17 @@ interface Props {
 }
 
 export const PaymentModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, balanceAmount }) => {
-  const [amount, setAmount] = useState<number>(balanceAmount);
-  const [mode, setMode] = useState<PaymentMode>(PaymentMode.CASH);
-  const [reference, setReference] = useState('');
-  const [cashReceived, setCashReceived] = useState<number>(0);
+  const [overrideState, setOverrideState] = useState<{ amount?: number; mode?: PaymentMode; reference?: string; cashReceived?: number } | null>(null);
 
-  // Reset when opened
-  useEffect(() => {
-    if (isOpen) {
-      setAmount(balanceAmount);
-      setMode(PaymentMode.CASH);
-      setReference('');
-      setCashReceived(0);
-    }
-  }, [isOpen, balanceAmount]);
+  const amount = overrideState?.amount ?? balanceAmount;
+  const mode = overrideState?.mode ?? PaymentMode.CASH;
+  const reference = overrideState?.reference ?? '';
+  const cashReceived = overrideState?.cashReceived ?? 0;
+
+  const setAmount = (val: any) => setOverrideState(prev => ({ ...prev, amount: typeof val === 'function' ? val(prev?.amount ?? balanceAmount) : val }));
+  const setMode = (val: PaymentMode) => setOverrideState(prev => ({ ...prev, mode: val }));
+  const setReference = (val: string) => setOverrideState(prev => ({ ...prev, reference: val }));
+  const setCashReceived = (val: any) => setOverrideState(prev => ({ ...prev, cashReceived: typeof val === 'function' ? val(prev?.cashReceived ?? 0) : val }));
 
   if (!isOpen) return null;
 

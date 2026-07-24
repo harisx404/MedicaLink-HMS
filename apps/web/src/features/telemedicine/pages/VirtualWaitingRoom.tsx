@@ -49,7 +49,7 @@ export const VirtualWaitingRoom: React.FC = () => {
       stream?.getTracks().forEach(t => t.stop());
       socketRef.current?.disconnect();
     };
-  }, [id, navigate]);
+  }, [id, navigate, stream]);
 
   if (isLoading) return <div className="p-8 text-center">Loading waiting room...</div>;
   if (!session && !isLoading) return <div className="p-8 text-center text-red-500">Session not found.</div>;

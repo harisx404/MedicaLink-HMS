@@ -14,7 +14,10 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export const AmbulanceTracking: React.FC = () => {
   const { data: ambulancesRes } = useGetAmbulancesQuery();
-  const [ambulances, setAmbulances] = useState<IAmbulance[]>([]);
+  const [localAmbulances, setLocalAmbulances] = useState<IAmbulance[] | null>(null);
+  const ambulances = localAmbulances || ambulancesRes?.data || [];
+  const setAmbulances = setLocalAmbulances;
+
   const { token, tenantId } = useSelector((state: RootState) => state.auth as any);
   const [selectedAmbulance, setSelectedAmbulance] = useState<IAmbulance | null>(null);
 
@@ -23,19 +26,13 @@ export const AmbulanceTracking: React.FC = () => {
   const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
 
   useEffect(() => {
-    if (ambulancesRes?.data) {
-      setAmbulances(ambulancesRes.data);
-    }
-  }, [ambulancesRes]);
-
-  useEffect(() => {
     const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       auth: { token },
       query: { tenantId }
     });
 
     socket.on('emergency:ambulance-location', (updatedAmbulance: IAmbulance) => {
-      setAmbulances(prev => prev.map(amb => amb._id === updatedAmbulance._id ? updatedAmbulance : amb));
+      setAmbulances(prev => (prev || []).map(amb => amb._id === updatedAmbulance._id ? updatedAmbulance : amb));
     });
 
     return () => {

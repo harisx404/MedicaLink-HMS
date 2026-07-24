@@ -24,25 +24,21 @@ export const ICUPatientDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState('MONITORING');
   const [addVitals] = useAddVitalsMutation();
   const [updateVent] = useUpdateVentilatorMutation();
-  
   const [newVitals, setNewVitals] = useState({ hr: '', bp: '', rr: '', temp: '', spO2: '', cvp: '' });
-  const [newVent, setNewVent] = useState({ isOnVentilator: false, mode: '', fiO2: '', peep: '', tv: '', rr: '' });
-
   const patient = patientRes?.data;
 
-  // Sync state when data loads
-  React.useEffect(() => {
-    if (patient?.ventilator) {
-      setNewVent({
-        isOnVentilator: patient.ventilator.isOnVentilator,
-        mode: patient.ventilator.mode || '',
-        fiO2: patient.ventilator.fiO2?.toString() || '',
-        peep: patient.ventilator.peep?.toString() || '',
-        tv: patient.ventilator.tv?.toString() || '',
-        rr: patient.ventilator.rr?.toString() || ''
-      });
-    }
-  }, [patient?.ventilator]);
+  const [userVentState, setUserVentState] = useState<any>(null);
+  const newVent = userVentState || {
+    isOnVentilator: patient?.ventilator?.isOnVentilator || false,
+    mode: patient?.ventilator?.mode || '',
+    fiO2: patient?.ventilator?.fiO2?.toString() || '',
+    peep: patient?.ventilator?.peep?.toString() || '',
+    tv: patient?.ventilator?.tv?.toString() || '',
+    rr: patient?.ventilator?.rr?.toString() || ''
+  };
+  const setNewVent = (updater: any) => {
+    setUserVentState((prev: any) => typeof updater === 'function' ? updater(prev || newVent) : updater);
+  };
 
   if (isLoading || !patient) {
     return <div className="p-8 text-center text-slate-500">Loading Patient Data...</div>;

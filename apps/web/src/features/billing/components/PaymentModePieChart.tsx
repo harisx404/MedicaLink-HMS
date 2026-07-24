@@ -23,26 +23,26 @@ const COLORS: Record<string, string> = {
   CREDIT: '#ef4444'     // Red
 };
 
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-lg">
+        <p className="font-bold text-slate-900 mb-1">{data.name}</p>
+        <p className="text-sm text-slate-600">₹{data.value.toLocaleString('en-IN')}</p>
+        <p className="text-xs text-slate-400 mt-1">{data.count} transactions</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const PaymentModePieChart: React.FC<Props> = ({ data, height = 300 }) => {
   const chartData = data.map(item => ({
     name: item.mode,
     value: item.amount,
     count: item.count
   })).filter(d => d.value > 0);
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-lg">
-          <p className="font-bold text-slate-900 mb-1">{data.name}</p>
-          <p className="text-sm text-slate-600">₹{data.value.toLocaleString('en-IN')}</p>
-          <p className="text-xs text-slate-400 mt-1">{data.count} transactions</p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   // Custom legend to show percentages
   const renderLegend = (props: any) => {

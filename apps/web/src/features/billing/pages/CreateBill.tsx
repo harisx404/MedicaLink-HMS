@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -37,21 +37,23 @@ export const CreateBill: React.FC = () => {
     { skip: !patientId }
   );
 
-  const [items, setItems] = useState<BillItemForm[]>([]);
   const [billType, setBillType] = useState<BillType>(BillType.OPD);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [createdBillId, setCreatedBillId] = useState<string | null>(null);
 
-  // Auto-populate when pending charges load
-  useEffect(() => {
-    if (pendingData?.data && items.length === 0) {
-      const formattedItems = pendingData.data.map((item: any) => ({
-        ...item,
-        id: Math.random().toString(36).substr(2, 9)
-      }));
-      setItems(formattedItems);
-    }
+  const [userItems, setUserItems] = useState<BillItemForm[] | null>(null);
+  const pendingFormatted = useMemo(() => {
+    if (!pendingData?.data) return [];
+    return pendingData.data.map((item: any, idx: number) => ({
+      ...item,
+      id: `pending-${idx}-${item.code || item.name}`
+    }));
   }, [pendingData]);
+
+  const items = userItems ?? pendingFormatted;
+  const setItems = (updater: any) => {
+    setUserItems((prev: any) => typeof updater === 'function' ? updater(prev || pendingFormatted) : updater);
+  };
 
   const handleAutoFetch = () => {
     refetchPending().then((res: any) => {
