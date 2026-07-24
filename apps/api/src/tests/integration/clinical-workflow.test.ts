@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import mongoose from 'mongoose';
 import { getPatientModel } from '../../models/Patient';
 import { getAppointmentModel } from '../../models/Appointment';
-import { getEhrRecordModel } from '../../models/EhrRecord';
+import { getConsultationModel } from '../../models/Consultation';
 
 describe('Clinical Workflow Lifecycle Integration Suite', () => {
   it('executes patient registration -> appointment -> EHR consultation workflow', async () => {
@@ -14,7 +14,7 @@ describe('Clinical Workflow Lifecycle Integration Suite', () => {
     const conn = mongoose.connection;
     const Patient = getPatientModel(conn);
     const Appointment = getAppointmentModel(conn);
-    const EhrRecord = getEhrRecordModel(conn);
+    const Consultation = getConsultationModel(conn);
 
     const tenantId = 'city-hospital-test';
 
@@ -47,7 +47,7 @@ describe('Clinical Workflow Lifecycle Integration Suite', () => {
     expect(appointment.status).toBe('CONFIRMED');
 
     // 3. EHR SOAP Consultation Entry
-    const ehr = await EhrRecord.create({
+    const consultation = await Consultation.create({
       tenantId,
       patientId: patient._id,
       doctorId: appointment.doctorId,
@@ -66,8 +66,8 @@ describe('Clinical Workflow Lifecycle Integration Suite', () => {
       },
     });
 
-    expect(ehr._id).toBeDefined();
-    expect(ehr.soapNote?.assessment).toContain('Viral');
+    expect(consultation._id).toBeDefined();
+    expect(consultation.soapNote?.assessment).toContain('Viral');
 
     // Update appointment status to COMPLETED
     appointment.status = 'COMPLETED';

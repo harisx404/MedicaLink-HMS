@@ -20,6 +20,9 @@ process.env.CLIENT_URL = 'http://localhost:3000';
 process.env.API_URL = 'http://localhost:5001';
 process.env.EMAIL_FROM = 'test@medicalink.app';
 
+// Disable buffering to prevent 10000ms timeouts when MongoDB is offline
+mongoose.set('bufferCommands', false);
+
 // Mock Redis to avoid needing a Redis server during tests
 vi.mock('../config/redis', () => ({
   getRedisClient: () => ({

@@ -1,9 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import mongoose from 'mongoose';
 import { getDrugModel } from '../../models/Drug';
 
 describe('Pharmacy Integration', () => {
   const getTestDb = () => mongoose.connection;
+
+  beforeEach((context) => {
+    if (mongoose.connection.readyState !== 1) {
+      context.skip();
+    }
+  });
 
   describe('Drug Model — Inventory Management', () => {
     it('creates a drug with correct stock levels', async () => {

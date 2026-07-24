@@ -1,9 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import mongoose from 'mongoose';
 import { getBillModel } from '../../models/Bill';
 
 describe('Billing Integration', () => {
   const getTestDb = () => mongoose.connection;
+
+  beforeEach((context) => {
+    if (mongoose.connection.readyState !== 1) {
+      context.skip();
+    }
+  });
 
   describe('Bill Model — Financial Integrity', () => {
     it('creates a bill with line items and correct totals', async () => {

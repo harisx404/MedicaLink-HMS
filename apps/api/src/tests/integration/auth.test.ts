@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { getUserModel } from '../../models/User';
@@ -21,6 +21,12 @@ vi.mock('../../services/emailService', () => ({
 describe('Authentication Integration', () => {
   // Use the main test connection as a "tenant" db
   const getTestDb = () => mongoose.connection;
+
+  beforeEach((context) => {
+    if (mongoose.connection.readyState !== 1) {
+      context.skip();
+    }
+  });
 
   describe('User Model — Password Security', () => {
     it('hashes the password on user creation (never stores plaintext)', async () => {
