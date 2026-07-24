@@ -21,6 +21,12 @@
     "test": {
       "dependsOn": ["^build"],
       "cache": false
+    },
+    "seed": {
+      "cache": false
+    },
+    "seed:full": {
+      "cache": false
     }
   }
 }
