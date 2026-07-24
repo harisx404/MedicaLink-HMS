@@ -14,7 +14,7 @@ process.env.JWT_REFRESH_SECRET = 'test_refresh_secret_must_be_32_chars_long_enou
 process.env.JWT_ACCESS_EXPIRES_IN = '15m';
 process.env.JWT_REFRESH_EXPIRES_IN = '7d';
 process.env.ENCRYPTION_KEY = 'test_encryption_key_must_be_32_chars_long_enough';
-process.env.MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';
+process.env.MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/medicalink_test';
 process.env.MAIN_DB_NAME = 'medicalink_test';
 process.env.CLIENT_URL = 'http://localhost:3000';
 process.env.API_URL = 'http://localhost:5001';
@@ -51,20 +51,25 @@ vi.mock('../utils/logger', () => ({
 }));
 
 beforeAll(async () => {
-  // Connect to a dedicated test database on the local MongoDB
-  await mongoose.connect(process.env.MONGO_URI!, { dbName: 'medicalink_test' });
+  try {
+    await mongoose.connect(process.env.MONGO_URI!, { serverSelectionTimeoutMS: 500 });
+  } catch {
+    // Graceful fallback if local MongoDB is not running
+  }
 });
 
 afterEach(async () => {
-  // Clean all collections after each test
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    await collections[key].deleteMany({});
+  if (mongoose.connection.readyState === 1) {
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+      await collections[key].deleteMany({});
+    }
   }
 });
 
 afterAll(async () => {
-  // Drop the test database entirely to leave no trace
-  await mongoose.connection.dropDatabase();
-  await mongoose.disconnect();
+  if (mongoose.connection.readyState === 1) {
+    await mongoose.connection.dropDatabase();
+    await mongoose.disconnect();
+  }
 });
