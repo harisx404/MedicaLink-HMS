@@ -10,6 +10,7 @@
     "test": "turbo run test",
     "seed": "turbo run seed",
     "seed:full": "turbo run seed:full",
+    "deploy:check": "node scripts/deploy-check.js",
     "prepare": "husky"
   },
   "devDependencies": {
