@@ -10,7 +10,9 @@ import {
   voiceToSoap, 
   getPatientRiskScore, 
   getLabTrendsSummary, 
-  generateDischargeSummary 
+  generateDischargeSummary,
+  suggestICD10,
+  patientTriageChat
 } from '../controllers/aiController';
 
 const router: Router = Router();
@@ -18,8 +20,10 @@ const router: Router = Router();
 // Protect all AI routes
 router.use(authenticate);
 
-// Clinical Assistant
+// Clinical Assistant & Triage
 router.post('/clinical-assistant', chatWithAssistant);
+router.post('/triage-chat', patientTriageChat);
+router.post('/icd10-suggest', suggestICD10);
 
 // Diagnosis Assistance
 router.post('/suggest-diagnosis', authorize([Role.DOCTOR, Role.HOSPITAL_ADMIN, Role.SUPER_ADMIN]), suggestDiagnosis);

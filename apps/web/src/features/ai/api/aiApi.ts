@@ -78,6 +78,20 @@ export const aiApi = createApi({
         body,
       }),
     }),
+    suggestICD10: builder.mutation<ApiResponse<Array<{ code: string; description: string; confidence: number }>>, { clinicalNote: string }>({
+      query: (body) => ({
+        url: '/icd10-suggest',
+        method: 'POST',
+        body,
+      }),
+    }),
+    patientTriageChat: builder.mutation<ApiResponse<{ reply: string; urgency: 'LOW' | 'MEDIUM' | 'HIGH' | 'EMERGENCY'; recommendedDepartment: string }>, { message: string; history?: any[] }>({
+      query: (body) => ({
+        url: '/triage-chat',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -92,4 +106,6 @@ export const {
   useGetPatientRiskScoreMutation,
   useGetLabTrendsSummaryMutation,
   useGenerateDischargeSummaryMutation,
+  useSuggestICD10Mutation,
+  usePatientTriageChatMutation,
 } = aiApi;

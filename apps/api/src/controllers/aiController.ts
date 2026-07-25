@@ -126,3 +126,25 @@ export const generateDischargeSummary = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const suggestICD10 = async (req: Request, res: Response) => {
+  try {
+    const { clinicalNote } = req.body;
+    const data = await AIService.suggestICD10Coding(clinicalNote);
+    res.json({ success: true, data });
+  } catch (error: any) {
+    logger.error('Error in suggestICD10', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const patientTriageChat = async (req: Request, res: Response) => {
+  try {
+    const { message, history } = req.body;
+    const data = await AIService.patientTriageBot(message, history);
+    res.json({ success: true, data });
+  } catch (error: any) {
+    logger.error('Error in patientTriageChat', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
