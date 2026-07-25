@@ -11,6 +11,7 @@
     "seed": "turbo run seed",
     "seed:full": "turbo run seed:full",
     "deploy:check": "node scripts/deploy-check.js",
+    "benchmark": "node scripts/benchmark-load.js",
     "prepare": "husky"
   },
   "devDependencies": {
