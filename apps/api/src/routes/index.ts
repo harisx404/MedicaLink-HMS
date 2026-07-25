@@ -33,6 +33,7 @@ import documentRoutes from './document.routes';
 import consentRoutes from './consent.routes';
 import complianceRoutes from './compliance.routes';
 import complianceAuditRoutes from './complianceAudit.routes';
+import disasterRecoveryRoutes from './disasterRecovery.routes';
 
 const router: Router = Router();
 
@@ -66,6 +67,7 @@ router.use('/documents', documentRoutes);
 router.use('/consents', consentRoutes);
 router.use('/compliance', complianceRoutes);
 router.use('/compliance/audit-report', complianceAuditRoutes);
+router.use('/disaster-recovery', disasterRecoveryRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {
