@@ -15,9 +15,6 @@ node_modules
 # Testing
 coverage/
 
-# Documentation (Local only)
-docs/
-
 # Turbo
 .turbo
 
