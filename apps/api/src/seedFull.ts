@@ -30,13 +30,23 @@ import { getBloodUnitModel } from './models/BloodBank';
 
 async function seedFull() {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/medicalink';
-    console.log(`Connecting to MongoDB at: ${mongoUri}`);
+    let mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/medicalink';
+    console.log(`Connecting to Primary MongoDB at: ${mongoUri}`);
     
-    // Connect to Main DB
-    await mongoose.connect(mongoUri, {
-      dbName: process.env.MAIN_DB_NAME || 'medicalink_main'
-    });
+    // Connect to Main DB with fallback
+    try {
+      await mongoose.connect(mongoUri, {
+        dbName: process.env.MAIN_DB_NAME || 'medicalink_main',
+        serverSelectionTimeoutMS: 5000
+      });
+    } catch (primaryErr: any) {
+      console.warn(`⚠️ Cloud MongoDB connection failed (${primaryErr.message}). Attempting local fallback: mongodb://127.0.0.1:27017...`);
+      mongoUri = 'mongodb://127.0.0.1:27017/medicalink';
+      await mongoose.connect(mongoUri, {
+        dbName: process.env.MAIN_DB_NAME || 'medicalink_main',
+        serverSelectionTimeoutMS: 5000
+      });
+    }
     console.log(`MongoDB connected to: ${process.env.MAIN_DB_NAME || 'medicalink_main'}`);
 
     console.log('⚠️ DROPPING MAIN DATABASE...');

@@ -14,12 +14,22 @@ export async function connectMainDb(): Promise<mongoose.Connection> {
     return mainConnection;
   }
 
-  await mongoose.connect(env.MONGO_URI, {
-    dbName: env.MAIN_DB_NAME,
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-  });
+  try {
+    await mongoose.connect(env.MONGO_URI, {
+      dbName: env.MAIN_DB_NAME,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+  } catch (primaryErr: any) {
+    logger.warn(`⚠️ Cloud MONGO_URI connection failed (${primaryErr.message}). Attempting local fallback: mongodb://127.0.0.1:27017...`);
+    await mongoose.connect('mongodb://127.0.0.1:27017/medicalink', {
+      dbName: env.MAIN_DB_NAME,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+  }
 
   mainConnection = mongoose.connection;
 
