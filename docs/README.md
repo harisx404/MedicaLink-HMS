@@ -1,45 +1,45 @@
-# 📚 MedicaLink HMS — Documentation Center
+# MedicaLink HMS — Documentation Index
 
-Welcome to the official technical and operational documentation hub for **MedicaLink HMS**, an enterprise-grade, multi-tenant B2B SaaS Hospital Management System.
+Technical and operational documentation index for MedicaLink HMS, an enterprise multi-tenant B2B SaaS Hospital Management System.
 
 ---
 
-## 🗺️ Documentation Directory
+## Documentation Directory
 
 | Document | Description | Key Topics |
 |---|---|---|
-| 📐 [**Architecture Guide**](./ARCHITECTURE.md) | Technical system architecture & design patterns | Multi-tenant DB isolation, Monorepo topology, Redis caching, Security & AI pipeline |
-| 📖 [**User Guide**](./USER_GUIDE.md) | Operations manual for all 25+ hospital modules | Patient portal, EHR, Pharmacy FEFO, Lab delta checks, Emergency triage, Telemedicine |
-| 🔌 [**API Reference**](./API_REFERENCE.md) | REST routes & real-time WebSocket events | Endpoint schemas, Authentication headers, Response envelopes, Socket.io events |
-| 🛠️ [**Development & Troubleshooting**](./DEVELOPMENT_AND_TROUBLESHOOTING.md) | Onboarding, deployment & diagnostic guide | Local setup, Database seeding, Docker Compose, Common errors, Backup & Recovery |
-| ☁️ [**Vercel Cloud Deployment Guide**](./VERCEL_DEPLOYMENT.md) | Vercel cloud serverless deployment guide | Monorepo deployment, Dual-mode serverless vs local Docker configuration |
+| [Architecture Guide](./ARCHITECTURE.md) | System architecture & technical patterns | Multi-tenant DB isolation, monorepo topology, Redis caching, security safeguards, AI pipeline |
+| [User Guide](./USER_GUIDE.md) | Operations manual for clinical & admin modules | Patient portal, EHR, pharmacy FEFO, lab delta checks, emergency triage, telemedicine |
+| [API Reference](./API_REFERENCE.md) | REST routes & WebSocket events | Endpoint schemas, headers, response format envelopes, Socket.io event schemas |
+| [Development & Troubleshooting](./DEVELOPMENT_AND_TROUBLESHOOTING.md) | Onboarding, deployment & diagnostics | Setup, DB seeding, Docker Compose, error diagnostics, backup & recovery |
+| [Vercel Deployment Guide](./VERCEL_DEPLOYMENT.md) | Cloud serverless deployment guide | Monorepo Vercel project configuration, environment variables, serverless vs Docker runtime |
 
 ---
 
-## 🏗️ Monorepo Topology Overview
+## Monorepo Directory Layout
 
 ```
 MedicaLink-HMS/
 ├── apps/
-│   ├── api/                 # Node.js 20 + Express TypeScript Backend REST API & WebSockets
+│   ├── api/                 # Node.js 20 + Express TypeScript REST API & WebSockets
 │   ├── web/                 # React 18 + Vite SPA Frontend (TailwindCSS, RTK Query)
 │   └── mobile/              # React Native / Expo Mobile Client
 ├── packages/
 │   ├── shared/              # Shared Zod Schemas, TypeScript Interfaces, Constants
 │   ├── ui/                  # Shared React UI Component Library
-│   ├── eslint-config/       # Unified ESLint Configurations
+│   ├── eslint-config/       # Shared ESLint Configurations
 │   └── typescript-config/   # Strict TypeScript Compiler Options
-├── docs/                    # Complete Engineering & Operational Documentation Suite
-├── scripts/                 # Pre-flight deployment check, Redis load test, DB backup
-├── docker-compose.prod.yml  # Multi-container production deployment orchestration
-└── RELEASE_NOTES.md         # Release history and milestone logs
+├── docs/                    # Architecture, API, User Guide, and Deployment Docs
+├── scripts/                 # Deployment check, Redis benchmark, and DB backup scripts
+├── docker-compose.prod.yml  # Multi-container production compose file
+└── RELEASE_NOTES.md         # Version release history
 ```
 
 ---
 
-## 🚀 Key Engineering Pillars
+## Architectural Principles
 
-1. **Strict Multi-Tenancy:** Dynamic database connection routing per tenant (`x-tenant-id`) providing complete data isolation at the MongoDB connection level.
-2. **High Throughput Caching:** Dual-mode Redis caching layer (ioredis TCP / Upstash HTTP REST) delivering sub-20ms latency and 1,800+ req/sec throughput.
-3. **AI Clinical Decision Support:** Integrated Google Gemini 1.5 Flash LLM for automated ICD-10 medical coding, drug interaction warnings, and patient symptom triage.
-4. **HIPAA Security & Auditability:** PII data field-level encryption (AES-256-GCM), HttpOnly refresh token rotation, TOTP 2FA, and granular audit trail logging.
+1. **Database-per-Tenant Multi-Tenancy:** Dynamic database connection routing per tenant (`x-tenant-id`) providing complete data isolation at the MongoDB connection level.
+2. **Dual-Mode Caching:** Layered Redis caching (ioredis TCP / Upstash HTTP REST) supporting high-concurrency read operations.
+3. **AI Clinical Decision Support:** Integrated Google Gemini 1.5 Flash API for automated ICD-10 medical coding, drug interaction warnings, and patient triage.
+4. **Security & Auditability:** PII data field-level encryption (AES-256-GCM), HttpOnly refresh token rotation, TOTP 2FA, and structured audit logging.

@@ -1,19 +1,19 @@
-# 🔌 API & Real-Time Event Reference — MedicaLink HMS
+# API & Real-Time Event Reference — MedicaLink HMS
 
-This reference documents the RESTful API endpoints, request/response envelopes, authentication requirements, and real-time Socket.io events across **MedicaLink HMS**.
+REST API routes, request/response envelopes, authentication headers, and Socket.io event schemas for MedicaLink HMS.
 
 ---
 
-## 🔒 Standard Request Headers & Response Envelope
+## Headers & Response Format
 
-### Required Request Headers
+### Required Headers
 ```http
 Authorization: Bearer <JWT_ACCESS_TOKEN>
 x-tenant-id: <TENANT_ID>
 Content-Type: application/json
 ```
 
-### Standard Response Format
+### Standard Response Envelope
 ```json
 {
   "success": true,
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ---
 
-## 📡 REST API Route Catalog
+## REST API Catalog
 
 ### 1. Authentication & Multi-Tenancy (`/api/v1/auth`)
 | Method | Endpoint | Description | Access |
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ---
 
-## ⚡ Socket.io Real-Time Events
+## Socket.io Real-Time Events
 
 ```mermaid
 sequenceDiagram
@@ -75,7 +75,7 @@ sequenceDiagram
     Socket-->>Web: Emit `location_update` payload `{ ambulanceId, lat, lng, speed }`
 ```
 
-### Event Payload Definitions
+### Event Payload Schemas
 - `ambulance:location_update`: Real-time GPS coordinate telemetry.
-- `icu:vital_alert`: High-priority patient vital threshold alert.
-- `queue:patient_called`: Real-time reception call speaker notification.
+- `icu:vital_alert`: Patient vital threshold alert.
+- `queue:patient_called`: Reception call notification.

@@ -1,25 +1,25 @@
-# 📖 Comprehensive User & Module Operational Guide — MedicaLink HMS
+# Comprehensive User & Module Operational Guide — MedicaLink HMS
 
-This operational guide provides step-by-step instructions for all 25+ modules across the 15 distinct user roles in **MedicaLink HMS**.
+Operational manual for all 25+ clinical and administrative modules across 15 user roles in MedicaLink HMS.
 
 ---
 
-## 🎯 User Role Matrix & Access Scope
+## User Role Scope Matrix
 
 | Role | Target Portal | Core Module Access |
 |---|---|---|
-| **SUPER_ADMIN** | `/super-admin/*` | Global Tenant Provisioning, System Monitoring, Subscription Plans, Audit Logs |
-| **HOSPITAL_ADMIN** | `/admin/*` | Hospital Settings, Staff Directory, Department Management, Compliance Audits |
-| **DOCTOR** | `/doctor/*` | Clinical Workstation, SOAP Consultations, E-Prescriptions, Patient Timeline |
-| **NURSE** | `/nursing/*` | Inpatient Ward Management, Bed Allocation, Medication Administration (MAR) |
-| **PHARMACIST** | `/pharmacy/*` | FEFO Dispensing, Drug Inventory, Purchase Orders, Narcotics Register |
-| **LAB_TECH** | `/lab/*` | Sample Collection, Test Result Entry, Delta Checks, Pathologist Sign-off |
-| **RADIOLOGIST** | `/radiology/*` | Imaging Orders, DICOM Viewer, AI Image Report Generator |
-| **PATIENT** | `/patient-portal/*` | Appointment Booking, Lab Results, Prescriptions, AI Symptom Triage Chatbot |
+| **SUPER_ADMIN** | `/super-admin/*` | Global tenant provisioning, system monitoring, subscription plans, audit logs |
+| **HOSPITAL_ADMIN** | `/admin/*` | Hospital settings, staff directory, department management, compliance audits |
+| **DOCTOR** | `/doctor/*` | Clinical workstation, SOAP consultations, e-prescriptions, patient timeline |
+| **NURSE** | `/nursing/*` | Inpatient ward management, bed allocation, Medication Administration Records (MAR) |
+| **PHARMACIST** | `/pharmacy/*` | FEFO dispensing, drug inventory, purchase orders, narcotics register |
+| **LAB_TECH** | `/lab/*` | Sample collection, test result entry, delta checks, pathologist verification |
+| **RADIOLOGIST** | `/radiology/*` | Imaging orders, DICOM viewer, AI report generator |
+| **PATIENT** | `/patient-portal/*` | Appointment booking, lab results, prescriptions, AI symptom triage chatbot |
 
 ---
 
-## 📋 Key Module Operational Workflows
+## Operational Workflows
 
 ### 1. Patient Registration & UHID Generation
 ```
@@ -49,11 +49,11 @@ graph TD
 ```
 
 ### 3. Pharmacy FEFO (First-Expired, First-Out) Dispensing
-1. Navigating to `/pharmacy/dispensing`.
-2. Selecting patient prescription order from active queue.
-3. System automatically selects inventory batches sorted by **earliest expiration date**.
-4. Pharmacist scans barcode/verifies batch number and executes dispensing transaction.
-5. Stock levels auto-decrement with real-time stock alert triggers.
+1. Navigate to `/pharmacy/dispensing`.
+2. Select patient prescription order from active queue.
+3. System automatically pre-selects inventory batches sorted by earliest expiration date.
+4. Pharmacist verifies batch number and executes dispensing transaction.
+5. Stock levels decrement with automated threshold alerts.
 
 ### 4. Emergency Manchester Triage Workflow
 - **Red (Immediate):** Critical resuscitation cases (Immediate ICU/Trauma Bay allocation).
@@ -62,8 +62,8 @@ graph TD
 - **Green (Standard):** Minor injuries/mild symptoms.
 - **Blue (Non-Urgent):** Routine complaints.
 
-### 5. Patient Portal & AI Symptom Triage Chatbot
-1. Patients log in to `/patient-portal`.
-2. Click **AI Health Assistant** floating action widget.
-3. Enter symptoms in natural language (e.g., *"I have a high fever and persistent dry cough for 3 days"*).
-4. Google Gemini AI analyzes symptoms and responds with urgency triage category (e.g., *"Urgent: Schedule consultation with General Practitioner within 24 hours"*).
+### 5. Patient Portal & AI Triage Chatbot
+1. Log in to `/patient-portal`.
+2. Open **AI Health Assistant** widget.
+3. Enter symptoms in natural language.
+4. Google Gemini API processes input against clinical schema and returns urgency categorization.

@@ -1,10 +1,10 @@
-# 📐 Technical Architecture & System Design — MedicaLink HMS
+# Technical Architecture & System Design — MedicaLink HMS
 
-This document details the high-level system architecture, data models, multi-tenancy mechanics, caching strategy, security safeguards, and AI pipeline of **MedicaLink HMS**.
+System architecture, data models, multi-tenancy mechanics, caching strategy, security safeguards, and AI pipeline details for MedicaLink HMS.
 
 ---
 
-## 🏛️ System Architecture Topology
+## System Architecture Topology
 
 ```mermaid
 graph TD
@@ -20,9 +20,9 @@ graph TD
 
 ---
 
-## 🏢 Multi-Tenant Database-per-Tenant Isolation
+## Multi-Tenant Database-per-Tenant Isolation
 
-MedicaLink HMS employs a strict **database-per-tenant isolation strategy**. Unlike shared-database single-table designs that rely solely on `tenantId` columns (which are vulnerable to developer query leakage), each hospital tenant maintains a dedicated, isolated MongoDB database instance.
+MedicaLink HMS uses a database-per-tenant isolation strategy. Rather than storing all tenants in shared tables filtered by `tenantId`, each tenant operates against a separate MongoDB database instance (`medicalink_tenant_{id}`).
 
 ### Tenant Resolution Lifecycle
 
@@ -35,7 +35,7 @@ sequenceDiagram
     participant DB as MongoDB Cluster
 
     Client->>Auth: Request with `x-tenant-id` header or JWT payload
-    Auth->>Pool: Query existing connection instance for Tenant ID
+    Auth->>Pool: Query connection pool for Tenant ID
     alt Connection Exists in Pool
         Pool-->>Auth: Return cached Mongoose Connection
     else New Connection Required
@@ -48,11 +48,11 @@ sequenceDiagram
 
 ---
 
-## ⚡ Multi-Layer Redis Caching Architecture
+## Redis Caching Architecture
 
-To achieve sub-20ms API response times and support high-concurrency clinical workloads, MedicaLink HMS integrates a dual-mode Redis caching layer using `cacheService.ts` and `cacheMiddleware.ts`.
+To support high-concurrency read operations, MedicaLink HMS uses a dual-mode Redis client supporting both ioredis (TCP socket) and Upstash (HTTP REST API).
 
-### Cache Strategy & Invalidation
+### Cache Strategy
 
 ```
 +-------------------------------------------------------------------+
@@ -79,7 +79,7 @@ To achieve sub-20ms API response times and support high-concurrency clinical wor
 
 ---
 
-## 🔒 Security & HIPAA Compliance Safeguards
+## Security & HIPAA Safeguards
 
 ```mermaid
 graph LR
@@ -103,12 +103,12 @@ graph LR
     Edge Security --> Authentication & Authorization --> Data Security
 ```
 
-- **Field-Level PII Encryption:** Sensitive patient identifiers (SSN, national tax ID, insurance policy ID) are encrypted at rest using AES-256-GCM via `encryption.ts`.
-- **RBAC Matrix:** Access is strictly bounded by 15 predefined roles (`SUPER_ADMIN`, `HOSPITAL_ADMIN`, `DOCTOR`, `NURSE`, `PHARMACIST`, `LAB_TECH`, `RECEPTIONIST`, `ACCOUNTANT`, `PATIENT`, etc.).
+- **Field-Level PII Encryption:** Sensitive fields (SSN, tax ID, insurance policy ID) are encrypted at rest using AES-256-GCM.
+- **RBAC Matrix:** Access is bounded by 15 predefined roles (`SUPER_ADMIN`, `HOSPITAL_ADMIN`, `DOCTOR`, `NURSE`, `PHARMACIST`, `LAB_TECH`, `RECEPTIONIST`, `ACCOUNTANT`, `PATIENT`, etc.).
 
 ---
 
-## 🤖 AI Clinical Decision Support Pipeline
+## AI Clinical Decision Support Pipeline
 
 ```mermaid
 sequenceDiagram

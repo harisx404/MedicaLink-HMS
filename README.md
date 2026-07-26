@@ -1,8 +1,7 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/MedicaLink-HMS-4F46E5?style=for-the-badge&logo=hospital&logoColor=white" alt="MedicaLink HMS" />
-  <h1>🏥 MedicaLink HMS</h1>
-  <p><strong>Enterprise-Grade Multi-Tenant Hospital Management System</strong></p>
-  <p><em>AI-Powered · Cloud-Native · Real-Time · HIPAA-Ready</em></p>
+  <h1>MedicaLink HMS</h1>
+  <p><strong>Enterprise Multi-Tenant Hospital Management System</strong></p>
+  <p><em>AI-Assisted · Cloud-Native · Real-Time · HIPAA-Ready</em></p>
 
   <p>
     <a href="https://github.com/harisx404/MedicaLink-HMS/actions"><img src="https://img.shields.io/github/actions/workflow/status/harisx404/MedicaLink-HMS/ci.yml?branch=main&style=flat-square&label=CI" alt="CI Status" /></a>
@@ -20,9 +19,9 @@
 
 ## Overview
 
-MedicaLink HMS is a production-grade, **multi-tenant B2B SaaS** hospital management platform. It manages the complete lifecycle of hospital operations — from patient registration and clinical consultations to pharmacy dispensing, laboratory workflows, billing, emergency triage, and telemedicine — all within a single, real-time, AI-enhanced system.
+MedicaLink HMS is a multi-tenant B2B SaaS hospital management platform. It manages hospital operations from patient registration and clinical consultations to pharmacy dispensing, laboratory workflows, billing, emergency triage, and telemedicine.
 
-Built with a **database-per-tenant** architecture, each hospital operates in complete data isolation while sharing the same application infrastructure. The platform supports **15 distinct user roles**, **25+ clinical and administrative modules**, and **200+ pages**.
+Built with a database-per-tenant architecture, each hospital operates in data isolation while sharing the application infrastructure. The platform supports 15 user roles, 25+ clinical and administrative modules, and 200+ views.
 
 ---
 
@@ -31,13 +30,13 @@ Built with a **database-per-tenant** architecture, each hospital operates in com
 | Category | Highlights |
 |----------|-----------|
 | **Multi-Tenant SaaS** | Database-per-tenant isolation, tenant-scoped middleware, subscription management |
-| **Authentication** | JWT HttpOnly cookies, refresh token rotation, TOTP 2FA, account lockout |
+| **Authentication** | JWT HttpOnly cookies, refresh token rotation, TOTP 2FA, account lockout protection |
 | **Patient Management** | Auto-generated UHID, duplicate detection, patient portal with AI chatbot |
 | **Clinical Workflows** | SOAP consultations, prescription builder, ICD-10 coding, AI clinical summaries |
 | **Pharmacy** | FEFO batch dispensing, narcotics register, purchase orders, GRN processing |
 | **Laboratory** | Sample collection, result entry with delta checks, pathologist verification |
 | **Billing & Finance** | Multi-currency invoicing, insurance claims, payment tracking, financial reports |
-| **Emergency & ICU** | Manchester triage, real-time ambulance tracking, ventilator parameter charts |
+| **Emergency & ICU** | Manchester triage, real-time ambulance tracking, ventilator parameter monitoring |
 | **Telemedicine** | WebRTC video consultations, virtual waiting room |
 | **Real-Time** | Socket.io live queues, notifications, bed tracking, schedule updates |
 | **AI Integration** | Gemini-powered clinical summaries, drug interaction checks, predictive analytics |
@@ -51,7 +50,7 @@ Built with a **database-per-tenant** architecture, each hospital operates in com
 |-------|---------------|
 | **Authentication** | JWT access tokens (in-memory) + HttpOnly refresh cookies with rotation |
 | **Authorization** | RBAC (15 roles) + ABAC (resource-level permission checks) |
-| **Input Validation** | Zod schemas on every endpoint — no unvalidated user input |
+| **Input Validation** | Zod schemas on every endpoint |
 | **NoSQL Injection** | express-mongo-sanitize on all request bodies |
 | **XSS Prevention** | Custom XSS middleware + DOMPurify on frontend |
 | **Rate Limiting** | Tiered limits — auth: 5/15min, API: 300/min, AI: 20/min |
@@ -90,8 +89,7 @@ Built with a **database-per-tenant** architecture, each hospital operates in com
 | Linting | ESLint 9 (flat config), Husky + lint-staged |
 | Testing | Vitest, jsdom, supertest |
 | CI/CD | GitHub Actions |
-| Deployment | Vercel (serverless) |
-| Infrastructure | Docker Compose (local dev) |
+| Deployment | Vercel (serverless) / Docker Compose |
 
 ---
 
@@ -140,76 +138,37 @@ graph TB
 
 ---
 
+## System Limitations & Operational Considerations
+
+- **WebSocket Telemetry:** Socket.io real-time event rooms (ambulance location streams, queue calls) require a persistent Node.js process (`apps/api/src/server.ts` or Docker container) or a Redis Pub/Sub adapter when running serverless functions.
+- **Background Cron Tasks:** Periodic appointment reminders and automated inventory alerts rely on job schedulers initialized in `server.ts`.
+- **Database Connection Pooling:** Multi-tenant connections are dynamically instantiated and cached in memory. In serverless environments (Vercel), connection caching is managed per function invocation.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v20+
-- [pnpm](https://pnpm.io/) v9+
-- [Docker](https://www.docker.com/) & Docker Compose
-- [Git](https://git-scm.com/)
+- Node.js v20+
+- pnpm v9+
+- Docker & Docker Compose
 
 ### Quick Start
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/harisx404/MedicaLink-HMS.git
 cd MedicaLink-HMS
-
-# 2. Install dependencies
 pnpm install
-
-# 3. Start MongoDB and Redis
-docker-compose up -d
-
-# 4. Configure environment
-cp .env.example apps/api/.env
-cp .env.example apps/web/.env
-
-# 5. Start development servers
+cp apps/api/.env.example apps/api/.env
+pnpm seed:full
 pnpm run dev
 ```
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3000 |
+| Frontend | http://localhost:5173 |
 | Backend API | http://localhost:5000 |
-| API Documentation | http://localhost:5000/api/docs |
-
----
-
-## Project Structure
-
-```
-MedicaLink-HMS/
-├── apps/
-│   ├── api/                 # Express.js REST API
-│   │   ├── src/
-│   │   │   ├── config/      # DB, Redis, Swagger, env validation
-│   │   │   ├── controllers/ # Route handlers
-│   │   │   ├── middlewares/  # Auth, tenant, rate-limit, validation
-│   │   │   ├── models/       # Mongoose schemas
-│   │   │   ├── routes/       # Route definitions
-│   │   │   ├── services/     # Business logic
-│   │   │   ├── sockets/      # Real-time event handlers
-│   │   │   └── tests/        # Unit + integration tests
-│   │   └── vercel.json       # Serverless deployment config
-│   ├── web/                  # React SPA (Vite)
-│   │   └── src/
-│   │       ├── components/   # Shared UI components
-│   │       ├── features/     # Feature modules
-│   │       ├── layouts/      # App, Admin, Portal layouts
-│   │       ├── pages/        # Route-level pages
-│   │       └── store/        # Redux slices + RTK Query APIs
-│   └── mobile/               # React Native (Expo)
-├── packages/
-│   ├── shared/               # Shared TypeScript types and enums
-│   ├── eslint-config/        # Shared ESLint configuration
-│   └── typescript-config/    # Shared tsconfig bases
-├── .github/                  # CI/CD workflows, issue templates
-├── CHANGELOG.md              # Version history
-├── CONTRIBUTING.md           # Contribution guidelines
-└── docker-compose.yml        # Local development infrastructure
-```
+| Documentation | [docs/README.md](./docs/README.md) |
 
 ---
 
@@ -226,41 +185,8 @@ pnpm run test --filter api
 pnpm run test --filter web
 ```
 
-**Current Coverage**: 46 tests passing (41 API + 5 Web)
-
-| Suite | Tests | Coverage |
-|-------|-------|----------|
-| API Unit (Encryption, ErrorHandler, ApiResponse) | 24 | Core utilities |
-| API Integration (Auth, Billing, Pharmacy) | 17 | Critical business flows |
-| Web Unit (Redux AuthSlice) | 5 | State management |
-
 ---
-
-## API Documentation
-
-Interactive Swagger documentation is available at `/api/docs` when the API server is running. It covers all major endpoint groups:
-
-- **Authentication** — Login, registration, token refresh, 2FA
-- **Patients** — Registration, search, profiles
-- **Appointments** — Booking, queue management
-- **Pharmacy** — Drug inventory, dispensing
-- **Laboratory** — Orders, results, verification
-- **Billing** — Invoice generation, payments, insurance
-- **Emergency** — Triage, ambulance tracking
-- **Dashboard** — KPI metrics and analytics
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding standards, and PR process.
 
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-  <sub>Built with precision for enterprise healthcare operations.</sub>
-</div>
