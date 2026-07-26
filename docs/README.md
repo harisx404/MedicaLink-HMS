@@ -12,6 +12,7 @@ Welcome to the official technical and operational documentation hub for **Medica
 | 📖 [**User Guide**](./USER_GUIDE.md) | Operations manual for all 25+ hospital modules | Patient portal, EHR, Pharmacy FEFO, Lab delta checks, Emergency triage, Telemedicine |
 | 🔌 [**API Reference**](./API_REFERENCE.md) | REST routes & real-time WebSocket events | Endpoint schemas, Authentication headers, Response envelopes, Socket.io events |
 | 🛠️ [**Development & Troubleshooting**](./DEVELOPMENT_AND_TROUBLESHOOTING.md) | Onboarding, deployment & diagnostic guide | Local setup, Database seeding, Docker Compose, Common errors, Backup & Recovery |
+| ☁️ [**Vercel Cloud Deployment Guide**](./VERCEL_DEPLOYMENT.md) | Vercel cloud serverless deployment guide | Monorepo deployment, Dual-mode serverless vs local Docker configuration |
 
 ---
 
