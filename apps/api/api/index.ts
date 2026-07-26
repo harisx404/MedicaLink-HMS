@@ -1,12 +1,8 @@
 import { createApp } from '../src/app';
 
 /**
- * ☁️ Vercel Serverless Function Adapter
- * 
- * - Vercel Cloud Mode: Exports the Express `app` instance for Vercel Serverless Function execution.
- * - Local / Docker Mode: `apps/api/src/server.ts` handles `httpServer.listen()` directly.
- * 
- * Both runtimes coexist cleanly without conflict.
+ * Exports the Express app instance for Vercel Serverless Function execution.
+ * Standalone Node.js server and Docker runtimes use apps/api/src/server.ts directly.
  */
 const app = createApp();
 
